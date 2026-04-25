@@ -37,7 +37,7 @@ export default function GromadaPickScreen() {
   useEffect(() => {
     if (!cityId) return;
     fetchGromadySuggestions(cityId, selectedInterestIds)
-      .then((data) => setSuggestions(data as GromadaSuggestion[]))
+      .then((data) => setSuggestions(data as unknown as GromadaSuggestion[]))
       .catch(() => {})
       .finally(() => setLoading(false));
   // Serialise to string so the effect doesn't re-fire on every render due to array identity
