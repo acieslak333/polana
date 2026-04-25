@@ -2,8 +2,8 @@
   "sprint": 6,
   "sprint_name": "Auto-generation + Polish",
   "started": "2026-04-25",
-  "last_updated": "2026-04-25T23:02:17.216367+00:00",
-  "last_completed_task": null,
+  "last_updated": "2026-04-25T23:05:37.877728+00:00",
+  "last_completed_task": "s6-user-calendar",
   "tasks": [
     {
       "id": "s6-ts-fixes",
@@ -38,31 +38,31 @@
     {
       "id": "s6-crossovers-api",
       "title": "services/api/crossovers.ts — CRUD",
-      "status": "in_progress",
+      "status": "done",
       "domain": "frontend"
     },
     {
       "id": "s6-crossovers-form",
       "title": "Crossover proposal form + vote UI in Gromada info panel",
-      "status": "in_progress",
+      "status": "done",
       "domain": "frontend"
     },
     {
       "id": "s6-crossovers-status",
       "title": "Crossover status flow: proposed → accepted → happening → completed",
-      "status": "in_progress",
+      "status": "done",
       "domain": "frontend"
     },
     {
       "id": "s6-allies",
       "title": "gromada_allies display + elder CRUD in app/(app)/(gromady)/[id]/info.tsx",
-      "status": "pending",
+      "status": "done",
       "domain": "frontend"
     },
     {
       "id": "s6-user-calendar",
       "title": "app/(app)/(profile)/calendar.tsx — upcoming + past RSVPd events",
-      "status": "pending",
+      "status": "done",
       "domain": "frontend"
     },
     {
