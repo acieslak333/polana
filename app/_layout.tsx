@@ -6,10 +6,14 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { StyleSheet } from 'react-native';
 
 import '@/i18n';
+import { initSentry } from '@/services/sentry';
 import { supabase } from '@/services/supabase';
 import { getProfile } from '@/services/auth';
 import { useAuthStore } from '@/stores/authStore';
 import { theme } from '@/constants/theme';
+
+// Initialise error monitoring before any component renders
+initSentry();
 
 export default function RootLayout() {
   const { setSession, setProfile, setLoading } = useAuthStore();

@@ -2,8 +2,8 @@
   "sprint": 6,
   "sprint_name": "Auto-generation + Polish",
   "started": "2026-04-25",
-  "last_updated": "2026-04-25T23:05:37.877728+00:00",
-  "last_completed_task": "s6-user-calendar",
+  "last_updated": "2026-04-25T23:11:39.292322+00:00",
+  "last_completed_task": "s6-eas",
   "tasks": [
     {
       "id": "s6-ts-fixes",
@@ -68,37 +68,37 @@
     {
       "id": "s6-gromada-stats",
       "title": "Gromada stats + warmth score formula in app/(app)/(gromady)/[id]/info.tsx",
-      "status": "pending",
+      "status": "done",
       "domain": "frontend"
     },
     {
       "id": "s6-warmth-indicator",
       "title": "components/gromada/WarmthIndicator.tsx — visual bar + campfire icon",
-      "status": "pending",
+      "status": "done",
       "domain": "frontend"
     },
     {
       "id": "s6-mindful-texts",
       "title": "MindfulText in all empty states + loading skeletons across the app",
-      "status": "pending",
+      "status": "done",
       "domain": "frontend"
     },
     {
       "id": "s6-sentry",
       "title": "services/sentry.ts — error monitoring integration",
-      "status": "pending",
+      "status": "done",
       "domain": "infra"
     },
     {
       "id": "s6-analytics",
       "title": "Plausible/PostHog event tracking — screen views + key actions, privacy-first",
-      "status": "pending",
+      "status": "done",
       "domain": "infra"
     },
     {
       "id": "s6-eas",
       "title": "eas.json — development, preview, production build profiles",
-      "status": "pending",
+      "status": "done",
       "domain": "infra"
     },
     {
