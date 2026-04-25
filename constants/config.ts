@@ -1,0 +1,25 @@
+export const SUPABASE_URL = process.env.EXPO_PUBLIC_SUPABASE_URL ?? '';
+export const SUPABASE_ANON_KEY = process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY ?? '';
+
+export const LIMITS = {
+  MAX_GROMADY_PER_USER: 3,
+  MAX_MEMBERS_SMALL: 12,
+  MAX_MEMBERS_MEDIUM: 24,
+  MAX_MEMBERS_LARGE: 36,
+  MAX_UPCOMING_EVENTS_PER_GROMADA: 5,
+  MAX_INTERESTS_PER_GROMADA: 3,
+  MAX_BIO_LENGTH: 200,
+  MAX_POST_LENGTH: 5000,
+  MAX_COMMENT_LENGTH: 2000,
+  MAX_MESSAGE_LENGTH: 2000,
+  MAX_FAVOR_LENGTH: 300,
+  FAVOR_EXPIRY_DAYS: 7,
+} as const;
+
+export const CITIES = {
+  WARSZAWA: 'warszawa',
+  KRAKOW: 'krakow',
+  WROCLAW: 'wroclaw',
+  LODZ: 'lodz',
+  GDANSK: 'gdansk',
+} as const;
