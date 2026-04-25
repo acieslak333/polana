@@ -2,8 +2,8 @@
   "sprint": 6,
   "sprint_name": "Auto-generation + Polish",
   "started": "2026-04-25",
-  "last_updated": "2026-04-25T00:00:00Z",
-  "last_completed_task": null,
+  "last_updated": "2026-04-25T23:01:32.500295+00:00",
+  "last_completed_task": "s6-edge-cron",
   "tasks": [
     {
       "id": "s6-ts-fixes",
@@ -14,25 +14,25 @@
     {
       "id": "s6-edge-generate-events",
       "title": "supabase/functions/generate-events/index.ts",
-      "status": "pending",
+      "status": "done",
       "domain": "backend"
     },
     {
       "id": "s6-edge-expire-favors",
       "title": "supabase/functions/expire-favors/index.ts",
-      "status": "pending",
+      "status": "done",
       "domain": "backend"
     },
     {
       "id": "s6-edge-dormant-check",
       "title": "supabase/functions/dormant-check/index.ts",
-      "status": "pending",
+      "status": "done",
       "domain": "backend"
     },
     {
       "id": "s6-edge-cron",
       "title": "Schedule all 3 Edge Functions as cron jobs in Supabase",
-      "status": "pending",
+      "status": "done",
       "domain": "backend"
     },
     {
