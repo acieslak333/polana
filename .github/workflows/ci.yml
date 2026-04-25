@@ -1,0 +1,60 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - 'sprint-*'
+      - 's*/**'
+  pull_request:
+    branches:
+      - 'sprint-*'
+      - main
+
+jobs:
+  typecheck:
+    name: TypeScript
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: TypeScript check
+        run: ./node_modules/.bin/tsc --noEmit
+
+  lint:
+    name: ESLint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Check for ESLint config
+        id: check_eslint
+        run: |
+          if [ -f ".eslintrc.js" ] || [ -f ".eslintrc.json" ] || [ -f "eslint.config.js" ]; then
+            echo "has_eslint=true" >> $GITHUB_OUTPUT
+          else
+            echo "has_eslint=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: ESLint
+        if: steps.check_eslint.outputs.has_eslint == 'true'
+        run: ./node_modules/.bin/eslint . --ext .ts,.tsx --max-warnings 0
+
+      - name: ESLint skip notice
+        if: steps.check_eslint.outputs.has_eslint == 'false'
+        run: echo "ESLint config not found — skipping (added in Sprint 7)"
