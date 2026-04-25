@@ -24,6 +24,8 @@ export default function ReadyScreen() {
 
   useEffect(() => {
     if (!user) return;
+    // Capture user.id here so TypeScript knows it's non-null inside the async closure
+    const userId = user.id;
     async function run() {
     setSaving(true);
     setError(null);
@@ -35,24 +37,28 @@ export default function ReadyScreen() {
       let profile;
       try {
         profile = await createProfile({
-          id: user.id,
+          id: userId,
           first_name: store.firstName.trim(),
+          last_name: null,
           nickname: store.nickname.trim() || null,
           date_of_birth: store.dateOfBirth || '2000-01-01',
+          bio: null,
           city_id: store.cityId || null,
-          avatar_config: avatarConfig,
+          // AvatarConfig is compatible at runtime — cast satisfies strict schema type
+          avatar_config: avatarConfig as unknown as Record<string, unknown>,
           language: 'pl',
           notifications_enabled: store.notificationsEnabled,
           onboarding_completed: true,
-        });
-      } catch (insertErr: any) {
-        if (insertErr?.code === '23505') {
+        } as Parameters<typeof createProfile>[0]);
+      } catch (insertErr: unknown) {
+        const err = insertErr as { code?: string };
+        if (err?.code === '23505') {
           // duplicate key — profile exists, update instead
-          profile = await updateProfile(user.id, {
+          profile = await updateProfile(userId, {
             first_name: store.firstName.trim(),
             nickname: store.nickname.trim() || null,
             city_id: store.cityId || null,
-            avatar_config: avatarConfig,
+            avatar_config: avatarConfig as Record<string, unknown>,
             notifications_enabled: store.notificationsEnabled,
             onboarding_completed: true,
           });
@@ -63,18 +69,18 @@ export default function ReadyScreen() {
 
       // Save interests
       if (store.selectedInterestIds.length > 0) {
-        await saveUserInterests(user.id, store.selectedInterestIds);
+        await saveUserInterests(userId, store.selectedInterestIds);
       }
 
       // Join selected Gromady
       for (const gromadaId of store.joinedGromadaIds) {
-        await joinGromada(gromadaId, user.id);
+        await joinGromada(gromadaId, userId);
       }
 
       setProfile(profile);
       store.reset();
-    } catch (err: any) {
-      setError(err?.message ?? t('common:unknown_error'));
+    } catch (err: unknown) {
+      setError((err as { message?: string })?.message ?? t('common:unknown_error'));
     } finally {
       setSaving(false);
     }
