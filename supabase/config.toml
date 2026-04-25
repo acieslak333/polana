@@ -1,0 +1,55 @@
+[project]
+# Get your project ref from: supabase.com → project settings → general
+project_id = "your-project-ref-here"
+
+[api]
+port = 54321
+schemas = ["public", "graphql_public"]
+extra_search_path = ["public", "extensions"]
+max_rows = 1000
+
+[db]
+port = 54322
+shadow_port = 54320
+major_version = 15
+
+[studio]
+port = 54323
+api_url = "http://127.0.0.1"
+
+[inbucket]
+# Local email testing (magic links, verification emails)
+port = 54324
+
+[auth]
+site_url = "exp://127.0.0.1:8081"
+additional_redirect_urls = ["exp://127.0.0.1:8081", "polana://"]
+jwt_expiry = 3600
+enable_signup = true
+
+[auth.email]
+enable_signup = true
+double_confirm_changes = true
+enable_confirmations = false
+
+[storage]
+file_size_limit = "50MiB"
+
+# Edge Function schedules (cron syntax: minute hour day month weekday)
+[functions.generate-events]
+verify_jwt = false
+# Daily at 18:00 UTC (20:00 Warsaw time in summer)
+schedule = "0 18 * * *"
+
+[functions.expire-favors]
+verify_jwt = false
+# Daily at 03:00 UTC
+schedule = "0 3 * * *"
+
+[functions.dormant-check]
+verify_jwt = false
+# Every Monday at 02:00 UTC
+schedule = "0 2 * * 1"
+
+[functions.send-notification]
+verify_jwt = true
