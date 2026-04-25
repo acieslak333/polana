@@ -426,7 +426,9 @@ After all tasks done → invoke `sprint-review` skill.
 
 ### `sprint-review` skill
 
-Fires at sprint end:
+Fires at sprint end in two passes:
+
+**Pass 1 — Codebase drift check:**
 1. `git log sprint-N/ --name-only` → collect all changed files
 2. Check CLAUDE.md for undocumented patterns
 3. Check `rules/` for new patterns established this sprint
@@ -434,6 +436,26 @@ Fires at sprint end:
 5. Check `registry/task-types.yaml` for coverage gaps
 6. Open maintenance PR: `chore(engine): sprint-N end review`
 7. Update `sprint_progress.json` sprint pointer
+
+**Pass 2 — Workflow retrospective (self-reflection):**
+
+After the maintenance PR is opened, Claude evaluates the workflow itself by answering these questions from the sprint's data:
+
+1. **Blocker rate:** How many tasks hit the 3-retry limit? If >20% of tasks blocked, flag the relevant domain's tooling as under-equipped and suggest adding a skill or agent.
+
+2. **Review escalation rate:** How often did Karpathy escalate to senior-engineer? If >50% of tasks escalated, consider lowering the `files_changed` threshold or promoting the domain to `senior-first` in `review-rules.yaml`.
+
+3. **Preflight failure rate:** How many preflight runs failed before passing? If a domain consistently fails preflight, suggest adding a domain-specific pre-check script.
+
+4. **Skill coverage gaps:** Were any tasks implemented without a matching registry entry (used default `quality/bugfix`)? If yes, add a new domain to `task-types.yaml`.
+
+5. **Registry keyword misses:** Did `plan_sprint.py` fall back to default domain more than once? If yes, expand `keywords.yaml` with the actual words used.
+
+6. **Hooks/scripts failures:** Did any hook or script error during the sprint? Flag for repair.
+
+7. **Token efficiency:** Did any task spawn more than 3 subagent iterations? If yes, the task scope was too large — suggest splitting that domain into subtask templates.
+
+Retrospective output is written to `workflow_log.md` as a `## Retrospective — Sprint N` section and committed. If any improvement is actionable (threshold change, new keyword, new domain), Claude creates a follow-up task in the next sprint's `sprint_progress.json` automatically with domain `engine/claude-config`.
 
 ---
 
@@ -504,6 +526,23 @@ Triggers on push to `main`. Detects sprint branch merge by reading `git log -1 -
   Issue: #12 opened (needs-human)
   Notification: sent
   Skipping → next task
+
+## Retrospective — Sprint 6
+
+Tasks completed: 16/19 (84%)
+Blockers: 1 (s6-crossovers-api) — 5% blocker rate ✓
+Review escalations: 4/16 (25%) — within threshold ✓
+Preflight failures before pass: avg 0.8 per task ✓
+
+Issues found:
+⚠ backend/api-services escalated 3/4 times (75%) → consider promoting to senior-first
+⚠ keywords.yaml missed "gromada crossover" → added "crossover" to backend/api-services keywords
+⚠ hook workflow_log.py errored twice on Windows path (backslash) → repair task created
+
+Actions taken:
+→ backend/api-services review changed to senior-first in review-rules.yaml
+→ "crossover" added to keywords.yaml backend/api-services
+→ Task created: s7-fix-workflow-log-windows [engine/claude-config]
 ```
 
 ---
