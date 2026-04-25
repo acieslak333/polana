@@ -1,0 +1,240 @@
+# .claude/registry/task-types.yaml
+# Maps task domains to: skills, agents, plugins, rules, review tier, escalation condition.
+# Read by scripts/plan_sprint.py at planning time.
+# review values: karpathy-first | senior-first | lead-required
+
+domains:
+
+  frontend/ui-components:
+    description: React Native screens, components, styling
+    skills: [frontend-design:frontend-design, senior-frontend, superpowers:test-driven-development, preflight]
+    agents: [cs-karpathy-reviewer, cs-senior-engineer]
+    plugins: [frontend-design@claude-plugins-official, code-simplifier@claude-plugins-official, superpowers@claude-plugins-official, impeccable@pbakaus]
+    rules: [rn-native-only.md, no-dark-patterns.md, typescript-strict.md]
+    review: karpathy-first
+    escalate_if: files_changed > 5 or touches_navigation or touches_auth
+
+  frontend/ux-interactions:
+    description: Animations, haptics, gestures, accessibility, empty states
+    skills: [frontend-design:frontend-design, senior-frontend, superpowers:systematic-debugging, preflight]
+    agents: [cs-karpathy-reviewer, cs-senior-engineer]
+    plugins: [frontend-design@claude-plugins-official, superpowers@claude-plugins-official, impeccable@pbakaus]
+    rules: [no-dark-patterns.md, rn-native-only.md]
+    review: karpathy-first
+    escalate_if: touches_reanimated or touches_gesture_handler
+
+  frontend/i18n:
+    description: Translation keys, locale files, i18next config
+    skills: [preflight, context-map]
+    agents: [cs-karpathy-reviewer]
+    plugins: [code-simplifier@claude-plugins-official]
+    rules: [typescript-strict.md]
+    review: karpathy-first
+    escalate_if: adds_new_namespace
+
+  frontend/state-management:
+    description: Zustand stores, hooks, global state changes
+    skills: [senior-frontend, superpowers:test-driven-development, preflight]
+    agents: [cs-karpathy-reviewer, cs-senior-engineer]
+    plugins: [superpowers@claude-plugins-official, code-simplifier@claude-plugins-official]
+    rules: [typescript-strict.md]
+    review: karpathy-first
+    escalate_if: touches_auth_store or files_changed > 4
+
+  backend/api-services:
+    description: services/api/*.ts — CRUD, fetch, mutations
+    skills: [supabase:supabase, supabase:supabase-postgres-best-practices, senior-fullstack, preflight]
+    agents: [cs-karpathy-reviewer, cs-senior-engineer]
+    plugins: [supabase@claude-plugins-official, superpowers@claude-plugins-official]
+    rules: [supabase-rls.md, typescript-strict.md]
+    review: karpathy-first
+    escalate_if: touches_auth or new_table_access or files_changed > 4
+
+  backend/edge-functions:
+    description: supabase/functions/*.ts — Deno Edge Functions
+    skills: [supabase:supabase, supabase:supabase-postgres-best-practices, security-review, preflight]
+    agents: [cs-senior-engineer, cs-karpathy-reviewer]
+    plugins: [supabase@claude-plugins-official, security-guidance@claude-plugins-official]
+    rules: [supabase-rls.md, typescript-strict.md]
+    review: senior-first
+    escalate_if: always_false
+
+  backend/realtime:
+    description: Supabase Realtime subscriptions, chat, live updates
+    skills: [supabase:supabase, senior-fullstack, preflight]
+    agents: [cs-senior-engineer, cs-karpathy-reviewer]
+    plugins: [supabase@claude-plugins-official]
+    rules: [supabase-rls.md, typescript-strict.md]
+    review: senior-first
+    escalate_if: always_false
+
+  database/migrations:
+    description: supabase/migrations/*.sql — schema changes
+    skills: [supabase:supabase, supabase:supabase-postgres-best-practices, sql-database-assistant, database-designer, security-review]
+    agents: [cs-senior-engineer, cs-engineering-lead]
+    plugins: [supabase@claude-plugins-official, security-guidance@claude-plugins-official]
+    rules: [supabase-rls.md]
+    review: senior-first
+    escalate_if: drops_column or drops_table or modifies_rls_policy
+
+  database/rls-policies:
+    description: Row Level Security policy changes
+    skills: [supabase:supabase, supabase:supabase-postgres-best-practices, security-review]
+    agents: [cs-senior-engineer, cs-engineering-lead]
+    plugins: [supabase@claude-plugins-official, security-guidance@claude-plugins-official]
+    rules: [supabase-rls.md]
+    review: lead-required
+    escalate_if: always_false
+
+  database/performance:
+    description: Query optimization, indexes, explain plans
+    skills: [supabase:supabase-postgres-best-practices, sql-database-assistant]
+    agents: [cs-senior-engineer]
+    plugins: [supabase@claude-plugins-official]
+    rules: [supabase-rls.md]
+    review: senior-first
+    escalate_if: always_false
+
+  infra/deployment:
+    description: EAS build config, app.json, eas.json, expo config
+    skills: [senior-fullstack, preflight]
+    agents: [cs-senior-engineer]
+    plugins: [superpowers@claude-plugins-official]
+    rules: [typescript-strict.md]
+    review: senior-first
+    escalate_if: modifies_production_profile
+
+  infra/ci-cd:
+    description: GitHub Actions workflows, scripts, automation
+    skills: [docker-development, senior-fullstack, security-review]
+    agents: [cs-senior-engineer, cs-engineering-lead]
+    plugins: [security-guidance@claude-plugins-official, superpowers@claude-plugins-official]
+    rules: []
+    review: senior-first
+    escalate_if: modifies_auto_merge or touches_secrets
+
+  infra/environment:
+    description: .env files, secrets, config management
+    skills: [env-secrets-manager, security-review]
+    agents: [cs-senior-engineer]
+    plugins: [security-guidance@claude-plugins-official]
+    rules: [supabase-rls.md]
+    review: senior-first
+    escalate_if: adds_new_secret
+
+  infra/docker:
+    description: Dockerfile, docker-compose, container config
+    skills: [docker-development, security-review]
+    agents: [cs-senior-engineer]
+    plugins: [docker-development@claude-plugins-official, security-guidance@claude-plugins-official]
+    rules: []
+    review: senior-first
+    escalate_if: modifies_base_image
+
+  infra/monorepo:
+    description: pnpm workspaces, Turborepo, tsconfig references
+    skills: [monorepo-navigator, senior-fullstack, preflight]
+    agents: [cs-senior-engineer, cs-engineering-lead]
+    plugins: [superpowers@claude-plugins-official]
+    rules: [typescript-strict.md]
+    review: senior-first
+    escalate_if: restructures_packages
+
+  security/auth:
+    description: Auth flows, OAuth, token handling, session management
+    skills: [security-review, supabase:supabase, senior-fullstack]
+    agents: [cs-senior-engineer, cs-engineering-lead]
+    plugins: [security-guidance@claude-plugins-official, supabase@claude-plugins-official]
+    rules: [supabase-rls.md, typescript-strict.md]
+    review: lead-required
+    escalate_if: always_false
+
+  security/audit:
+    description: Security review of existing code, vulnerability assessment
+    skills: [security-review, threat-detection]
+    agents: [cs-quality-regulatory, cs-engineering-lead]
+    plugins: [security-guidance@claude-plugins-official]
+    rules: [supabase-rls.md]
+    review: lead-required
+    escalate_if: always_false
+
+  quality/bugfix:
+    description: Bug fixes, error handling, edge cases
+    skills: [superpowers:systematic-debugging, preflight, code-review:code-review]
+    agents: [cs-karpathy-reviewer, cs-senior-engineer]
+    plugins: [superpowers@claude-plugins-official, code-simplifier@claude-plugins-official]
+    rules: [typescript-strict.md]
+    review: karpathy-first
+    escalate_if: touches_auth or files_changed > 6
+
+  quality/refactor:
+    description: Code cleanup, dead code removal, pattern enforcement
+    skills: [simplify, tech-debt-tracker, preflight, code-review:code-review]
+    agents: [cs-karpathy-reviewer, cs-senior-engineer]
+    plugins: [code-simplifier@claude-plugins-official, superpowers@claude-plugins-official]
+    rules: [typescript-strict.md]
+    review: karpathy-first
+    escalate_if: files_changed > 8
+
+  quality/typescript:
+    description: TypeScript error fixes, type improvements
+    skills: [preflight, superpowers:systematic-debugging]
+    agents: [cs-karpathy-reviewer]
+    plugins: [code-simplifier@claude-plugins-official]
+    rules: [typescript-strict.md]
+    review: karpathy-first
+    escalate_if: changes_core_types
+
+  engine/sprint-management:
+    description: Sprint planning, SPRINTS.md, sprint_progress.json updates
+    skills: [sprint-init, mark-done, context-map]
+    agents: [cs-karpathy-reviewer]
+    plugins: [superpowers@claude-plugins-official]
+    rules: []
+    review: karpathy-first
+    escalate_if: always_false
+
+  engine/claude-config:
+    description: CLAUDE.md, rules/, skills/, settings.json changes
+    skills: [update-config, self-improving-agent, context-map]
+    agents: [cs-senior-engineer]
+    plugins: [superpowers@claude-plugins-official, skill-creator@claude-plugins-official]
+    rules: []
+    review: senior-first
+    escalate_if: modifies_permissions or modifies_hooks
+
+  engine/new-skill:
+    description: Creating or modifying Claude Code skills
+    skills: [superpowers:writing-skills, skill-creator:skill-creator]
+    agents: [cs-senior-engineer]
+    plugins: [skill-creator@claude-plugins-official, superpowers@claude-plugins-official]
+    rules: []
+    review: senior-first
+    escalate_if: always_false
+
+  engine/new-agent:
+    description: Creating or modifying agents in .claude/agents/
+    skills: [agent-designer, agent-workflow-designer]
+    agents: [cs-engineering-lead]
+    plugins: [superpowers@claude-plugins-official]
+    rules: []
+    review: lead-required
+    escalate_if: always_false
+
+  docs/wiki:
+    description: Knowledge base, architecture docs, decision records
+    skills: [llm-wiki, context-map]
+    agents: [cs-wiki-ingestor, cs-wiki-librarian, cs-wiki-linter]
+    plugins: [superpowers@claude-plugins-official]
+    rules: []
+    review: karpathy-first
+    escalate_if: always_false
+
+  docs/api:
+    description: API documentation, type exports, public interfaces
+    skills: [context-map, preflight]
+    agents: [cs-karpathy-reviewer]
+    plugins: [code-simplifier@claude-plugins-official]
+    rules: [typescript-strict.md]
+    review: karpathy-first
+    escalate_if: always_false
