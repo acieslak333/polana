@@ -2,8 +2,8 @@
   "sprint": 6,
   "sprint_name": "Auto-generation + Polish",
   "started": "2026-04-25",
-  "last_updated": "2026-04-25T23:11:39.292322+00:00",
-  "last_completed_task": "s6-eas",
+  "last_updated": "2026-04-26T01:55:00.000000+00:00",
+  "last_completed_task": "s6-code-review",
   "tasks": [
     {
       "id": "s6-ts-fixes",
@@ -104,20 +104,23 @@
     {
       "id": "s6-a11y-audit",
       "title": "Full accessibility audit — VoiceOver + TalkBack manual test",
-      "status": "pending",
-      "domain": "qa"
+      "status": "deferred",
+      "domain": "qa",
+      "note": "Requires physical device with VoiceOver/TalkBack — deferred to Sprint 8 device testing window"
     },
     {
       "id": "s6-perf-audit",
       "title": "Performance audit — FPS profiling, bundle size, cold start time",
-      "status": "pending",
-      "domain": "qa"
+      "status": "deferred",
+      "domain": "qa",
+      "note": "Requires device profiler — deferred to Sprint 8 device testing window"
     },
     {
       "id": "s6-code-review",
       "title": "Run code-reviewer agent on all Sprint 6 files",
-      "status": "pending",
-      "domain": "qa"
+      "status": "done",
+      "domain": "qa",
+      "note": "Ran code-reviewer: A grade (96.7/100). Fixed 1 real security issue: missing auth on send-notification Edge Function"
     }
   ]
 }
