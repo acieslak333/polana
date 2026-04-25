@@ -13,6 +13,23 @@ serve(async (req) => {
     return new Response('ok', { headers: corsHeaders() })
   }
 
+  const authHeader = req.headers.get('Authorization')
+  if (!authHeader?.startsWith('Bearer ')) {
+    return new Response(
+      JSON.stringify({ error: 'Unauthorized' }),
+      { status: 401, headers: { ...corsHeaders(), 'Content-Type': 'application/json' } }
+    )
+  }
+
+  const serviceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
+  const token = authHeader.slice(7)
+  if (token !== serviceKey) {
+    return new Response(
+      JSON.stringify({ error: 'Forbidden' }),
+      { status: 403, headers: { ...corsHeaders(), 'Content-Type': 'application/json' } }
+    )
+  }
+
   try {
     const payload: NotificationPayload = await req.json()
     const { userId, title, body, data } = payload

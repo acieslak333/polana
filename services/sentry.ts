@@ -12,7 +12,6 @@ export function initSentry(): void {
     enableAutoSessionTracking: true,
     tracesSampleRate: APP_ENV === 'production' ? 0.2 : 1.0,
     beforeSend(event) {
-      // Strip breadcrumb data to avoid leaking PII — breadcrumbs.values may be an iterator
       return event
     },
   })
