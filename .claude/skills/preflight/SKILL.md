@@ -6,7 +6,7 @@ Run before any git commit to verify type safety. Use `/preflight` before committ
 
 1. Run TypeScript check from the project root:
    ```bash
-   npx tsc --noEmit
+   ./node_modules/.bin/tsc --noEmit
    ```
 
 2. If exit code is 0:
