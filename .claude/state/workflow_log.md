@@ -20,3 +20,21 @@ Tasks completed: 0/19
 Blocker rate: 0/19 (0%)
 
 _Fill in: escalation rate, preflight failures, keyword misses, hook errors_
+
+---
+
+## Sprint 6 Complete — 2026-04-25 21:34 UTC
+
+Branch: sprint-6 → merged to main
+Tasks: 0/19 completed, 0 skipped
+
+## Retrospective — Sprint 6
+
+**Blocker rate:** 0/19 (0% ✓)
+**Escalation rate:** _fill in from workflow_log_
+**Preflight avg failures:** _fill in_
+**Keyword misses:** _fill in_
+**Hook/script errors:** _fill in_
+
+**Actions taken:**
+_→ list any registry updates, threshold changes, or follow-up tasks created_
