@@ -1,0 +1,38 @@
+# .claude/registry/review-rules.yaml
+# Defines escalation thresholds for the layered review pipeline.
+# Read by scripts/review_pipeline.py.
+
+thresholds:
+  files_changed: 5       # Karpathy → senior if > 5 files touched
+  lines_changed: 300     # Karpathy → senior if > 300 lines changed
+
+# Domains that always use cs-senior-engineer (skip Karpathy)
+always_senior:
+  - backend/edge-functions
+  - backend/realtime
+  - database/migrations
+  - database/performance
+  - infra/deployment
+  - infra/ci-cd
+  - infra/environment
+  - infra/docker
+  - infra/monorepo
+  - engine/claude-config
+  - engine/new-skill
+
+# Domains that always use cs-engineering-lead (skip both Karpathy and senior)
+always_lead:
+  - database/rls-policies
+  - security/auth
+  - security/audit
+  - engine/new-agent
+
+# Blocker handling
+blocker_retries: 3
+blocker_notification: push   # calls send-notification Edge Function
+
+# Retrospective thresholds (used by sprint-review skill)
+retrospective:
+  blocker_rate_warning: 0.20       # warn if >20% of tasks blocked
+  escalation_rate_warning: 0.50    # warn if >50% of tasks escalated
+  preflight_avg_failures_warning: 2 # warn if avg preflight failures > 2

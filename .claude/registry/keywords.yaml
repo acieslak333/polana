@@ -1,0 +1,245 @@
+# .claude/registry/keywords.yaml
+# Maps plain-English keywords to domain IDs.
+# Read by scripts/plan_sprint.py to auto-detect domains from user request text.
+# A request matches a domain if ANY of its keywords appear (case-insensitive).
+# If no match: defaults to quality/bugfix.
+
+mappings:
+  frontend/ui-components:
+    - screen
+    - component
+    - button
+    - card
+    - modal
+    - tab
+    - navigation
+    - layout
+    - list
+    - grid
+    - picker
+    - header
+    - footer
+    - badge
+    - avatar
+
+  frontend/ux-interactions:
+    - animation
+    - haptic
+    - gesture
+    - swipe
+    - accessibility
+    - a11y
+    - empty state
+    - skeleton
+    - transition
+    - scroll
+    - drag
+    - pull to refresh
+
+  frontend/i18n:
+    - translation
+    - locale
+    - i18n
+    - polish
+    - language
+    - "t('"
+    - namespace
+    - localize
+
+  frontend/state-management:
+    - store
+    - zustand
+    - hook
+    - global state
+    - context
+    - usestore
+    - usehook
+
+  backend/api-services:
+    - api
+    - service
+    - fetch
+    - query
+    - mutation
+    - endpoint
+    - crud
+    - request
+    - response
+
+  backend/edge-functions:
+    - edge function
+    - deno
+    - cron
+    - scheduled
+    - serverless
+    - supabase function
+
+  backend/realtime:
+    - realtime
+    - subscription
+    - chat
+    - live
+    - websocket
+    - broadcast
+
+  database/migrations:
+    - migration
+    - schema
+    - table
+    - column
+    - index
+    - alter table
+    - create table
+    - add column
+    - drop column
+
+  database/rls-policies:
+    - rls
+    - row level security
+    - policy
+    - grant
+    - revoke
+    - security policy
+
+  database/performance:
+    - slow query
+    - index
+    - explain
+    - performance
+    - optimize
+    - query plan
+    - n+1
+
+  infra/deployment:
+    - eas
+    - build
+    - deploy
+    - app store
+    - google play
+    - release
+    - distribution
+    - submit
+
+  infra/ci-cd:
+    - github actions
+    - workflow
+    - pipeline
+    - ci
+    - cd
+    - automation
+    - action
+
+  infra/environment:
+    - env
+    - secret
+    - ".env"
+    - credentials
+    - environment variable
+    - config value
+
+  infra/docker:
+    - docker
+    - container
+    - dockerfile
+    - compose
+    - image
+
+  infra/monorepo:
+    - monorepo
+    - workspace
+    - package
+    - turbo
+    - pnpm
+    - turborepo
+
+  security/auth:
+    - auth
+    - oauth
+    - login
+    - token
+    - session
+    - jwt
+    - sign in
+    - sign up
+    - password
+    - refresh token
+
+  security/audit:
+    - security
+    - vulnerability
+    - audit
+    - threat
+    - penetration
+    - xss
+    - injection
+
+  quality/bugfix:
+    - bug
+    - fix
+    - error
+    - crash
+    - broken
+    - not working
+    - issue
+    - regression
+
+  quality/refactor:
+    - refactor
+    - clean
+    - simplify
+    - dead code
+    - technical debt
+    - cleanup
+    - restructure
+
+  quality/typescript:
+    - typescript
+    - type error
+    - ts error
+    - type
+    - interface
+    - generic
+    - type assertion
+
+  engine/sprint-management:
+    - sprint
+    - task
+    - backlog
+    - planning
+    - sprint goal
+
+  engine/claude-config:
+    - claude.md
+    - rules
+    - settings
+    - config
+    - skill update
+    - registry
+
+  engine/new-skill:
+    - new skill
+    - create skill
+    - add skill
+    - skill file
+
+  engine/new-agent:
+    - new agent
+    - create agent
+    - add agent
+    - agent file
+
+  docs/wiki:
+    - docs
+    - wiki
+    - documentation
+    - decision
+    - adr
+    - architecture doc
+
+  docs/api:
+    - api docs
+    - type docs
+    - interface docs
+    - jsdoc
+    - public api
+    - open graph
