@@ -2,7 +2,7 @@
   "sprint": 6,
   "sprint_name": "Auto-generation + Polish",
   "started": "2026-04-25",
-  "last_updated": "2026-04-25T00:00:00Z",
+  "last_updated": "2026-04-25T23:02:17.216367+00:00",
   "last_completed_task": null,
   "tasks": [
     {
@@ -38,19 +38,19 @@
     {
       "id": "s6-crossovers-api",
       "title": "services/api/crossovers.ts — CRUD",
-      "status": "pending",
+      "status": "in_progress",
       "domain": "frontend"
     },
     {
       "id": "s6-crossovers-form",
       "title": "Crossover proposal form + vote UI in Gromada info panel",
-      "status": "pending",
+      "status": "in_progress",
       "domain": "frontend"
     },
     {
       "id": "s6-crossovers-status",
       "title": "Crossover status flow: proposed → accepted → happening → completed",
-      "status": "pending",
+      "status": "in_progress",
       "domain": "frontend"
     },
     {
