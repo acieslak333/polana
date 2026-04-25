@@ -32,7 +32,7 @@ export default function MembersScreen() {
   useEffect(() => {
     if (!id) return;
     fetchGromadaMembers(id)
-      .then((data) => setMembers(data as Member[]))
+      .then((data) => setMembers(data as unknown as Member[]))
       .catch(() => {})
       .finally(() => setLoading(false));
   }, [id]);
@@ -63,6 +63,15 @@ export default function MembersScreen() {
                   label={ROLE_LABELS[item.role] ?? item.role}
                   variant={item.role === 'elder' ? 'accent' : 'default'}
                 />
+                <Pressable
+                  onPress={() => router.push(`/(app)/(messages)/friend/${item.user_id}`)}
+                  hitSlop={8}
+                  accessibilityRole="button"
+                  accessibilityLabel="Profil"
+                  style={styles.profileBtn}
+                >
+                  <Text style={styles.profileBtnText}>›</Text>
+                </Pressable>
               </View>
             );
           }}
@@ -92,4 +101,6 @@ const styles = StyleSheet.create({
   row: { flexDirection: 'row', alignItems: 'center', gap: theme.spacing.md, paddingVertical: theme.spacing.sm, minHeight: 60 },
   name: { flex: 1, fontSize: theme.fontSize.body, fontWeight: theme.fontWeight.medium, color: theme.colors.textPrimary },
   separator: { height: 1, backgroundColor: theme.colors.borderSubtle },
+  profileBtn: { width: 32, height: 32, alignItems: 'center', justifyContent: 'center' },
+  profileBtnText: { fontSize: 22, color: theme.colors.textTertiary },
 });
