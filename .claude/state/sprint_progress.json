@@ -2,67 +2,67 @@
   "sprint": 6,
   "sprint_name": "Auto-generation + Polish",
   "started": "2026-04-25",
-  "last_updated": "2026-04-25T23:10:51.062829+00:00",
+  "last_updated": "2026-04-25T23:11:39.292322+00:00",
   "last_completed_task": "s6-eas",
   "tasks": [
     {
       "id": "s6-ts-fixes",
       "title": "Fix 6 pre-existing TypeScript errors surfaced by preflight: members.tsx, gromada-pick.tsx, ready.tsx, Input.tsx, useNotifications.ts, notifications.ts",
-      "status": "pending",
+      "status": "done",
       "domain": "qa"
     },
     {
       "id": "s6-edge-generate-events",
       "title": "supabase/functions/generate-events/index.ts",
-      "status": "pending",
+      "status": "done",
       "domain": "backend"
     },
     {
       "id": "s6-edge-expire-favors",
       "title": "supabase/functions/expire-favors/index.ts",
-      "status": "pending",
+      "status": "done",
       "domain": "backend"
     },
     {
       "id": "s6-edge-dormant-check",
       "title": "supabase/functions/dormant-check/index.ts",
-      "status": "pending",
+      "status": "done",
       "domain": "backend"
     },
     {
       "id": "s6-edge-cron",
       "title": "Schedule all 3 Edge Functions as cron jobs in Supabase",
-      "status": "pending",
+      "status": "done",
       "domain": "backend"
     },
     {
       "id": "s6-crossovers-api",
       "title": "services/api/crossovers.ts — CRUD",
-      "status": "pending",
+      "status": "done",
       "domain": "frontend"
     },
     {
       "id": "s6-crossovers-form",
       "title": "Crossover proposal form + vote UI in Gromada info panel",
-      "status": "pending",
+      "status": "done",
       "domain": "frontend"
     },
     {
       "id": "s6-crossovers-status",
       "title": "Crossover status flow: proposed → accepted → happening → completed",
-      "status": "pending",
+      "status": "done",
       "domain": "frontend"
     },
     {
       "id": "s6-allies",
       "title": "gromada_allies display + elder CRUD in app/(app)/(gromady)/[id]/info.tsx",
-      "status": "pending",
+      "status": "done",
       "domain": "frontend"
     },
     {
       "id": "s6-user-calendar",
       "title": "app/(app)/(profile)/calendar.tsx — upcoming + past RSVPd events",
-      "status": "pending",
+      "status": "done",
       "domain": "frontend"
     },
     {
