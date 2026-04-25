@@ -48,3 +48,8 @@ _→ list any registry updates, threshold changes, or follow-up tasks created_
   Agent: cs-senior-engineer
   Branch: s6/backend-edge-functions
 ✓ 01:01 Done s6-edge-generate-events — merged to sprint-6
+
+▶ 01:02 Starting s6-crossovers-api [frontend/backend]
+  Agent: cs-senior-engineer
+  Branch: s6/crossovers
+✓ 01:09 Done s6-crossovers-api — merged to sprint-6

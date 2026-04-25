@@ -14,6 +14,17 @@ import { theme } from '@/constants/theme';
 import { useAuthStore } from '@/stores/authStore';
 import { fetchGromada, leaveGromada, type GromadaWithInterests } from '@/services/api/gromady';
 import { joinGromada } from '@/services/api/users';
+import { useFavors } from '@/hooks/useFavors';
+import { Input } from '@/components/ui/Input';
+import { fetchCrossovers, voteCrossover, type CrossoverProposal } from '@/services/api/crossovers';
+import { supabase } from '@/services/supabase';
+
+interface Ally {
+  id: string
+  business_name: string
+  category: string
+  offer_text: string
+}
 
 export default function GromadaInfoScreen() {
   const { id: _rawId } = useLocalSearchParams<{ id: string | string[] }>();
@@ -23,10 +34,22 @@ export default function GromadaInfoScreen() {
   const [gromada, setGromada] = useState<GromadaWithInterests | null>(null);
   const [loading, setLoading] = useState(true);
   const [acting, setActing] = useState(false);
+  const [newFavor, setNewFavor] = useState('');
+  const [creatingFavor, setCreatingFavor] = useState(false);
+  const [crossovers, setCrossovers] = useState<CrossoverProposal[]>([]);
+  const [allies, setAllies] = useState<Ally[]>([]);
+  const { favors, load: loadFavors, create: createFavor, offer, markHelped } = useFavors(id ?? '');
 
   useEffect(() => {
     if (!id) return;
     fetchGromada(id).then(setGromada).catch(() => {}).finally(() => setLoading(false));
+    loadFavors();
+    fetchCrossovers(id).then(setCrossovers).catch(() => {});
+    void supabase
+      .from('gromada_allies')
+      .select('id, business_name, category, offer_text')
+      .eq('gromada_id', id)
+      .then(({ data }) => setAllies((data ?? []) as Ally[]));
   }, [id]);
 
   const isMember = gromada?.gromada_members?.some((m) => m.user_id === user?.id) ?? false;
@@ -121,6 +144,109 @@ export default function GromadaInfoScreen() {
           />
         </View>
 
+        {/* Favors */}
+        {isMember && (
+          <View style={styles.section}>
+            <Text style={styles.sectionLabel}>Potrzebne ręce</Text>
+
+            {/* Create favor */}
+            <View style={styles.favorComposer}>
+              <Input
+                label=""
+                value={newFavor}
+                onChangeText={(v) => setNewFavor(v.slice(0, 200))}
+                placeholder="Czego potrzebujesz?"
+                containerStyle={styles.favorInput}
+              />
+              <Button
+                label={creatingFavor ? '' : 'Dodaj'}
+                loading={creatingFavor}
+                size="sm"
+                onPress={async () => {
+                  if (!newFavor.trim()) return;
+                  setCreatingFavor(true);
+                  try { await createFavor(newFavor.trim()); setNewFavor(''); }
+                  finally { setCreatingFavor(false); }
+                }}
+                style={styles.favorBtn}
+              />
+            </View>
+
+            {favors.length > 0 && favors.map((f) => {
+              const isOwn = f.requested_by === user?.id;
+              const authorName = f.profiles?.nickname ?? f.profiles?.first_name ?? 'Ktoś';
+              return (
+                <View key={f.id} style={styles.favorRow}>
+                  <View style={styles.favorContent}>
+                    <Text style={styles.favorAuthor}>{authorName}</Text>
+                    <Text style={styles.favorDesc}>{f.description}</Text>
+                  </View>
+                  {isOwn ? (
+                    <Button
+                      label="Pomożono ✓"
+                      size="sm"
+                      variant="ghost"
+                      onPress={() => markHelped(f.id)}
+                    />
+                  ) : (
+                    <Button
+                      label="Pomogę"
+                      size="sm"
+                      onPress={() => offer(f.id)}
+                    />
+                  )}
+                </View>
+              );
+            })}
+
+            {favors.length === 0 && (
+              <Text style={styles.favorEmpty}>Brak aktywnych próśb o pomoc.</Text>
+            )}
+          </View>
+        )}
+
+        {/* Crossovers */}
+        {crossovers.length > 0 && (
+          <View style={styles.section}>
+            <Text style={styles.sectionLabel}>Crossovery</Text>
+            {crossovers.map((c) => (
+              <View key={c.id} style={styles.crossoverCard}>
+                <View style={styles.crossoverInfo}>
+                  <Text style={styles.crossoverTitle}>{c.title}</Text>
+                  <Badge label={c.status} variant="default" />
+                </View>
+                {c.status === 'proposed' && isMember && (
+                  <Button
+                    label={`Wspieram (${c.vote_count})`}
+                    size="sm"
+                    variant="ghost"
+                    onPress={() => voteCrossover(c.id).then(() =>
+                      setCrossovers((prev) => prev.map((x) =>
+                        x.id === c.id ? { ...x, vote_count: x.vote_count + 1 } : x
+                      ))
+                    ).catch(() => {})}
+                    accessibilityLabel={`Zagłosuj na crossover ${c.title}`}
+                  />
+                )}
+              </View>
+            ))}
+          </View>
+        )}
+
+        {/* Allies */}
+        {allies.length > 0 && (
+          <View style={styles.section}>
+            <Text style={styles.sectionLabel}>Sojusznicy</Text>
+            {allies.map((a) => (
+              <View key={a.id} style={styles.allyCard}>
+                <Text style={styles.allyName}>{a.business_name}</Text>
+                <Badge label={a.category} variant="default" />
+                <Text style={styles.allyOffer}>{a.offer_text}</Text>
+              </View>
+            ))}
+          </View>
+        )}
+
         {/* Action */}
         {!isMember ? (
           <Button
@@ -167,4 +293,36 @@ const styles = StyleSheet.create({
   statValue: { fontSize: theme.fontSize.xxl, fontWeight: theme.fontWeight.bold, color: theme.colors.accent },
   statLabel: { fontSize: theme.fontSize.xs, color: theme.colors.textTertiary, textAlign: 'center' },
   actionBtn: { width: '100%' },
+  favorComposer: { flexDirection: 'row', alignItems: 'flex-end', gap: theme.spacing.sm },
+  favorInput: { flex: 1, marginBottom: 0 },
+  favorBtn: { minWidth: 64 },
+  favorRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: theme.spacing.md,
+    padding: theme.spacing.md,
+    backgroundColor: theme.colors.backgroundCard,
+    borderRadius: theme.borderRadius.lg,
+    borderWidth: 1,
+    borderColor: theme.colors.border,
+  },
+  favorContent: { flex: 1, gap: 2 },
+  favorAuthor: { fontSize: theme.fontSize.xs, color: theme.colors.accent, fontWeight: theme.fontWeight.medium },
+  favorDesc: { fontSize: theme.fontSize.body, color: theme.colors.textPrimary },
+  favorEmpty: { fontSize: theme.fontSize.body, color: theme.colors.textTertiary, fontStyle: 'italic' },
+  crossoverCard: {
+    flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
+    gap: theme.spacing.sm, padding: theme.spacing.md,
+    backgroundColor: theme.colors.backgroundCard, borderRadius: theme.borderRadius.lg,
+    borderWidth: 1, borderColor: theme.colors.border,
+  },
+  crossoverInfo: { flex: 1, gap: 4 },
+  crossoverTitle: { fontSize: theme.fontSize.body, fontWeight: theme.fontWeight.medium, color: theme.colors.textPrimary },
+  allyCard: {
+    gap: theme.spacing.xs, padding: theme.spacing.md,
+    backgroundColor: theme.colors.backgroundCard, borderRadius: theme.borderRadius.lg,
+    borderWidth: 1, borderColor: theme.colors.border,
+  },
+  allyName: { fontSize: theme.fontSize.body, fontWeight: theme.fontWeight.semibold, color: theme.colors.textPrimary },
+  allyOffer: { fontSize: theme.fontSize.sm, color: theme.colors.textSecondary },
 });
