@@ -50,7 +50,6 @@ export const Input = forwardRef<TextInput, InputProps>(
             style={[styles.input, showPasswordToggle && styles.inputWithToggle, style]}
             placeholderTextColor={theme.colors.textTertiary}
             accessibilityLabel={label}
-            accessibilityInvalid={!!error}
             accessibilityHint={error ?? hint}
           />
           {showPasswordToggle ? (
