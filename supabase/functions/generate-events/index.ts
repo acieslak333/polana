@@ -71,9 +71,9 @@ Deno.serve(async (_req) => {
     if ((count ?? 0) > 0) continue;
 
     // Pick template based on Gromada interests
-    const categories = (gromada.gromada_interests as any[])
-      .map((gi: any) => gi.interests?.category)
-      .filter(Boolean);
+    const categories = (gromada.gromada_interests as { interests: { category: string } | null }[])
+      .map((gi) => gi.interests?.category)
+      .filter((c): c is string => Boolean(c));
     const category = categories[0] ?? 'social';
 
     const templates = isWeekly ? WEEKLY_EVENTS : (EVENT_TEMPLATES[category] ?? EVENT_TEMPLATES.social);

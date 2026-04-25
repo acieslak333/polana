@@ -42,4 +42,9 @@ _→ list any registry updates, threshold changes, or follow-up tasks created_
 ▶ 00:43 Starting s6-ts-fixes [quality/typescript]
   Agent: cs-karpathy-reviewer
   Branch: s6/quality-typescript
-✓ 00:48 Done s6-ts-fixes — PR #pushed-branch merged
+✓ 00:48 Done s6-ts-fixes — merged to sprint-6
+
+▶ 00:52 Starting s6-edge-generate-events [backend/edge-functions]
+  Agent: cs-senior-engineer
+  Branch: s6/backend-edge-functions
+✓ 01:01 Done s6-edge-generate-events — merged to sprint-6
