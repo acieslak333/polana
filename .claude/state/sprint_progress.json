@@ -6,6 +6,12 @@
   "last_completed_task": null,
   "tasks": [
     {
+      "id": "s6-ts-fixes",
+      "title": "Fix 6 pre-existing TypeScript errors surfaced by preflight: members.tsx, gromada-pick.tsx, ready.tsx, Input.tsx, useNotifications.ts, notifications.ts",
+      "status": "pending",
+      "domain": "qa"
+    },
+    {
       "id": "s6-edge-generate-events",
       "title": "supabase/functions/generate-events/index.ts",
       "status": "pending",
