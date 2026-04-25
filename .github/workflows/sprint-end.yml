@@ -1,0 +1,47 @@
+name: Sprint End
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  detect-sprint-merge:
+    name: Detect and log sprint completion
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 10
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install pyyaml
+        run: pip install pyyaml
+
+      - name: Detect sprint branch merge
+        id: detect
+        run: |
+          MERGE_MSG=$(git log -1 --merges --pretty=format:%s 2>/dev/null || echo "")
+          SPRINT_BRANCH=$(echo "$MERGE_MSG" | grep -oP 'sprint-\d+' | head -1 || echo "")
+          echo "sprint_branch=$SPRINT_BRANCH" >> $GITHUB_OUTPUT
+          echo "detected=$( [ -n "$SPRINT_BRANCH" ] && echo 'true' || echo 'false' )" >> $GITHUB_OUTPUT
+
+      - name: Log sprint completion
+        if: steps.detect.outputs.detected == 'true'
+        run: |
+          python scripts/sprint_end_log.py "${{ steps.detect.outputs.sprint_branch }}"
+
+      - name: Commit sprint end log
+        if: steps.detect.outputs.detected == 'true'
+        run: |
+          git config user.email "action@github.com"
+          git config user.name "GitHub Actions"
+          git add .claude/state/workflow_log.md || true
+          git diff --cached --quiet || git commit -m "chore(engine): log sprint-end for ${{ steps.detect.outputs.sprint_branch }}"
+          git push
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
