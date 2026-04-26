@@ -107,7 +107,7 @@ export default function GromadaPanelScreen() {
         setPendingImageUri(result.assets[0].uri);
       }
     } catch {
-      setToastMessage('Nie udało się otworzyć galerii');
+      setToastMessage(t('common:unknown_error'));
     }
   }
 
@@ -123,7 +123,7 @@ export default function GromadaPanelScreen() {
         const url = await uploadPostImage(user.id, pendingImageUri);
         uploadedUrls = [url];
       } catch {
-        setToastMessage('Nie udało się przesłać zdjęcia');
+        setToastMessage(t('common:unknown_error'));
         // Continue posting without the image
       } finally {
         setUploadingImage(false);

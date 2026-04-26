@@ -32,7 +32,7 @@ export default function DataScreen() {
     setError(null)
     try {
       const token = await getToken()
-      if (!token) throw new Error('Brak sesji')
+      if (!token) throw new Error('No active session')
       const resp = await fetch(`${SUPABASE_URL}/functions/v1/export-data`, {
         headers: { Authorization: `Bearer ${token}` },
       })
@@ -57,7 +57,7 @@ export default function DataScreen() {
     setError(null)
     try {
       const token = await getToken()
-      if (!token) throw new Error('Brak sesji')
+      if (!token) throw new Error('No active session')
       const resp = await fetch(`${SUPABASE_URL}/functions/v1/delete-account`, {
         method: 'POST',
         headers: { Authorization: `Bearer ${token}` },

@@ -188,14 +188,14 @@ export default function MapScreen() {
           ItemSeparatorComponent={() => <View style={{ height: theme.spacing.sm }} />}
           ListEmptyComponent={
             <View style={styles.emptyContainer}>
-              <Text style={styles.emptyTitle}>Brak wydarzeń</Text>
+              <Text style={styles.emptyTitle}>{t('no_upcoming')}</Text>
               <Pressable
                 style={styles.emptyAction}
                 onPress={() => router.push('/(app)/(map)/create-event' as never)}
-                accessibilityLabel="Stwórz pierwsze wydarzenie"
+                accessibilityLabel={t('create_event')}
                 accessibilityRole="button"
               >
-                <Text style={styles.emptyActionText}>Stwórz pierwsze wydarzenie</Text>
+                <Text style={styles.emptyActionText}>{t('create_event')}</Text>
               </Pressable>
             </View>
           }

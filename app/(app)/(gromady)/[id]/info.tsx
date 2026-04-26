@@ -200,7 +200,7 @@ export default function GromadaInfoScreen() {
             })}
 
             {favors.length === 0 && (
-              <Text style={styles.favorEmpty}>Brak aktywnych próśb o pomoc.</Text>
+              <Text style={styles.favorEmpty}>{t('profile:favors_empty')}</Text>
             )}
           </View>
         )}

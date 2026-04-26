@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, Pressable, Image, StyleSheet, ActionSheetIOS, Platform, Alert } from 'react-native';
 import { router } from 'expo-router';
+import { useTranslation } from 'react-i18next';
 import { formatDistanceToNow } from 'date-fns';
 import { pl } from 'date-fns/locale';
 import { ProceduralAvatar } from '@/components/avatar/ProceduralAvatar';
@@ -24,11 +25,12 @@ type PostCardProps = {
 
 function PostCardBase({ post, onReact, onDelete, isElder = false }: PostCardProps) {
   const { user } = useAuthStore();
+  const { t } = useTranslation(['feed', 'common']);
   const [expanded, setExpanded] = useState(false);
   const isOwn = post.author_id === user?.id;
   const canModerate = isOwn || isElder;
 
-  const authorName = post.profiles?.nickname ?? post.profiles?.first_name ?? 'Ktoś';
+  const authorName = post.profiles?.nickname ?? post.profiles?.first_name ?? '?';
   const timeAgo = formatDistanceToNow(new Date(post.created_at), { addSuffix: true, locale: pl });
 
   const mediaUrls = Array.isArray(post.media_urls)
@@ -38,9 +40,16 @@ function PostCardBase({ post, onReact, onDelete, isElder = false }: PostCardProp
   const isSingle = mediaUrls.length === 1;
 
   function openMenu() {
+    const hideLabel = t('feed:post_hidden');
+    const deleteLabel = t('feed:delete_post');
+    const reportLabel = t('common:report');
+    const cancelLabel = t('common:cancel');
+    const hideAction = t('common:hide');
+    const deleteAction = t('common:delete');
+
     const options = canModerate
-      ? ['Ukryj post', 'Usuń post', 'Anuluj']
-      : ['Zgłoś post', 'Anuluj'];
+      ? [hideLabel, deleteLabel, cancelLabel]
+      : [reportLabel, cancelLabel];
 
     if (Platform.OS === 'ios') {
       ActionSheetIOS.showActionSheetWithOptions(
@@ -56,17 +65,17 @@ function PostCardBase({ post, onReact, onDelete, isElder = false }: PostCardProp
       );
     } else {
       Alert.alert(
-        'Opcje posta',
+        t('common:more_options'),
         undefined,
         canModerate
           ? [
-              { text: 'Ukryj', onPress: () => hidePost(post.id, true) },
-              { text: 'Usuń', style: 'destructive', onPress: () => onDelete?.(post.id) },
-              { text: 'Anuluj', style: 'cancel' },
+              { text: hideAction, onPress: () => hidePost(post.id, true) },
+              { text: deleteAction, style: 'destructive', onPress: () => onDelete?.(post.id) },
+              { text: cancelLabel, style: 'cancel' },
             ]
           : [
-              { text: 'Zgłoś', onPress: () => user && reportPost(post.id, user.id, 'inappropriate') },
-              { text: 'Anuluj', style: 'cancel' },
+              { text: reportLabel, onPress: () => user && reportPost(post.id, user.id, 'inappropriate') },
+              { text: cancelLabel, style: 'cancel' },
             ],
       );
     }

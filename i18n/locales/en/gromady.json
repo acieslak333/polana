@@ -70,5 +70,6 @@
   "explore_empty": "No Gromady in your city",
   "explore_create_first": "Create the first one",
   "explore_joined": "Already a member",
-  "explore_join_toast": "Joined {{name}}"
+  "explore_join_toast": "Joined {{name}}",
+  "gromada_full": "Full"
 }

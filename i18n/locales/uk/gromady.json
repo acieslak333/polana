@@ -70,5 +70,6 @@
   "explore_empty": "У вашому місті немає Громад",
   "explore_create_first": "Створити першу",
   "explore_joined": "Вже учасник",
-  "explore_join_toast": "Приєдналися до {{name}}"
+  "explore_join_toast": "Приєдналися до {{name}}",
+  "gromada_full": "Заповнена"
 }

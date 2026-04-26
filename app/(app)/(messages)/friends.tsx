@@ -66,7 +66,7 @@ export default function FriendsScreen() {
         <Pressable onPress={() => router.back()} style={styles.backBtn} accessibilityRole="button">
           <Text style={styles.backText}>‹</Text>
         </Pressable>
-        <Text style={styles.title}>Znajomi</Text>
+        <Text style={styles.title}>{t('messages:friends')}</Text>
       </View>
 
       {loading ? (
@@ -82,7 +82,7 @@ export default function FriendsScreen() {
           ListHeaderComponent={
             pending.length > 0 ? (
               <Text style={styles.sectionLabel}>
-                Zaproszenia ({pending.length})
+                {t('messages:friend_request_received')} ({pending.length})
               </Text>
             ) : null
           }
@@ -95,7 +95,7 @@ export default function FriendsScreen() {
               <>
                 {showFriendsHeader && (
                   <Text style={[styles.sectionLabel, index > 0 && styles.sectionLabelSpaced]}>
-                    Znajomi ({friends.length})
+                    {t('messages:friends')} ({friends.length})
                   </Text>
                 )}
                 <Pressable
@@ -110,14 +110,14 @@ export default function FriendsScreen() {
                   {item.type === 'pending' && (
                     <View style={styles.pendingBtns}>
                       <Button
-                        label="Przyjmij"
+                        label={t('messages:accept')}
                         size="sm"
                         loading={acting === item.profile.id}
                         onPress={() => handleAccept(item.profile.id)}
                         style={styles.acceptBtn}
                       />
                       <Button
-                        label="Odrzuć"
+                        label={t('messages:decline')}
                         size="sm"
                         variant="ghost"
                         loading={acting === item.profile.id}
@@ -133,10 +133,8 @@ export default function FriendsScreen() {
           ListEmptyComponent={
             <View style={styles.emptyContainer}>
               <Text style={styles.emptyEmoji}>🤝</Text>
-              <Text style={styles.emptyTitle}>Brak znajomych</Text>
-              <Text style={styles.emptyBody}>
-                Dodawaj znajomych z listy członków Gromad lub uczestników wydarzeń.
-              </Text>
+              <Text style={styles.emptyTitle}>{t('messages:no_friends')}</Text>
+              <Text style={styles.emptyBody}>{t('messages:no_friends_body')}</Text>
             </View>
           }
         />

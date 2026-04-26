@@ -17,15 +17,15 @@ const PAGE_SIZE = 25;
 
 type Filter = 'all' | 'gromady' | 'friends' | 'discover';
 
-const FILTERS: { key: Filter; label: string }[] = [
-  { key: 'all', label: 'Wszystkie' },
-  { key: 'gromady', label: 'Gromady' },
-  { key: 'friends', label: 'Znajomi' },
-  { key: 'discover', label: 'Odkrywaj' },
-];
-
 export default function FeedScreen() {
   const { t } = useTranslation('feed');
+
+  const FILTERS: { key: Filter; label: string }[] = [
+    { key: 'all', label: t('filter_all') },
+    { key: 'gromady', label: t('filter_gromady') },
+    { key: 'friends', label: t('filter_friends') },
+    { key: 'discover', label: t('filter_discover') },
+  ];
   const { user } = useAuthStore();
 
   const [posts, setPosts] = useState<Post[]>([]);

@@ -52,9 +52,11 @@ type GromadaExploreCardProps = {
   userId: string;
   onJoined: (name: string) => void;
   joinedLabel: string;
+  joinLabel: string;
+  fullLabel: string;
 };
 
-function GromadaExploreCard({ gromada, userId, onJoined, joinedLabel }: GromadaExploreCardProps) {
+function GromadaExploreCard({ gromada, userId, onJoined, joinedLabel, joinLabel, fullLabel }: GromadaExploreCardProps) {
   const [joinState, setJoinState] = useState<JoinState>('idle');
   const [joining, setJoining] = useState(false);
   const isFull = gromada.member_count >= gromada.max_members;
@@ -74,11 +76,7 @@ function GromadaExploreCard({ gromada, userId, onJoined, joinedLabel }: GromadaE
   }
 
   const isJoined = joinState === 'joined';
-  const buttonLabel = isJoined
-    ? joinedLabel
-    : isFull
-    ? 'Pełna'
-    : 'Dołącz';
+  const buttonLabel = isJoined ? joinedLabel : isFull ? fullLabel : joinLabel;
 
   return (
     <Pressable
@@ -209,6 +207,8 @@ export default function ExploreScreen(): React.JSX.Element {
 
   const isEmpty = !loading && gromady.length === 0;
   const joinedLabel = t('gromady:explore_joined');
+  const joinLabel = t('gromady:join');
+  const fullLabel = t('gromady:gromada_full');
 
   return (
     <SafeAreaView style={styles.safe}>
@@ -292,6 +292,8 @@ export default function ExploreScreen(): React.JSX.Element {
               userId={userId}
               onJoined={handleJoined}
               joinedLabel={joinedLabel}
+              joinLabel={joinLabel}
+              fullLabel={fullLabel}
             />
           )}
           ItemSeparatorComponent={() => <View style={styles.separator} />}

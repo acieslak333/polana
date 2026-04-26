@@ -70,5 +70,6 @@
   "explore_empty": "Nie ma Gromad w twoim mieście",
   "explore_create_first": "Utwórz pierwszą",
   "explore_joined": "Już w Gromadzie",
-  "explore_join_toast": "Dołączono do {{name}}"
+  "explore_join_toast": "Dołączono do {{name}}",
+  "gromada_full": "Pełna"
 }
