@@ -1,18 +1,14 @@
 {
-  "sprint": 14,
-  "sprint_name": "Service Layer Tests",
+  "sprint": 15,
+  "sprint_name": "Hook Tests",
   "started": "2026-04-26",
-  "last_updated": "2026-04-26T12:00:00.000000+00:00",
-  "last_completed_task": "s14-test-api-media",
+  "last_updated": "2026-04-26T13:00:00.000000+00:00",
+  "last_completed_task": "s15-test-hooks-notifications",
   "tasks": [
-    { "id": "s14-mock-helper", "title": "__tests__/helpers/mockChain.ts — mockSuccess/mockError/mockSingle", "status": "done", "domain": "infra" },
-    { "id": "s14-test-api-posts", "title": "services/api/__tests__/posts.test.ts", "status": "done", "domain": "qa" },
-    { "id": "s14-test-api-gromady", "title": "services/api/__tests__/gromady.test.ts", "status": "done", "domain": "qa" },
-    { "id": "s14-test-api-users", "title": "services/api/__tests__/users.test.ts", "status": "done", "domain": "qa" },
-    { "id": "s14-test-api-events", "title": "services/api/__tests__/events.test.ts", "status": "done", "domain": "qa" },
-    { "id": "s14-test-api-messages", "title": "services/api/__tests__/messages.test.ts", "status": "done", "domain": "qa" },
-    { "id": "s14-test-api-safety", "title": "services/api/__tests__/safety.test.ts", "status": "done", "domain": "qa" },
-    { "id": "s14-test-api-invites", "title": "services/api/__tests__/invites.test.ts", "status": "done", "domain": "qa" },
-    { "id": "s14-test-api-media", "title": "services/api/__tests__/media.test.ts", "status": "done", "domain": "qa" }
+    { "id": "s15-test-hooks-posts", "title": "hooks/__tests__/usePosts.test.ts — 9 cases", "status": "done", "domain": "qa" },
+    { "id": "s15-test-hooks-events", "title": "hooks/__tests__/useEvents.test.ts", "status": "done", "domain": "qa" },
+    { "id": "s15-test-hooks-favors", "title": "hooks/__tests__/useFavors.test.ts", "status": "done", "domain": "qa" },
+    { "id": "s15-test-hooks-messages", "title": "hooks/__tests__/useMessages.test.ts", "status": "done", "domain": "qa" },
+    { "id": "s15-test-hooks-notifications", "title": "hooks/__tests__/useNotifications.test.ts", "status": "done", "domain": "qa" }
   ]
 }
