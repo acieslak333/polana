@@ -1,15 +1,18 @@
 {
-  "sprint": 13,
-  "sprint_name": "Test Infrastructure + Pure Function Tests",
+  "sprint": 14,
+  "sprint_name": "Service Layer Tests",
   "started": "2026-04-26",
-  "last_updated": "2026-04-26T11:00:00.000000+00:00",
-  "last_completed_task": "s13-jest-setup",
+  "last_updated": "2026-04-26T12:00:00.000000+00:00",
+  "last_completed_task": "s14-test-api-media",
   "tasks": [
-    { "id": "s13-jest-setup", "title": "jest.config + jest.setup.ts + supabase mock + fixtures", "status": "done", "domain": "infra" },
-    { "id": "s13-ci-jest", "title": "ci.yml — Jest job with coverage artifact", "status": "done", "domain": "infra" },
-    { "id": "s13-test-utils", "title": "utils/__tests__/routing, nameGenerator, validation", "status": "done", "domain": "qa" },
-    { "id": "s13-test-stores", "title": "stores/__tests__/authStore, preferencesStore, cacheStore", "status": "done", "domain": "qa" },
-    { "id": "s13-test-i18n", "title": "i18n/__tests__/coverage.test.ts — key parity pl/en/uk", "status": "done", "domain": "qa" },
-    { "id": "s13-code-review", "title": "Preflight clean, all tests green in CI", "status": "pending", "domain": "qa" }
+    { "id": "s14-mock-helper", "title": "__tests__/helpers/mockChain.ts — mockSuccess/mockError/mockSingle", "status": "done", "domain": "infra" },
+    { "id": "s14-test-api-posts", "title": "services/api/__tests__/posts.test.ts", "status": "done", "domain": "qa" },
+    { "id": "s14-test-api-gromady", "title": "services/api/__tests__/gromady.test.ts", "status": "done", "domain": "qa" },
+    { "id": "s14-test-api-users", "title": "services/api/__tests__/users.test.ts", "status": "done", "domain": "qa" },
+    { "id": "s14-test-api-events", "title": "services/api/__tests__/events.test.ts", "status": "done", "domain": "qa" },
+    { "id": "s14-test-api-messages", "title": "services/api/__tests__/messages.test.ts", "status": "done", "domain": "qa" },
+    { "id": "s14-test-api-safety", "title": "services/api/__tests__/safety.test.ts", "status": "done", "domain": "qa" },
+    { "id": "s14-test-api-invites", "title": "services/api/__tests__/invites.test.ts", "status": "done", "domain": "qa" },
+    { "id": "s14-test-api-media", "title": "services/api/__tests__/media.test.ts", "status": "done", "domain": "qa" }
   ]
 }
