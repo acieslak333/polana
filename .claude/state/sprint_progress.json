@@ -1,16 +1,15 @@
 {
-  "sprint": 11,
-  "sprint_name": "Legal + GDPR + Launch",
+  "sprint": 13,
+  "sprint_name": "Test Infrastructure + Pure Function Tests",
   "started": "2026-04-26",
-  "last_updated": "2026-04-26T06:00:00.000000+00:00",
-  "last_completed_task": "s11-launch-checklist",
+  "last_updated": "2026-04-26T11:00:00.000000+00:00",
+  "last_completed_task": "s13-jest-setup",
   "tasks": [
-    { "id": "s11-privacy-screen", "title": "app/(auth)/privacy.tsx — GDPR-compliant Polish privacy policy", "status": "done", "domain": "frontend" },
-    { "id": "s11-gdpr-export", "title": "supabase/functions/export-data — full user data JSON export", "status": "done", "domain": "backend" },
-    { "id": "s11-gdpr-delete", "title": "supabase/functions/delete-account — hard delete via admin API", "status": "done", "domain": "backend" },
-    { "id": "s11-data-screen", "title": "app/(app)/(profile)/data.tsx — export + delete account UI (type USUŃ to confirm)", "status": "done", "domain": "frontend" },
-    { "id": "s11-settings-links", "title": "settings.tsx — privacy policy + Twoje dane links wired", "status": "done", "domain": "frontend" },
-    { "id": "s11-app-json", "title": "app.json — version 1.0.0, buildNumber, runtimeVersion", "status": "done", "domain": "infra" },
-    { "id": "s11-launch-checklist", "title": "LAUNCH_CHECKLIST.md — complete pre-submit checklist", "status": "done", "domain": "infra" }
+    { "id": "s13-jest-setup", "title": "jest.config + jest.setup.ts + supabase mock + fixtures", "status": "done", "domain": "infra" },
+    { "id": "s13-ci-jest", "title": "ci.yml — Jest job with coverage artifact", "status": "done", "domain": "infra" },
+    { "id": "s13-test-utils", "title": "utils/__tests__/routing, nameGenerator, validation", "status": "done", "domain": "qa" },
+    { "id": "s13-test-stores", "title": "stores/__tests__/authStore, preferencesStore, cacheStore", "status": "done", "domain": "qa" },
+    { "id": "s13-test-i18n", "title": "i18n/__tests__/coverage.test.ts — key parity pl/en/uk", "status": "done", "domain": "qa" },
+    { "id": "s13-code-review", "title": "Preflight clean, all tests green in CI", "status": "pending", "domain": "qa" }
   ]
 }
