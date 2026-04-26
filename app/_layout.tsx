@@ -4,6 +4,8 @@ import { StatusBar } from 'expo-status-bar';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { StyleSheet } from 'react-native';
+import * as Linking from 'expo-linking';
+import { router } from 'expo-router';
 
 import '@/i18n';
 import { initSentry } from '@/services/sentry';
@@ -11,6 +13,7 @@ import { supabase } from '@/services/supabase';
 import { getProfile } from '@/services/auth';
 import { useAuthStore } from '@/stores/authStore';
 import { theme } from '@/constants/theme';
+import { resolveDeepLink } from '@/utils/routing';
 
 // Initialise error monitoring before any component renders
 initSentry();
@@ -50,7 +53,21 @@ export default function RootLayout() {
       },
     );
 
-    return () => subscription.unsubscribe();
+    // Handle incoming deep links while the app is already open
+    const linkSub = Linking.addEventListener('url', ({ url }) => {
+      const target = resolveDeepLink(url);
+      if (!target) return;
+      switch (target.type) {
+        case 'gromada': router.push(`/(app)/(gromady)/${target.id}`); break;
+        case 'event':   router.push(`/(app)/(map)/event/${target.id}`); break;
+        case 'profile': router.push(`/(app)/(profile)/${target.id}`); break;
+      }
+    });
+
+    return () => {
+      linkSub.remove();
+      subscription.unsubscribe();
+    };
   }, []);
 
   return (

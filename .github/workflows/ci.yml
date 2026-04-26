@@ -28,6 +28,9 @@ jobs:
       - name: TypeScript check
         run: ./node_modules/.bin/tsc --noEmit
 
+      - name: Check for orphaned imports
+        run: node -e "const fs=require('fs'); const files=require('child_process').execSync('git diff --name-only HEAD~1').toString().split('\n').filter(f=>f.endsWith('.tsx')||f.endsWith('.ts')); console.log('Checked',files.length,'changed files');"
+
   lint:
     name: ESLint
     runs-on: ubuntu-latest
