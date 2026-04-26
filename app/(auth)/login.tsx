@@ -129,6 +129,11 @@ export default function LoginScreen() {
             style={styles.submitBtn}
           />
 
+          {/* Forgot password */}
+          <Link href="/(auth)/forgot-password" asChild>
+            <Text style={[styles.link, styles.forgotLink]}>Nie pamiętam hasła</Text>
+          </Link>
+
           {/* Footer links */}
           <View style={styles.footer}>
             <Text style={styles.footerText}>{t('auth:no_account')} </Text>
@@ -175,5 +180,11 @@ const styles = StyleSheet.create({
     color: theme.colors.accent,
     fontSize: theme.fontSize.md,
     fontWeight: theme.fontWeight.semibold,
+  },
+  forgotLink: {
+    textAlign: 'center',
+    paddingVertical: theme.spacing.sm,
+    minHeight: 44,
+    textAlignVertical: 'center',
   },
 });

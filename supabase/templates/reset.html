@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Resetuj hasło — Polana</title>
+  <style>
+    body { margin: 0; padding: 0; background: #F5F0E8; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; }
+    .wrapper { max-width: 480px; margin: 40px auto; background: #fff; border-radius: 16px; overflow: hidden; }
+    .hero { background: #3D3029; padding: 40px 32px; text-align: center; }
+    .hero-emoji { font-size: 48px; display: block; margin-bottom: 12px; }
+    .hero h1 { margin: 0; color: #fff; font-size: 22px; font-weight: 700; }
+    .body { padding: 32px; }
+    .body p { color: #3D3029; font-size: 16px; line-height: 1.6; margin: 0 0 16px; }
+    .btn { display: block; width: 100%; max-width: 240px; margin: 24px auto; background: #C4705A; color: #fff; text-decoration: none; text-align: center; padding: 14px 24px; border-radius: 100px; font-weight: 600; font-size: 16px; box-sizing: border-box; }
+    .footer { text-align: center; padding: 24px 32px; color: #8C7B6B; font-size: 13px; border-top: 1px solid #E8E0D5; }
+  </style>
+</head>
+<body>
+  <div class="wrapper">
+    <div class="hero">
+      <span class="hero-emoji">🔑</span>
+      <h1>Resetuj hasło</h1>
+    </div>
+    <div class="body">
+      <p>Otrzymaliśmy prośbę o zresetowanie hasła do Twojego konta w Polanie.</p>
+      <p>Kliknij poniższy przycisk, żeby ustawić nowe hasło. Link jest ważny przez 1 godzinę.</p>
+      <a href="{{ .ConfirmationURL }}" class="btn">Ustaw nowe hasło</a>
+      <p style="font-size:13px;color:#8C7B6B;">Jeśli nie prosiłeś/aś o zmianę hasła, zignoruj tę wiadomość. Twoje konto jest bezpieczne.</p>
+    </div>
+    <div class="footer">Polana · Razem, lokalnie · <a href="https://polana.app" style="color:#C4705A;">polana.app</a></div>
+  </div>
+</body>
+</html>

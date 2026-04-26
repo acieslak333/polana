@@ -187,7 +187,7 @@ export async function createGromada(payload: {
 
 export async function updateGromada(
   id: string,
-  updates: Partial<Pick<GromadaRow, 'name' | 'description'>>,
+  updates: Partial<Pick<GromadaRow, 'name' | 'description' | 'status'>>,
 ): Promise<GromadaRow> {
   const { data, error } = await supabase
     .from('gromady')
