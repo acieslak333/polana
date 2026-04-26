@@ -1,18 +1,7 @@
 import { supabase } from '@/services/supabase';
+import type { ReportRow } from '@polana/db-types';
 
-export type ReportRow = {
-  id: string;
-  reporter_id: string;
-  post_id: string | null;
-  comment_id: string | null;
-  reason: 'spam' | 'harassment' | 'inappropriate' | 'other';
-  description: string | null;
-  status: 'pending' | 'reviewed' | 'resolved';
-  created_at: string;
-  post_content: string | null;
-  comment_content: string | null;
-  reporter_name: string | null;
-};
+export type { ReportRow };
 
 export async function fetchPendingReports(gromadaIds: string[]): Promise<ReportRow[]> {
   if (gromadaIds.length === 0) return [];

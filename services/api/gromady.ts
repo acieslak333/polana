@@ -1,23 +1,7 @@
 import { supabase } from '@/services/supabase';
+import type { GromadaRow } from '@polana/db-types';
 
-export type GromadaRow = {
-  id: string;
-  name: string;
-  avatar_config: Record<string, unknown>;
-  city_id: string;
-  size_type: 'small' | 'medium' | 'large';
-  max_members: number;
-  elder_id: string | null;
-  member_count: number;
-  description: string | null;
-  last_activity_at: string;
-  status: 'active' | 'dormant' | 'archived';
-  total_meetings_count: number;
-  meetings_this_month: number;
-  meetings_this_week: number;
-  favors_exchanged: number;
-  created_at: string;
-};
+export type { GromadaRow };
 
 export type GromadaWithInterests = GromadaRow & {
   gromada_interests: {

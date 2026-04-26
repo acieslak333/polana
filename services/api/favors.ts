@@ -1,16 +1,7 @@
 import { supabase } from '@/services/supabase';
+import type { FavorRequest } from '@polana/db-types';
 
-export type FavorRequest = {
-  id: string;
-  gromada_id: string | null;
-  requested_by: string;
-  description: string;
-  expires_at: string;
-  status: 'open' | 'helped' | 'expired';
-  created_at: string;
-  profiles: { id: string; first_name: string; nickname: string | null; avatar_config: Record<string, unknown> } | null;
-  favor_offers: { id: string; offered_by: string; message: string | null }[];
-};
+export type { FavorRequest };
 
 const FAVOR_QUERY = `
   id, gromada_id, requested_by, description, expires_at, status, created_at,

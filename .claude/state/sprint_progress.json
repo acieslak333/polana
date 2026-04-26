@@ -1,17 +1,14 @@
 {
-  "sprint": 16,
-  "sprint_name": "Component Tests",
-  "started": "2026-04-26",
-  "last_updated": "2026-04-26T14:00:00.000000+00:00",
-  "last_completed_task": "s16-test-avatar",
+  "sprint": 17,
+  "sprint_name": "Architecture: Clean Separation",
+  "started": "2026-04-27",
+  "last_updated": "2026-04-27T06:00:00.000000+00:00",
+  "last_completed_task": "s17-docs",
   "tasks": [
-    { "id": "s16-test-button", "title": "components/ui/__tests__/Button.test.tsx — 8 cases", "status": "done", "domain": "qa" },
-    { "id": "s16-test-input", "title": "components/ui/__tests__/Input.test.tsx — 7 cases", "status": "done", "domain": "qa" },
-    { "id": "s16-test-error-boundary", "title": "components/ui/__tests__/ErrorBoundary.test.tsx — 5 cases", "status": "done", "domain": "qa" },
-    { "id": "s16-test-network-error", "title": "components/ui/__tests__/NetworkError.test.tsx — 4 cases", "status": "done", "domain": "qa" },
-    { "id": "s16-test-warmth", "title": "components/gromada/__tests__/WarmthIndicator.test.tsx — 7 cases", "status": "done", "domain": "qa" },
-    { "id": "s16-test-event-card", "title": "components/event/__tests__/EventCard.test.tsx — 7 cases", "status": "done", "domain": "qa" },
-    { "id": "s16-test-post-card", "title": "components/feed/__tests__/PostCard.test.tsx — 7 cases", "status": "done", "domain": "qa" },
-    { "id": "s16-test-avatar", "title": "components/avatar/__tests__/ProceduralAvatar.test.tsx — 6 cases", "status": "done", "domain": "qa" }
+    { "id": "s17-db-types-pkg", "title": "packages/db-types — @polana/db-types with all table interfaces + enums", "status": "done", "domain": "infra" },
+    { "id": "s17-tsconfig", "title": "tsconfig.json + jest moduleNameMapper — @polana/db-types path alias", "status": "done", "domain": "infra" },
+    { "id": "s17-metro", "title": "metro.config.js — watchFolders + extraNodeModules for packages/", "status": "done", "domain": "infra" },
+    { "id": "s17-services-migrate", "title": "All services/api/*.ts — inline types replaced with imports from @polana/db-types", "status": "done", "domain": "frontend" },
+    { "id": "s17-docs", "title": "docs/architecture.md — data flow, directory guide, adding-a-feature guide", "status": "done", "domain": "infra" }
   ]
 }

@@ -1,12 +1,7 @@
 import { supabase } from '@/services/supabase'
+import type { GromadaInvite } from '@polana/db-types'
 
-export interface GromadaInvite {
-  id: string
-  gromada_id: string
-  code: string
-  expires_at: string
-  used_by: string | null
-}
+export type { GromadaInvite }
 
 export async function createInvite(gromadaId: string, createdBy: string): Promise<GromadaInvite> {
   const { data, error } = await supabase

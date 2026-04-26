@@ -1,23 +1,7 @@
 import { supabase } from '@/services/supabase';
+import type { EventRow, RsvpStatus } from '@polana/db-types';
 
-export type EventRow = {
-  id: string;
-  gromada_id: string | null;
-  created_by: string;
-  title: string;
-  description: string | null;
-  location_name: string;
-  location_point: string | null;
-  city_id: string | null;
-  starts_at: string;
-  ends_at: string | null;
-  max_attendees: number | null;
-  is_public: boolean;
-  is_auto_generated: boolean;
-  event_type: string;
-  status: 'upcoming' | 'ongoing' | 'completed' | 'cancelled';
-  created_at: string;
-};
+export type { EventRow, RsvpStatus };
 
 export type EventWithRSVP = EventRow & {
   rsvp_count: number;

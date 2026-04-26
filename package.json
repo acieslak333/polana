@@ -51,7 +51,9 @@
     "preset": "jest-expo",
     "setupFiles": ["<rootDir>/jest.setup.ts"],
     "moduleNameMapper": {
-      "^@/(.*)$": "<rootDir>/$1"
+      "^@/(.*)$": "<rootDir>/$1",
+      "^@polana/db-types$": "<rootDir>/packages/db-types/src/index.ts",
+      "^@polana/db-types/(.*)$": "<rootDir>/packages/db-types/src/$1"
     },
     "transformIgnorePatterns": [
       "node_modules/(?!((jest-)?react-native|@react-native(-community)?)|expo(nent)?|@expo(nent)?/.*|@expo-google-fonts/.*|react-navigation|@react-navigation/.*|@unimodules/.*|unimodules|sentry-expo|native-base|react-native-svg|zustand)"

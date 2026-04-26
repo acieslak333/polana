@@ -1,4 +1,7 @@
 import { supabase } from '@/services/supabase';
+import type { PublicProfile, FriendshipStatus } from '@polana/db-types';
+
+export type { PublicProfile, FriendshipStatus };
 
 export async function fetchInterests() {
   const { data, error } = await supabase
@@ -66,17 +69,6 @@ export async function joinGromada(gromadaId: string, userId: string) {
   if (error && error.code !== '23505') throw error;
 }
 
-export interface PublicProfile {
-  id: string;
-  first_name: string;
-  nickname: string | null;
-  bio: string | null;
-  avatar_config: Record<string, unknown>;
-  custom_avatar_url: string | null;
-  city_id: string | null;
-}
-
-export type FriendshipStatus = 'none' | 'pending_sent' | 'pending_received' | 'accepted';
 
 export async function fetchPublicProfile(userId: string): Promise<PublicProfile> {
   const { data, error } = await supabase

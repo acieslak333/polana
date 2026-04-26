@@ -3,7 +3,9 @@
   "compilerOptions": {
     "strict": true,
     "paths": {
-      "@/*": ["./*"]
+      "@/*": ["./*"],
+      "@polana/db-types": ["./packages/db-types/src/index.ts"],
+      "@polana/db-types/*": ["./packages/db-types/src/*"]
     }
   },
   "include": [

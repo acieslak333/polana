@@ -1,16 +1,7 @@
 import { supabase } from '../supabase'
+import type { CrossoverProposal } from '@polana/db-types'
 
-export interface CrossoverProposal {
-  id: string
-  from_gromada_id: string
-  to_gromada_id: string
-  proposed_by: string
-  title: string
-  description: string | null
-  status: 'proposed' | 'accepted' | 'happening' | 'completed' | 'rejected'
-  vote_count: number
-  created_at: string
-}
+export type { CrossoverProposal }
 
 export async function fetchCrossovers(gromadaId: string): Promise<CrossoverProposal[]> {
   const { data, error } = await supabase

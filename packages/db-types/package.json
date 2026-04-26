@@ -1,0 +1,8 @@
+{
+  "name": "@polana/db-types",
+  "version": "1.0.0",
+  "private": true,
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "description": "Shared TypeScript types for all Polana DB tables and enums"
+}

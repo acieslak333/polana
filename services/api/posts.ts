@@ -1,31 +1,18 @@
 import { supabase } from '@/services/supabase';
+import type { PostRow, CommentRow, ProfileSnippet } from '@polana/db-types';
 
-export type Post = {
-  id: string;
-  gromada_id: string | null;
-  author_id: string;
-  content: string | null;
-  media_urls: string[];
-  media_types: string[];
-  event_id: string | null;
-  is_hidden: boolean;
-  created_at: string;
-  updated_at: string;
-  // Joined
-  profiles: { id: string; first_name: string; nickname: string | null; avatar_config: Record<string, unknown> } | null;
+export type { PostRow, CommentRow };
+
+// Post and Comment extend the DB row types with joined data
+export type Post = PostRow & {
+  profiles: ProfileSnippet | null;
   reactions: { emoji: string; user_id: string }[];
   comment_count: number;
+  gromady?: { name: string; avatar_config: Record<string, unknown> } | null;
 };
 
-export type Comment = {
-  id: string;
-  post_id: string;
-  author_id: string;
-  parent_comment_id: string | null;
-  content: string;
-  is_hidden: boolean;
-  created_at: string;
-  profiles: { id: string; first_name: string; nickname: string | null; avatar_config: Record<string, unknown> } | null;
+export type Comment = CommentRow & {
+  profiles: ProfileSnippet | null;
   replies?: Comment[];
 };
 

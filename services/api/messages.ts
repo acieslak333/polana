@@ -1,30 +1,7 @@
 import { supabase } from '@/services/supabase';
+import type { Message, ChatRoom } from '@polana/db-types';
 
-export type Message = {
-  id: string;
-  chat_room_id: string;
-  sender_id: string;
-  body: string;
-  media_url: string | null;
-  created_at: string;
-  profiles: { id: string; first_name: string; nickname: string | null; avatar_config: Record<string, unknown> } | null;
-};
-
-export type ChatRoom = {
-  id: string;
-  type: 'gromada' | 'event' | 'direct';
-  gromada_id: string | null;
-  event_id: string | null;
-  participant_1: string | null;
-  participant_2: string | null;
-  created_at: string;
-  // Joined
-  last_message?: string;
-  last_message_at?: string;
-  unread_count?: number;
-  display_name?: string;
-  display_avatar?: Record<string, unknown>;
-};
+export type { Message, ChatRoom };
 
 const MESSAGE_QUERY = `
   id, chat_room_id, sender_id, body, media_url, created_at,
