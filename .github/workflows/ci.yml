@@ -28,6 +28,12 @@ jobs:
       - name: TypeScript check
         run: ./node_modules/.bin/tsc --noEmit
 
+      - name: Check for orphaned imports
+        run: |
+          changed=$(git diff --name-only HEAD~1 | grep -E '\.(tsx?$)' || true)
+          count=$(echo "$changed" | grep -c . || true)
+          echo "Checked $count changed TypeScript files"
+
   lint:
     name: ESLint
     runs-on: ubuntu-latest

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { View, Text, Pressable, Image, StyleSheet, ActionSheetIOS, Platform, Alert } from 'react-native';
 import { router } from 'expo-router';
 import { formatDistanceToNow } from 'date-fns';
@@ -22,7 +22,7 @@ type PostCardProps = {
   isElder?: boolean;
 };
 
-export function PostCard({ post, onReact, onDelete, isElder = false }: PostCardProps) {
+function PostCardBase({ post, onReact, onDelete, isElder = false }: PostCardProps) {
   const { user } = useAuthStore();
   const [expanded, setExpanded] = useState(false);
   const isOwn = post.author_id === user?.id;
@@ -167,6 +167,10 @@ export function PostCard({ post, onReact, onDelete, isElder = false }: PostCardP
     </View>
   );
 }
+
+// Memo-wrap: named export preserves all existing import { PostCard } call sites
+export const PostCard = React.memo(PostCardBase);
+export default PostCard;
 
 const styles = StyleSheet.create({
   card: {

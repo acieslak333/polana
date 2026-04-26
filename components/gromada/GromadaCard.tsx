@@ -1,3 +1,4 @@
+import React from 'react';
 import { Pressable, View, Text, StyleSheet } from 'react-native';
 import { router } from 'expo-router';
 import { ProceduralAvatar } from '@/components/avatar/ProceduralAvatar';
@@ -10,7 +11,7 @@ type GromadaCardProps = {
   isMember?: boolean;
 };
 
-export function GromadaCard({ gromada, isMember = true }: GromadaCardProps) {
+function GromadaCardBase({ gromada, isMember = true }: GromadaCardProps) {
   return (
     <Pressable
       onPress={() => router.push(`/(app)/(gromady)/${gromada.id}`)}
@@ -46,6 +47,10 @@ export function GromadaCard({ gromada, isMember = true }: GromadaCardProps) {
     </Pressable>
   );
 }
+
+// Memo-wrap: named export preserves all existing import { GromadaCard } call sites
+export const GromadaCard = React.memo(GromadaCardBase);
+export default GromadaCard;
 
 const styles = StyleSheet.create({
   card: {
