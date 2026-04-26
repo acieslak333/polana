@@ -456,3 +456,239 @@
 - [ ] App Store screenshots (6.5" + 5.5" iPhone, 12.9" iPad)
 - [ ] Play Store screenshots + feature graphic
 - [ ] Store listings: Polish (primary) + English description, keywords
+
+---
+
+## Sprint 13 — Test Infrastructure + Pure Function Tests
+
+**Goal:** Jest running in CI with 50% coverage threshold. Pure functions and stores fully tested. Foundation every later sprint builds on.
+
+### Test Infrastructure
+- [ ] `jest.config.js` — jest-expo preset, moduleNameMapper for `@/` alias, coverage config
+- [ ] `jest.setup.ts` — mock AsyncStorage, expo-secure-store, expo-router, expo-notifications, react-i18next
+- [ ] `__mocks__/supabase.ts` — typed mock of the Supabase client (shared across all test files)
+- [ ] `__fixtures__/index.ts` — factory functions: makePost(), makeGromada(), makeProfile(), makeEvent(), makeMessage()
+- [ ] `package.json` — add `test`, `test:watch`, `test:coverage` scripts
+- [ ] `.github/workflows/ci.yml` — add Jest job, enforce 50% coverage threshold, fail PR on regression
+
+### Utility Tests (`utils/__tests__/`)
+- [ ] `dates.test.ts` — formatRelative, formatEventDate, all edge cases (today/yesterday/far future)
+- [ ] `geo.test.ts` — distance calculation, city centre lookup, normalizeCity with Polish diacritics
+- [ ] `validation.test.ts` — email valid/invalid, password length, bio max 200 chars, post max 5000
+- [ ] `routing.test.ts` — buildDeepLink all 4 types, resolveDeepLink polana:// and https://, malformed input returns null
+- [ ] `nameGenerator.test.ts` — output matches `word word word` pattern, differs over 10 runs
+
+### Store Tests (`stores/__tests__/`)
+- [ ] `authStore.test.ts` — session set/clear, reset(), profile partial update
+- [ ] `preferencesStore.test.ts` — language cycles pl→en→uk→pl, colorScheme cycles
+- [ ] `onboardingStore.test.ts` — step fields set correctly, interests array toggle
+- [ ] `cacheStore.test.ts` — setFeedPosts capped at 50, clearCache zeroes all fields
+
+### i18n Coverage Test
+- [ ] `i18n/__tests__/coverage.test.ts` — every key in `pl/` exists in `en/` and `uk/`; flags any missing key with the key name in the failure message
+
+### Code Review (end of sprint)
+- [ ] Preflight clean, coverage ≥ 50%, all tests green in CI
+
+---
+
+## Sprint 14 — Service Layer Tests
+
+**Goal:** Every `services/api/*.ts` file tested against the typed Supabase mock. Auth service fully covered.
+
+### Auth Service Tests
+- [ ] `services/__tests__/auth.test.ts` — signIn success, wrong password error, signUp email-taken, signOut, getProfile null-user guard
+
+### API Service Tests (`services/api/__tests__/`)
+- [ ] `posts.test.ts` — fetchFeedPosts pagination, createPost with media_urls, toggleReaction add/remove, deletePost, hidePost
+- [ ] `gromady.test.ts` — fetchMyGromady, fetchGromada 404, joinGromada duplicate-key ignored, leaveGromada, fetchAllGromady with interestId filter
+- [ ] `users.test.ts` — fetchPublicProfile, fetchFriendshipStatus all 4 states, sendFriendRequest, fetchFriends, acceptFriendRequest, declineFriendRequest
+- [ ] `events.test.ts` — fetchCityEvents pagination, createEvent, upsertRSVP going/maybe/not_going
+- [ ] `messages.test.ts` — fetchChatRooms, fetchMessages, sendMessage, getOrCreateDM idempotent
+- [ ] `favors.test.ts` — fetchGromadaFavors, createFavorRequest, offerHelp, markFavorHelped
+- [ ] `crossovers.test.ts` — fetchCrossovers, proposeCrossover, voteCrossover RPC call, updateCrossoverStatus
+- [ ] `safety.test.ts` — blockUser (duplicate ignored), unblockUser, fetchBlockedIds, muteChat, unmuteChat
+- [ ] `moderation.test.ts` — fetchPendingReports filtered by gromadaIds, resolveReport hide/dismiss, undoResolveReport
+- [ ] `invites.test.ts` — createInvite, fetchInviteByCode, expired-link throws, acceptInvite already-member ignored
+- [ ] `media.test.ts` — uploadPostImage success + fetch-error, uploadAvatar upsert=true
+
+### Code Review (end of sprint)
+- [ ] All service tests green, mock verifies correct table/column names and RLS-safe queries
+
+---
+
+## Sprint 15 — Hook Tests
+
+**Goal:** All data-fetching hooks tested for loading, success, error, and optimistic update states.
+
+### Hook Tests (`hooks/__tests__/`)
+- [ ] `usePosts.test.ts` — useGromadaPosts load, addPost optimistic + rollback on error, removePost, react toggle
+- [ ] `usePosts.test.ts` — fetchFeedPosts filter by type, pagination append, offline fallback to cache
+- [ ] `useEvents.test.ts` — useCityEvents load+paginate, rsvp optimistic update, refreshing state
+- [ ] `useGromady.test.ts` — fetchMyGromady on mount, refresh, error state stays empty
+- [ ] `useMessages.test.ts` — useChatMessages load, send optimistic append, Realtime subscription fires handler
+- [ ] `useFavors.test.ts` — load, create, offer, markHelped — each verifies state update
+- [ ] `useNotifications.test.ts` — registers when user present, cleans up subscriptions on unmount, navigates on notification tap
+
+### Code Review (end of sprint)
+- [ ] All hooks tested with renderHook + act(), async states (loading/success/error) all verified
+
+---
+
+## Sprint 16 — Component Tests
+
+**Goal:** Critical UI components tested for render correctness and user interaction.
+
+### UI Component Tests (`components/ui/__tests__/`)
+- [ ] `Button.test.tsx` — all 4 variants render, loading shows spinner, disabled prevents onPress, accessibilityRole button
+- [ ] `Input.test.tsx` — label renders, error message displayed, password toggle works, forwardRef
+- [ ] `ErrorBoundary.test.tsx` — catches thrown error, renders fallback UI, retry resets hasError, captureError called
+- [ ] `NetworkError.test.tsx` — renders offline banner, onRetry fires, accessibilityRole alert
+- [ ] `Badge.test.tsx` — emoji support, selected state styling change
+- [ ] `ProgressBar.test.tsx` — progress 0 / 0.5 / 1.0 rendered correctly
+
+### Feed + Gromada Component Tests
+- [ ] `PostCard.test.tsx` — text content renders, single image renders, 4-image grid renders, reaction bar present, author Pressable exists
+- [ ] `GromadaCard.test.tsx` — name and member count displayed, warmth emoji shown
+- [ ] `WarmthIndicator.test.tsx` — score 0 / 50 / 100 show correct campfire tier
+- [ ] `EventCard.test.tsx` — title renders, RSVP pressable calls onRSVP, event type emoji shown
+
+### Avatar Tests
+- [ ] `ProceduralAvatar.test.tsx` — renders without crash for all base types and null config, size prop applied
+
+### Code Review (end of sprint)
+- [ ] 80%+ component coverage, all interactions use fireEvent from @testing-library/react-native
+
+---
+
+## Sprint 17 — Architecture: Clean Separation
+
+**Goal:** Shared types extracted into a package. Services thinned to pure DB queries. Business logic lives in hooks. Tests from Sprints 13-16 stay green throughout — do not merge if any test breaks.
+
+### Shared Types Package (`packages/db-types/`)
+- [ ] `packages/db-types/package.json` — name `@polana/db-types`, TypeScript source, no build step needed
+- [ ] `packages/db-types/src/tables.ts` — all DB row interfaces (Profile, GromadaRow, EventRow, Post, Message, FavorRequest, CrossoverProposal, GromadaInvite, ReportRow)
+- [ ] `packages/db-types/src/enums.ts` — GromadaStatus, EventStatus, EventType, FriendshipStatus, MemberRole, ReportReason, ReportStatus
+- [ ] `packages/db-types/src/index.ts` — re-exports all types
+- [ ] `tsconfig.json` — paths: `@polana/db-types` → `packages/db-types/src/index.ts`
+- [ ] `metro.config.js` — watchFolders: packages/ for Metro bundler
+
+### Pnpm Workspaces
+- [ ] `pnpm-workspace.yaml` — `packages: [packages/*]`
+- [ ] Run `pnpm install`, commit `pnpm-lock.yaml`, delete `package-lock.json`
+- [ ] `.github/workflows/ci.yml` — switch `npm ci` → `pnpm install --frozen-lockfile`
+
+### API Layer Cleanup
+- [ ] Remove all inline type definitions from `services/api/*.ts` — import from `@polana/db-types`
+- [ ] Each service file = only Supabase queries, no business logic
+- [ ] Any business logic mixed into services → moved to hooks or a new `domain/` layer
+- [ ] Audit and remove any remaining `any` casts from the Sprints 3-6 era
+
+### Documentation
+- [ ] `context_map.md` — updated to reflect packages/ + clean separation
+- [ ] `docs/architecture.md` — data flow: Screen → Hook → service/api → Supabase
+- [ ] `docs/adding-a-feature.md` — step-by-step for a new developer adding a CRUD feature
+
+### Code Review (end of sprint)
+- [ ] All Sprint 13-16 tests still green, TS clean, pnpm CI green, no `any` in services
+
+---
+
+## Sprint 18 — Observability + Admin Panel
+
+**Goal:** Know what users do and what breaks before launch. Manage content without touching code.
+
+### PostHog Analytics (privacy-first)
+- [ ] `services/analytics.ts` — PostHog client init, `trackEvent(name, props)` wrapper, `identifyUser(id, city)`
+- [ ] `app/_layout.tsx` — PostHogProvider wraps the app
+- [ ] Screen tracking via `usePathname()` → `posthog.screen()` on every route change
+- [ ] Event tracking: `join_gromada`, `rsvp_event`, `send_message`, `create_post`, `invite_sent`, `friend_added`, `block_user`
+- [ ] No PII in events — only anonymous userId hash + city slug
+- [ ] `EXPO_PUBLIC_POSTHOG_KEY` + `EXPO_PUBLIC_POSTHOG_HOST` env vars, documented in `.env.example`
+
+### Structured Edge Function Logs
+- [ ] `supabase/migrations/008_app_logs.sql` — `app_logs(id, function_name, event, user_id, duration_ms, success, error_msg, created_at)` with 30-day retention via pg_cron
+- [ ] `supabase/functions/_shared/logger.ts` — `logEvent(supabase, event, opts)` helper
+- [ ] Update all 6 Edge Functions to call logEvent at entry and exit
+- [ ] `supabase/functions/purge-logs/index.ts` — cron: DELETE app_logs WHERE created_at < NOW() - INTERVAL 30 days
+
+### User Flags
+- [ ] `supabase/migrations/009_user_flags.sql` — `ALTER TABLE profiles ADD COLUMN is_banned BOOLEAN DEFAULT false`
+- [ ] RLS update on posts, comments, messages: banned users blocked from read/write
+- [ ] `services/api/safety.ts` — `banUser(userId)`, `unbanUser(userId)` (admin-only, calls service-role Edge Function)
+
+### Retool Admin Panel
+- [ ] Retool workspace connected to Supabase (read-only anon key for queries, service-role only via Edge Functions for mutations)
+- [ ] **Content editor**: `interests`, `name_adjectives`, `name_animals`, `name_suffixes` — view/add/edit/delete rows
+- [ ] **Mindful texts**: view/edit `constants/mindfulTexts.ts` content via a writable `mindful_texts` DB table (migrate hardcoded array to DB)
+- [ ] **Moderation queue**: pending reports with hide/dismiss actions → calls resolve-report Edge Function
+- [ ] **User lookup**: search by email, view profile + gromady, ban/unban button
+- [ ] **Analytics**: embed PostHog dashboard iframe
+
+### Code Review (end of sprint)
+- [ ] Analytics events firing in dev console, admin panel deployed, logs flowing in app_logs table
+
+---
+
+## Sprint 19 — E2E Tests (Maestro)
+
+**Goal:** 5 critical user journeys automated on simulator. Runs in CI nightly. No manual regression testing before each release.
+
+### Maestro Setup
+- [ ] Install Maestro CLI, add to CI runner, document setup in `docs/e2e.md`
+- [ ] `.maestro/` directory at repo root
+- [ ] `.github/workflows/e2e.yml` — nightly at 02:00 on iOS Simulator (macos runner), post results summary to PR
+- [ ] Supabase test project configured — seeded with `003_seed_data.sql`, separate from production
+
+### E2E Flows (`.maestro/*.yaml`)
+- [ ] `01_register_onboard.yaml` — launch → register email → verify email (mocked) → 7-step onboarding → land on feed tab
+- [ ] `02_create_post.yaml` — open gromada → tap composer → type post → submit → post visible in feed
+- [ ] `03_rsvp_event.yaml` — map tab → list view → find first event → tap RSVP "Idę" → navigate to calendar → event listed
+- [ ] `04_send_message.yaml` — messages tab → open first chat room → type message → send → message visible in bubble list
+- [ ] `05_invite_flow.yaml` — gromada info → admin panel → generate invite → copy link → navigate to link → member count increments
+
+### Code Review (end of sprint)
+- [ ] All 5 flows passing on iOS Simulator, E2E workflow green in CI nightly
+
+---
+
+## Sprint 20 — Pre-Launch Hardening + Store Submission
+
+**Goal:** App is shippable. Store listings live. TestFlight soak passed. Submit to App Store and Google Play.
+
+### Accessibility Final Pass
+- [ ] VoiceOver audit: register, browse feed, RSVP event, send message, view profile — document any issues found
+- [ ] Fix any missing `accessibilityLabel` / `accessibilityHint` surfaced by audit
+- [ ] Minimum contrast ratio check on all Text components (WCAG AA: 4.5:1)
+- [ ] All interactive elements ≥ 44pt verified (run automated check with a11y tooling)
+
+### Performance
+- [ ] Cold start < 3s measured on iPhone 12 and Pixel 6a
+- [ ] `npx expo-bundle-explorer` — find and remove any large unused dependencies
+- [ ] Image loading: add `blurhash` placeholder while Supabase Storage images load
+- [ ] Verify FlatList `getItemLayout` on feed, member list, event list
+
+### Store Assets
+- [ ] App icon 1024×1024 PNG (transparent background for Android adaptive icon)
+- [ ] Splash screen 2048×2048 PNG on dark background (#1A1612)
+- [ ] iOS screenshots: 6.5" × 5 screens + 12.9" iPad × 3 screens
+- [ ] Android screenshots: phone × 5 + 7" tablet × 3 + feature graphic 1024×500
+- [ ] Store listing PL: name "Polana – lokalne społeczności", subtitle, description 4000 chars, 5 keywords
+- [ ] Store listing EN: same content in English
+- [ ] Age rating form: 4+ iOS / Everyone Android
+
+### Legal + Config Verification
+- [ ] Privacy policy live at `https://polana.app/privacy`
+- [ ] `app.json` — all permission rationale strings filled (camera, location, notifications, photo library)
+- [ ] Supabase DPA signed (GDPR data processing agreement)
+- [ ] Push notification certificate configured in EAS for production
+
+### Build + Submit
+- [ ] `eas build --platform all --profile production` — both stores
+- [ ] TestFlight: 10 internal testers, 48h soak, 0 crashes required before proceeding
+- [ ] Google Play internal track: same 48h soak
+- [ ] `eas submit --platform ios --latest`
+- [ ] `eas submit --platform android --latest`
+
+### Code Review (end of sprint)
+- [ ] Crash-free rate ≥ 99% in Sentry after 48h TestFlight. Congrats — you shipped.
