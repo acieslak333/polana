@@ -85,9 +85,9 @@ export default function SettingsScreen() {
 
         <Text style={styles.groupLabel}>KONTO</Text>
         <View style={styles.group}>
-          <SettingsRow label={t('profile:privacy')} onPress={() => {}} />
-          <SettingsRow label={t('profile:help')} onPress={() => {}} />
-          <SettingsRow label={t('profile:terms')} onPress={() => {}} />
+          <SettingsRow label="Polityka prywatności" onPress={() => router.push('/(auth)/privacy')} />
+          <SettingsRow label="Twoje dane (RODO)" onPress={() => router.push('/(app)/(profile)/data')} />
+          <SettingsRow label={t('profile:terms')} onPress={() => router.push('/(auth)/terms')} />
         </View>
 
         <View style={styles.signOutContainer}>
