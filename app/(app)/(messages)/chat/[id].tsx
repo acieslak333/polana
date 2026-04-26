@@ -1,17 +1,31 @@
-import { useState, useRef, useCallback } from 'react';
+import { useState, useRef, useCallback, useMemo } from 'react';
 import {
   View, Text, StyleSheet, FlatList, TextInput,
   Pressable, KeyboardAvoidingView, Platform, ActivityIndicator,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useLocalSearchParams, router } from 'expo-router';
+import { isToday, isYesterday, format } from 'date-fns';
+import { pl } from 'date-fns/locale';
 
 import { ChatBubble } from '@/components/chat/ChatBubble';
 import { theme } from '@/constants/theme';
 import { useAuthStore } from '@/stores/authStore';
 import { useChatMessages } from '@/hooks/useMessages';
+import type { Message } from '@/services/api/messages';
 
 const MAX_MSG = 2000;
+
+type ListItem =
+  | { kind: 'message'; message: Message; showAvatar: boolean }
+  | { kind: 'separator'; label: string };
+
+function daySeparatorLabel(iso: string): string {
+  const date = new Date(iso);
+  if (isToday(date)) return 'Dzisiaj';
+  if (isYesterday(date)) return 'Wczoraj';
+  return format(date, 'd MMMM yyyy', { locale: pl });
+}
 
 export default function ChatScreen() {
   const { id: _rawId } = useLocalSearchParams<{ id: string | string[] }>();
@@ -23,25 +37,65 @@ export default function ChatScreen() {
   const [sending, setSending] = useState(false);
   const listRef = useRef<FlatList>(null);
 
+  // Build list items: interleave day separators between date-boundary messages
+  const listItems = useMemo<ListItem[]>(() => {
+    const items: ListItem[] = [];
+    let lastDay = '';
+
+    for (let i = 0; i < messages.length; i++) {
+      const msg = messages[i];
+      const dayLabel = daySeparatorLabel(msg.created_at);
+
+      if (dayLabel !== lastDay) {
+        items.push({ kind: 'separator', label: dayLabel });
+        lastDay = dayLabel;
+      }
+
+      const prevMsg = i > 0 ? messages[i - 1] : null;
+      const showAvatar = msg.sender_id !== user?.id && prevMsg?.sender_id !== msg.sender_id;
+      items.push({ kind: 'message', message: msg, showAvatar });
+    }
+
+    return items;
+  }, [messages, user?.id]);
+
   const handleSend = useCallback(async () => {
     if (!text.trim() || sending) return;
     const body = text.trim();
     setText('');
     setSending(true);
-    try { await send(body); }
-    finally { setSending(false); }
+    try {
+      await send(body);
+    } finally {
+      setSending(false);
+    }
   }, [text, sending, send]);
 
-  if (loading) return (
-    <SafeAreaView style={styles.safe}><View style={styles.center}><ActivityIndicator color={theme.colors.accent} size="large" /></View></SafeAreaView>
-  );
+  if (loading) {
+    return (
+      <SafeAreaView style={styles.safe}>
+        <View style={styles.center}>
+          <ActivityIndicator color={theme.colors.accent} size="large" />
+        </View>
+      </SafeAreaView>
+    );
+  }
 
   return (
     <SafeAreaView style={styles.safe} edges={['top']}>
-      <KeyboardAvoidingView style={styles.flex} behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
+      <KeyboardAvoidingView
+        style={styles.flex}
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      >
         {/* Header */}
         <View style={styles.header}>
-          <Pressable onPress={() => router.back()} style={styles.backBtn} accessibilityRole="button">
+          <Pressable
+            onPress={() => router.back()}
+            style={styles.backBtn}
+            accessibilityRole="button"
+            accessibilityLabel="Wróć"
+            hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+          >
             <Text style={styles.backText}>‹</Text>
           </Pressable>
           <Text style={styles.headerTitle}>Czat</Text>
@@ -50,20 +104,42 @@ export default function ChatScreen() {
         {/* Messages */}
         <FlatList
           ref={listRef}
-          data={messages}
-          keyExtractor={(m) => m.id}
+          data={listItems}
+          keyExtractor={(item) =>
+            item.kind === 'separator'
+              ? `sep-${item.label}`
+              : item.message.id
+          }
           contentContainerStyle={styles.msgList}
           onStartReached={loadMore}
           onStartReachedThreshold={0.2}
-          renderItem={({ item, index }) => {
-            const isOwn = item.sender_id === user?.id;
-            const prevMsg = index > 0 ? messages[index - 1] : null;
-            const showAvatar = !isOwn && prevMsg?.sender_id !== item.sender_id;
-            return <ChatBubble message={item} isOwn={isOwn} showAvatar={showAvatar} />;
-          }}
           ListHeaderComponent={
-            hasMore ? <ActivityIndicator style={{ padding: theme.spacing.md }} color={theme.colors.accent} /> : null
+            hasMore ? (
+              <ActivityIndicator
+                style={{ padding: theme.spacing.md }}
+                color={theme.colors.accent}
+              />
+            ) : null
           }
+          renderItem={({ item }) => {
+            if (item.kind === 'separator') {
+              return (
+                <View style={styles.daySeparatorRow}>
+                  <View style={styles.daySeparatorLine} />
+                  <Text style={styles.daySeparatorLabel}>{item.label}</Text>
+                  <View style={styles.daySeparatorLine} />
+                </View>
+              );
+            }
+            const isOwn = item.message.sender_id === user?.id;
+            return (
+              <ChatBubble
+                message={item.message}
+                isOwn={isOwn}
+                showAvatar={item.showAvatar}
+              />
+            );
+          }}
         />
 
         {/* Composer */}
@@ -86,15 +162,18 @@ export default function ChatScreen() {
             disabled={!text.trim() || sending}
             accessibilityRole="button"
             accessibilityLabel="Wyślij"
+            hitSlop={{ top: 4, bottom: 4, left: 4, right: 4 }}
             style={({ pressed }) => [
               styles.sendBtn,
               (!text.trim() || sending) && styles.sendBtnDisabled,
               pressed && { opacity: 0.8 },
             ]}
           >
-            {sending
-              ? <ActivityIndicator color="#fff" size="small" />
-              : <Text style={styles.sendIcon}>↑</Text>}
+            {sending ? (
+              <ActivityIndicator color="#fff" size="small" />
+            ) : (
+              <Text style={styles.sendIcon}>→</Text>
+            )}
           </Pressable>
         </View>
       </KeyboardAvoidingView>
@@ -106,14 +185,69 @@ const styles = StyleSheet.create({
   safe: { flex: 1, backgroundColor: theme.colors.background },
   flex: { flex: 1 },
   center: { flex: 1, alignItems: 'center', justifyContent: 'center' },
-  header: { flexDirection: 'row', alignItems: 'center', paddingHorizontal: theme.spacing.md, paddingVertical: theme.spacing.sm, borderBottomWidth: 1, borderBottomColor: theme.colors.border },
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: theme.spacing.md,
+    paddingVertical: theme.spacing.sm,
+    borderBottomWidth: 1,
+    borderBottomColor: theme.colors.border,
+  },
   backBtn: { width: 44, height: 44, alignItems: 'center', justifyContent: 'center' },
   backText: { fontSize: 28, color: theme.colors.accent },
-  headerTitle: { flex: 1, fontSize: theme.fontSize.lg, fontWeight: theme.fontWeight.semibold, color: theme.colors.textPrimary },
-  msgList: { padding: theme.spacing.md, gap: theme.spacing.xs, paddingBottom: theme.spacing.xl },
-  composer: { flexDirection: 'row', alignItems: 'flex-end', gap: theme.spacing.sm, padding: theme.spacing.sm, borderTopWidth: 1, borderTopColor: theme.colors.border, backgroundColor: theme.colors.background },
-  input: { flex: 1, minHeight: 40, maxHeight: 120, backgroundColor: theme.colors.backgroundCard, borderRadius: theme.borderRadius.full, borderWidth: 1, borderColor: theme.colors.border, paddingHorizontal: theme.spacing.md, paddingVertical: theme.spacing.sm, fontSize: theme.fontSize.body, color: theme.colors.textPrimary },
-  sendBtn: { width: 40, height: 40, borderRadius: 20, backgroundColor: theme.colors.accent, alignItems: 'center', justifyContent: 'center' },
+  headerTitle: {
+    flex: 1,
+    fontSize: theme.fontSize.lg,
+    fontWeight: theme.fontWeight.semibold,
+    color: theme.colors.textPrimary,
+  },
+  msgList: {
+    padding: theme.spacing.md,
+    gap: theme.spacing.xs,
+    paddingBottom: theme.spacing.xl,
+  },
+  daySeparatorRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: theme.spacing.sm,
+    marginVertical: theme.spacing.md,
+  },
+  daySeparatorLine: { flex: 1, height: 1, backgroundColor: theme.colors.border },
+  daySeparatorLabel: {
+    fontSize: theme.fontSize.sm,
+    color: theme.colors.textTertiary,
+    textAlign: 'center',
+  },
+  composer: {
+    flexDirection: 'row',
+    alignItems: 'flex-end',
+    gap: theme.spacing.sm,
+    padding: theme.spacing.sm,
+    borderTopWidth: 1,
+    borderTopColor: theme.colors.border,
+    backgroundColor: theme.colors.background,
+  },
+  input: {
+    flex: 1,
+    minHeight: 40,
+    maxHeight: 120,
+    backgroundColor: theme.colors.backgroundCard,
+    borderRadius: theme.borderRadius.full,
+    borderWidth: 1,
+    borderColor: theme.colors.border,
+    paddingHorizontal: theme.spacing.md,
+    paddingVertical: theme.spacing.sm,
+    fontSize: theme.fontSize.body,
+    color: theme.colors.textPrimary,
+  },
+  sendBtn: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    backgroundColor: theme.colors.accent,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
   sendBtnDisabled: { opacity: 0.4 },
   sendIcon: { fontSize: 18, color: '#fff', fontWeight: theme.fontWeight.bold },
 });
