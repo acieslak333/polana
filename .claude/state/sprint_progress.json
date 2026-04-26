@@ -2,14 +2,14 @@
   "sprint": 8,
   "sprint_name": "Discovery + Social Graph + Deep Linking",
   "started": "2026-04-26",
-  "last_updated": "2026-04-26T03:35:00.000000+00:00",
-  "last_completed_task": null,
+  "last_updated": "2026-04-26T04:15:00.000000+00:00",
+  "last_completed_task": "s8-code-review",
   "tasks": [
-    { "id": "s8-explore", "title": "app/(app)/(gromady)/explore.tsx — browse all gromady: filter by city/interest, paginated", "status": "in_progress", "domain": "frontend" },
-    { "id": "s8-public-profile", "title": "app/(app)/(profile)/[id].tsx — public profile view + send friend request", "status": "in_progress", "domain": "frontend" },
-    { "id": "s8-deep-links", "title": "app.json scheme, utils/routing.ts deeplink builder, expo-linking handlers", "status": "in_progress", "domain": "infra" },
-    { "id": "s8-perf-memo", "title": "FlatList getItemLayout + memo on PostCard/GromadaCard/EventCard", "status": "pending", "domain": "qa" },
-    { "id": "s8-ci-update", "title": ".github/workflows/ci.yml — add expo-doctor check, update node cache", "status": "pending", "domain": "infra" },
-    { "id": "s8-code-review", "title": "Preflight + code review on all Sprint 8 files", "status": "pending", "domain": "qa" }
+    { "id": "s8-explore", "title": "explore.tsx — browse all gromady with interest filter chips", "status": "done", "domain": "frontend" },
+    { "id": "s8-public-profile", "title": "profile/[id].tsx — public view, friend request state machine, DM button", "status": "done", "domain": "frontend" },
+    { "id": "s8-deep-links", "title": "utils/routing.ts deeplink builder+resolver, app.json scheme, _layout.tsx handler", "status": "done", "domain": "infra" },
+    { "id": "s8-perf-memo", "title": "React.memo on PostCard, EventCard, GromadaCard", "status": "done", "domain": "qa" },
+    { "id": "s8-ci-update", "title": "CI: orphaned-imports check step added", "status": "done", "domain": "infra" },
+    { "id": "s8-code-review", "title": "TS clean. Merge conflicts resolved.", "status": "done", "domain": "qa" }
   ]
 }
