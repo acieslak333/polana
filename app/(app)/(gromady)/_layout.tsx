@@ -5,6 +5,7 @@ export default function GromadyLayout() {
     <Stack screenOptions={{ headerShown: false }}>
       <Stack.Screen name="index" />
       <Stack.Screen name="search" />
+      <Stack.Screen name="explore" />
       <Stack.Screen name="create" />
       <Stack.Screen name="[id]/index" />
       <Stack.Screen name="[id]/members" />

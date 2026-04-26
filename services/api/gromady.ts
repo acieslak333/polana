@@ -36,6 +36,8 @@ const GROMADA_FULL_QUERY = `
   gromada_members(user_id, role)
 `;
 
+const PAGE_SIZE = 20;
+
 export async function fetchMyGromady(userId: string): Promise<GromadaWithInterests[]> {
   // First get the gromada IDs the user belongs to
   const { data: memberships, error: memErr } = await supabase
@@ -100,6 +102,52 @@ export async function searchGromady(
     ).length;
     return bOverlap - aOverlap;
   });
+}
+
+export async function fetchAllGromady(
+  cityId: string,
+  page = 0,
+  interestId?: string | null,
+): Promise<GromadaRow[]> {
+  const from = page * PAGE_SIZE;
+  const to = from + PAGE_SIZE - 1;
+
+  if (interestId) {
+    // Join through gromada_interests to filter by a specific interest
+    const { data, error } = await supabase
+      .from('gromada_interests')
+      .select(`
+        gromady!inner(
+          id, name, avatar_config, city_id, size_type, max_members,
+          elder_id, member_count, description, last_activity_at, status,
+          total_meetings_count, meetings_this_month, meetings_this_week,
+          favors_exchanged, created_at
+        )
+      `)
+      .eq('interest_id', interestId)
+      .eq('gromady.city_id', cityId)
+      .eq('gromady.status', 'active')
+      .order('gromady.member_count', { ascending: false })
+      .range(from, to);
+    if (error) throw error;
+
+    return (data ?? []).map((row) => {
+      const r = row as unknown as { gromady: GromadaRow };
+      return r.gromady;
+    });
+  }
+
+  const { data, error } = await supabase
+    .from('gromady')
+    .select(
+      'id, name, avatar_config, city_id, size_type, max_members, elder_id, member_count, description, last_activity_at, status, total_meetings_count, meetings_this_month, meetings_this_week, favors_exchanged, created_at',
+    )
+    .eq('city_id', cityId)
+    .eq('status', 'active')
+    .order('member_count', { ascending: false })
+    .range(from, to);
+  if (error) throw error;
+  return (data ?? []) as GromadaRow[];
 }
 
 export async function createGromada(payload: {
