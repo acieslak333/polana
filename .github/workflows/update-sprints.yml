@@ -1,0 +1,76 @@
+name: Update SPRINTS.md
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.claude/state/sprint_progress.json'
+      - '.github/workflows/update-sprints.yml'
+
+jobs:
+  sync:
+    name: Sync SPRINTS.md with sprint_progress.json
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Update sprint checkboxes in SPRINTS.md
+        run: |
+          python3 - << 'PYEOF'
+          import json, re, sys
+          from pathlib import Path
+
+          progress = json.loads(Path('.claude/state/sprint_progress.json').read_text())
+          sprint_num = progress['sprint']
+          sprint_name = progress['sprint_name']
+          tasks = progress['tasks']
+
+          # Build a lookup: task id → status
+          status_map = {t['id']: t['status'] for t in tasks}
+
+          # Status → emoji
+          def badge(status: str) -> str:
+              return {'done': '✅', 'in_progress': '🔄', 'deferred': '⏭️', 'skipped': '⏭️'}.get(status, '⏳')
+
+          sprints_path = Path('.claude/SPRINTS.md')
+          content = sprints_path.read_text(encoding='utf-8')
+
+          # Mark the current sprint header with task count summary
+          done = sum(1 for t in tasks if t['status'] == 'done')
+          total = len(tasks)
+          deferred = sum(1 for t in tasks if t['status'] in ('deferred', 'skipped'))
+
+          # Inject a status line right after the current sprint header
+          header_pattern = rf'(## Sprint {sprint_num} — {re.escape(sprint_name)})'
+          replacement = rf'\1\n\n> **Status:** {done}/{total} done' + (f', {deferred} deferred' if deferred else '') + f' · Last: `{progress.get("last_completed_task", "—")}`'
+          new_content = re.sub(header_pattern, replacement, content, count=1)
+
+          # Update per-task checkboxes: find lines matching task titles
+          for task in tasks:
+              s = task['status']
+              emoji = badge(s)
+              title = re.escape(task['title'].split('—')[0].strip().split('.')[0].strip()[:50])
+              # Replace [ ] or [x] or ✅ at the start of matching bullet lines
+              new_content = re.sub(
+                  rf'(- )(?:\[[ x]\]|✅|🔄|⏳|⏭️)( .*?{title})',
+                  rf'\1{emoji}\2',
+                  new_content
+              )
+
+          sprints_path.write_text(new_content, encoding='utf-8')
+          print(f'Sprint {sprint_num}: {done}/{total} done')
+          PYEOF
+
+      - name: Commit updated SPRINTS.md
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add .claude/SPRINTS.md
+          git diff --staged --quiet && echo "No changes" || \
+            git commit -m "chore(engine): sync SPRINTS.md — Sprint ${{ github.event.head_commit.message }}"
+          git push
