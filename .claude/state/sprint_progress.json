@@ -1,14 +1,17 @@
 {
-  "sprint": 15,
-  "sprint_name": "Hook Tests",
+  "sprint": 16,
+  "sprint_name": "Component Tests",
   "started": "2026-04-26",
-  "last_updated": "2026-04-26T13:00:00.000000+00:00",
-  "last_completed_task": "s15-test-hooks-notifications",
+  "last_updated": "2026-04-26T14:00:00.000000+00:00",
+  "last_completed_task": "s16-test-avatar",
   "tasks": [
-    { "id": "s15-test-hooks-posts", "title": "hooks/__tests__/usePosts.test.ts — 9 cases", "status": "done", "domain": "qa" },
-    { "id": "s15-test-hooks-events", "title": "hooks/__tests__/useEvents.test.ts", "status": "done", "domain": "qa" },
-    { "id": "s15-test-hooks-favors", "title": "hooks/__tests__/useFavors.test.ts", "status": "done", "domain": "qa" },
-    { "id": "s15-test-hooks-messages", "title": "hooks/__tests__/useMessages.test.ts", "status": "done", "domain": "qa" },
-    { "id": "s15-test-hooks-notifications", "title": "hooks/__tests__/useNotifications.test.ts", "status": "done", "domain": "qa" }
+    { "id": "s16-test-button", "title": "components/ui/__tests__/Button.test.tsx — 8 cases", "status": "done", "domain": "qa" },
+    { "id": "s16-test-input", "title": "components/ui/__tests__/Input.test.tsx — 7 cases", "status": "done", "domain": "qa" },
+    { "id": "s16-test-error-boundary", "title": "components/ui/__tests__/ErrorBoundary.test.tsx — 5 cases", "status": "done", "domain": "qa" },
+    { "id": "s16-test-network-error", "title": "components/ui/__tests__/NetworkError.test.tsx — 4 cases", "status": "done", "domain": "qa" },
+    { "id": "s16-test-warmth", "title": "components/gromada/__tests__/WarmthIndicator.test.tsx — 7 cases", "status": "done", "domain": "qa" },
+    { "id": "s16-test-event-card", "title": "components/event/__tests__/EventCard.test.tsx — 7 cases", "status": "done", "domain": "qa" },
+    { "id": "s16-test-post-card", "title": "components/feed/__tests__/PostCard.test.tsx — 7 cases", "status": "done", "domain": "qa" },
+    { "id": "s16-test-avatar", "title": "components/avatar/__tests__/ProceduralAvatar.test.tsx — 6 cases", "status": "done", "domain": "qa" }
   ]
 }
