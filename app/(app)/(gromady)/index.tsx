@@ -1,3 +1,4 @@
+import { ErrorBoundary } from '@/components/ui/ErrorBoundary'
 import { useEffect, useState, useCallback } from 'react';
 import {
   View, Text, StyleSheet, FlatList, RefreshControl,
@@ -42,8 +43,9 @@ export default function GromadyScreen() {
   }
 
   return (
-    <SafeAreaView style={styles.safe}>
-      <FlatList
+    <ErrorBoundary>
+      <SafeAreaView style={styles.safe}>
+        <FlatList
         data={gromady}
         keyExtractor={(g) => g.id}
         contentContainerStyle={styles.list}
@@ -95,7 +97,8 @@ export default function GromadyScreen() {
           ) : null
         }
       />
-    </SafeAreaView>
+      </SafeAreaView>
+    </ErrorBoundary>
   );
 }
 

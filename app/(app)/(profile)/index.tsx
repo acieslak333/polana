@@ -1,3 +1,4 @@
+import { ErrorBoundary } from '@/components/ui/ErrorBoundary'
 import { View, Text, StyleSheet, ScrollView, Pressable } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Link, router } from 'expo-router';
@@ -26,7 +27,8 @@ export default function ProfileScreen() {
     : '';
 
   return (
-    <SafeAreaView style={styles.safe}>
+    <ErrorBoundary>
+      <SafeAreaView style={styles.safe}>
       <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scroll}>
 
         {/* Header */}
@@ -98,7 +100,8 @@ export default function ProfileScreen() {
           style={styles.signOutBtn}
         />
       </ScrollView>
-    </SafeAreaView>
+      </SafeAreaView>
+    </ErrorBoundary>
   );
 }
 

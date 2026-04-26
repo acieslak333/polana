@@ -1,3 +1,4 @@
+import { ErrorBoundary } from '@/components/ui/ErrorBoundary'
 import { useEffect, useState, useCallback } from 'react';
 import {
   View, Text, StyleSheet, Pressable, FlatList,
@@ -82,8 +83,9 @@ export default function MapScreen() {
   };
 
   return (
-    <SafeAreaView style={styles.safe}>
-      <View style={styles.header}>
+    <ErrorBoundary>
+      <SafeAreaView style={styles.safe}>
+        <View style={styles.header}>
         <Text style={styles.title}>{t('title')}</Text>
         <View style={styles.viewToggle}>
           <Pressable
@@ -199,7 +201,8 @@ export default function MapScreen() {
           }
         />
       )}
-    </SafeAreaView>
+      </SafeAreaView>
+    </ErrorBoundary>
   );
 }
 

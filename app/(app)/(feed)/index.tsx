@@ -7,9 +7,11 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useTranslation } from 'react-i18next';
 
 import { PostCard } from '@/components/feed/PostCard';
+import { NetworkError } from '@/components/ui/NetworkError';
 import { theme } from '@/constants/theme';
 import { useAuthStore } from '@/stores/authStore';
 import { fetchFeedPosts, toggleReaction, deletePost, type Post } from '@/services/api/posts';
+import { useCacheStore } from '@/stores/cacheStore';
 
 const PAGE_SIZE = 25;
 
@@ -30,8 +32,10 @@ export default function FeedScreen() {
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [hasMore, setHasMore] = useState(true);
+  const [isOffline, setIsOffline] = useState(false);
   const [filter, setFilter] = useState<Filter>('all');
   const pageRef = useRef(0);
+  const cachedPosts = useCacheStore((s) => s.feedPosts);
 
   const load = useCallback(async (reset = false) => {
     if (!user) return;
@@ -44,9 +48,14 @@ export default function FeedScreen() {
       setPosts((prev) => (reset ? data : [...prev, ...data]));
       if (data.length < PAGE_SIZE) setHasMore(false);
       pageRef.current += 1;
-    } catch { /* stay cached */ }
+      setIsOffline(false);
+      if (reset) useCacheStore.getState().setFeedPosts(data);
+    } catch {
+      setIsOffline(true);
+      if (reset && cachedPosts.length > 0) setPosts(cachedPosts);
+    }
     finally { setLoading(false); setRefreshing(false); }
-  }, [user, hasMore]);
+  }, [user, hasMore, cachedPosts]);
 
   useEffect(() => { load(true); }, [user]);
 
@@ -84,6 +93,7 @@ export default function FeedScreen() {
 
   return (
     <SafeAreaView style={styles.safe}>
+      {isOffline && <NetworkError onRetry={() => { void load(true); }} />}
       {/* Header */}
       <View style={styles.header}>
         <Text style={styles.title}>{t('title')}</Text>

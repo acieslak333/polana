@@ -230,3 +230,13 @@ export async function fetchUpcomingEvents(gromadaId: string) {
   if (error) throw error;
   return data ?? [];
 }
+
+export async function fetchGromadyForElder(userId: string): Promise<GromadaRow[]> {
+  const { data, error } = await supabase
+    .from('gromady')
+    .select('id, name, avatar_config, member_count, max_members, size_type, elder_id, status, created_at')
+    .eq('elder_id', userId)
+    .eq('status', 'active');
+  if (error) throw error;
+  return (data ?? []) as GromadaRow[];
+}

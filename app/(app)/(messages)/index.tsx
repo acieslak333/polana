@@ -1,3 +1,4 @@
+import { ErrorBoundary } from '@/components/ui/ErrorBoundary'
 import { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, FlatList, Pressable, ActivityIndicator } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -23,8 +24,9 @@ export default function MessagesScreen() {
   }, [user]);
 
   return (
-    <SafeAreaView style={styles.safe}>
-      <View style={styles.header}>
+    <ErrorBoundary>
+      <SafeAreaView style={styles.safe}>
+        <View style={styles.header}>
         <Text style={styles.title}>{t('title')}</Text>
       </View>
 
@@ -66,7 +68,8 @@ export default function MessagesScreen() {
           }
         />
       )}
-    </SafeAreaView>
+      </SafeAreaView>
+    </ErrorBoundary>
   );
 }
 

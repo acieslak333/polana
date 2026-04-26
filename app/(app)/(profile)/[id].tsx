@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import {
   View,
   Text,
@@ -7,6 +7,7 @@ import {
   ActivityIndicator,
   Pressable,
   Image,
+  Modal,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useLocalSearchParams, router } from 'expo-router';
@@ -23,6 +24,7 @@ import {
   type FriendshipStatus,
 } from '@/services/api/users';
 import { getOrCreateDM } from '@/services/api/messages';
+import { blockUser, unblockUser } from '@/services/api/safety';
 
 export default function PublicProfileScreen(): React.JSX.Element {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -34,6 +36,9 @@ export default function PublicProfileScreen(): React.JSX.Element {
   const [error, setError] = useState(false);
   const [friendLoading, setFriendLoading] = useState(false);
   const [dmLoading, setDmLoading] = useState(false);
+  const [menuVisible, setMenuVisible] = useState(false);
+  const [undoToast, setUndoToast] = useState<{ message: string; onUndo: () => void } | null>(null);
+  const undoTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const currentUserId = user?.id ?? '';
 
@@ -155,6 +160,24 @@ export default function PublicProfileScreen(): React.JSX.Element {
   const friendButtonGhost =
     friendStatus === 'pending_sent' || friendStatus === 'accepted';
 
+  function showUndoToast(message: string, onUndo: () => void): void {
+    if (undoTimer.current) clearTimeout(undoTimer.current);
+    setUndoToast({ message, onUndo });
+    undoTimer.current = setTimeout(() => setUndoToast(null), 7000);
+  }
+
+  async function handleBlock(): Promise<void> {
+    if (!id || !user) return;
+    setMenuVisible(false);
+    try {
+      await blockUser(user.id, id);
+      showUndoToast(`Zablokowano ${profile?.first_name ?? 'użytkownika'}`, async () => {
+        await unblockUser(user.id, id);
+        setUndoToast(null);
+      });
+    } catch { /* silently ignore — user can retry */ }
+  }
+
   return (
     <SafeAreaView style={styles.safe}>
       {/* Back header */}
@@ -170,7 +193,63 @@ export default function PublicProfileScreen(): React.JSX.Element {
         <Text style={styles.headerTitle} numberOfLines={1}>
           {displayName}
         </Text>
+        <Pressable
+          onPress={() => setMenuVisible(true)}
+          style={styles.menuBtn}
+          accessibilityRole="button"
+          accessibilityLabel="Więcej opcji"
+        >
+          <Text style={styles.menuDots}>⋯</Text>
+        </Pressable>
       </View>
+
+      {/* Safety menu modal */}
+      <Modal
+        visible={menuVisible}
+        transparent
+        animationType="fade"
+        onRequestClose={() => setMenuVisible(false)}
+        accessibilityViewIsModal
+      >
+        <Pressable style={styles.modalOverlay} onPress={() => setMenuVisible(false)}>
+          <View style={styles.menuSheet}>
+            <Pressable
+              style={styles.menuItem}
+              onPress={() => { void handleBlock(); }}
+              accessibilityRole="button"
+              accessibilityLabel="Zablokuj użytkownika"
+            >
+              <Text style={[styles.menuItemText, { color: theme.colors.error }]}>
+                Zablokuj użytkownika
+              </Text>
+            </Pressable>
+            <View style={styles.menuDivider} />
+            <Pressable
+              style={styles.menuItem}
+              onPress={() => setMenuVisible(false)}
+              accessibilityRole="button"
+              accessibilityLabel="Anuluj"
+            >
+              <Text style={styles.menuItemText}>Anuluj</Text>
+            </Pressable>
+          </View>
+        </Pressable>
+      </Modal>
+
+      {/* Undo toast */}
+      {undoToast && (
+        <View style={styles.undoToast}>
+          <Text style={styles.undoText}>{undoToast.message}</Text>
+          <Pressable
+            onPress={undoToast.onUndo}
+            accessibilityRole="button"
+            accessibilityLabel="Cofnij"
+            hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+          >
+            <Text style={styles.undoBtn}>Cofnij</Text>
+          </Pressable>
+        </View>
+      )}
 
       <ScrollView
         showsVerticalScrollIndicator={false}
@@ -279,6 +358,37 @@ const styles = StyleSheet.create({
     fontWeight: theme.fontWeight.semibold,
     color: theme.colors.textPrimary,
   },
+  menuBtn: { width: 44, height: 44, alignItems: 'center', justifyContent: 'center' },
+  menuDots: { fontSize: 22, color: theme.colors.textSecondary, letterSpacing: 2 },
+  modalOverlay: { flex: 1, backgroundColor: 'rgba(0,0,0,0.4)', justifyContent: 'flex-end' },
+  menuSheet: {
+    backgroundColor: theme.colors.backgroundCard,
+    borderTopLeftRadius: theme.borderRadius.xl,
+    borderTopRightRadius: theme.borderRadius.xl,
+    paddingBottom: theme.spacing.xxxl,
+    overflow: 'hidden',
+  },
+  menuItem: { minHeight: 56, justifyContent: 'center', paddingHorizontal: theme.spacing.xl },
+  menuItemText: { fontSize: theme.fontSize.body, color: theme.colors.textPrimary },
+  menuDivider: { height: 1, backgroundColor: theme.colors.border },
+  undoToast: {
+    position: 'absolute',
+    bottom: theme.spacing.xl,
+    left: theme.spacing.xl,
+    right: theme.spacing.xl,
+    backgroundColor: theme.colors.backgroundElevated,
+    borderRadius: theme.borderRadius.md,
+    borderWidth: 1,
+    borderColor: theme.colors.border,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: theme.spacing.lg,
+    paddingVertical: theme.spacing.sm,
+    minHeight: 48,
+  },
+  undoText: { fontSize: theme.fontSize.sm, color: theme.colors.textPrimary, flex: 1 },
+  undoBtn: { fontSize: theme.fontSize.sm, color: theme.colors.accent, fontWeight: theme.fontWeight.semibold },
 
   center: {
     flex: 1,
