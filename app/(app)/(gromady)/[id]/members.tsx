@@ -16,11 +16,11 @@ type Member = {
   profiles: { id: string; first_name: string; nickname: string | null; avatar_config: Record<string, unknown> } | null;
 };
 
-const ROLE_LABELS: Record<string, string> = {
-  elder: 'Elder',
-  member: 'Członek',
-  newcomer: 'Nowicjusz',
-};
+function getRoleLabel(role: string, t: (key: string) => string): string {
+  if (role === 'elder') return t('gromady:elder')
+  if (role === 'newcomer') return t('gromady:newcomer')
+  return t('gromady:member')
+}
 
 export default function MembersScreen() {
   const { id: _rawId } = useLocalSearchParams<{ id: string | string[] }>();
@@ -60,7 +60,7 @@ export default function MembersScreen() {
                 <ProceduralAvatar config={item.profiles?.avatar_config} size={44} />
                 <Text style={styles.name}>{name}</Text>
                 <Badge
-                  label={ROLE_LABELS[item.role] ?? item.role}
+                  label={getRoleLabel(item.role, t)}
                   variant={item.role === 'elder' ? 'accent' : 'default'}
                 />
                 <Pressable

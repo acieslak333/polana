@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 
 type ColorScheme = 'dark' | 'light' | 'system';
-type Language = 'pl' | 'en';
+export type Language = 'pl' | 'en' | 'uk';
 
 type PreferencesState = {
   colorScheme: ColorScheme;

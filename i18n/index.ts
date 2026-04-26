@@ -19,7 +19,25 @@ import enEvents from './locales/en/events.json';
 import enMessages from './locales/en/messages.json';
 import enProfile from './locales/en/profile.json';
 
+import ukCommon from './locales/uk/common.json';
+import ukAuth from './locales/uk/auth.json';
+import ukOnboarding from './locales/uk/onboarding.json';
+import ukFeed from './locales/uk/feed.json';
+import ukGromady from './locales/uk/gromady.json';
+import ukEvents from './locales/uk/events.json';
+import ukMessages from './locales/uk/messages.json';
+import ukProfile from './locales/uk/profile.json';
+
 export const defaultNS = 'common';
+
+export const SUPPORTED_LANGUAGES = [
+  { code: 'pl', label: 'Polski', flag: '🇵🇱' },
+  { code: 'en', label: 'English', flag: '🇬🇧' },
+  { code: 'uk', label: 'Українська', flag: '🇺🇦' },
+] as const;
+
+export type SupportedLanguage = typeof SUPPORTED_LANGUAGES[number]['code'];
+
 export const resources = {
   pl: {
     common: plCommon,
@@ -40,6 +58,16 @@ export const resources = {
     events: enEvents,
     messages: enMessages,
     profile: enProfile,
+  },
+  uk: {
+    common: ukCommon,
+    auth: ukAuth,
+    onboarding: ukOnboarding,
+    feed: ukFeed,
+    gromady: ukGromady,
+    events: ukEvents,
+    messages: ukMessages,
+    profile: ukProfile,
   },
 } as const;
 

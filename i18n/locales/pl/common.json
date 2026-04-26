@@ -34,5 +34,20 @@
   "tomorrow": "Jutro",
   "members": "{{count}} osoba",
   "members_other": "{{count}} osób",
-  "ago": "{{time}} temu"
+  "ago": "{{time}} temu",
+  "undo": "Cofnij",
+  "generate": "Wygeneruj",
+  "share_link": "Udostępnij link",
+  "new_link": "Nowy link",
+  "more_options": "Więcej opcji",
+  "offline_banner": "Brak połączenia z internetem",
+  "offline_retry": "Ponów",
+  "error_boundary_title": "Coś poszło nie tak",
+  "error_boundary_body": "Spróbuj ponownie lub wróć do poprzedniego ekranu.",
+  "error_boundary_button": "Spróbuj ponownie",
+  "reason_spam": "Spam",
+  "reason_harassment": "Nękanie",
+  "reason_inappropriate": "Nieodpowiednia treść",
+  "reason_other": "Inne",
+  "no_content": "(brak treści)"
 }

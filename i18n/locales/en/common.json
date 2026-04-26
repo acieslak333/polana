@@ -34,5 +34,20 @@
   "tomorrow": "Tomorrow",
   "members": "{{count}} person",
   "members_other": "{{count}} people",
-  "ago": "{{time}} ago"
+  "ago": "{{time}} ago",
+  "undo": "Undo",
+  "generate": "Generate",
+  "share_link": "Share link",
+  "new_link": "New link",
+  "more_options": "More options",
+  "offline_banner": "No internet connection",
+  "offline_retry": "Retry",
+  "error_boundary_title": "Something went wrong",
+  "error_boundary_body": "Please try again or go back to the previous screen.",
+  "error_boundary_button": "Try again",
+  "reason_spam": "Spam",
+  "reason_harassment": "Harassment",
+  "reason_inappropriate": "Inappropriate content",
+  "reason_other": "Other",
+  "no_content": "(no content)"
 }

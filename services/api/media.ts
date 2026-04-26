@@ -20,7 +20,7 @@ export async function uploadPostImage(
     const { data } = supabase.storage.from('post-media').getPublicUrl(filename);
     return data.publicUrl;
   } catch (err) {
-    throw err instanceof Error ? err : new Error('Nie udało się przesłać zdjęcia');
+    throw err instanceof Error ? err : new Error('Failed to upload image');
   }
 }
 
@@ -44,6 +44,6 @@ export async function uploadAvatar(
     const { data } = supabase.storage.from('avatars').getPublicUrl(filename);
     return data.publicUrl;
   } catch (err) {
-    throw err instanceof Error ? err : new Error('Nie udało się przesłać avatara');
+    throw err instanceof Error ? err : new Error('Failed to upload avatar');
   }
 }

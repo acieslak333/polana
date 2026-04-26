@@ -41,10 +41,12 @@ export default function SettingsScreen() {
     reset();
   }
 
-  function toggleLanguage() {
-    const next = language === 'pl' ? 'en' : 'pl';
+  function cycleLanguage() {
+    const order = ['pl', 'en', 'uk'] as const;
+    const idx = order.indexOf(language as typeof order[number]);
+    const next = order[(idx + 1) % order.length];
     setLanguage(next);
-    i18n.changeLanguage(next);
+    void i18n.changeLanguage(next);
   }
 
   function cycleTheme() {
@@ -78,8 +80,8 @@ export default function SettingsScreen() {
           />
           <SettingsRow
             label={t('profile:language')}
-            value={language.toUpperCase()}
-            onPress={toggleLanguage}
+            value={language === 'pl' ? '🇵🇱 PL' : language === 'uk' ? '🇺🇦 UK' : '🇬🇧 EN'}
+            onPress={cycleLanguage}
           />
         </View>
 
