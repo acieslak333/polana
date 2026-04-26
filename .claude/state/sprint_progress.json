@@ -2,56 +2,16 @@
   "sprint": 7,
   "sprint_name": "Maps + Media + Chat Polish",
   "started": "2026-04-26",
-  "last_updated": "2026-04-26T02:10:00.000000+00:00",
-  "last_completed_task": null,
+  "last_updated": "2026-04-26T03:30:00.000000+00:00",
+  "last_completed_task": "s7-code-review",
   "tasks": [
-    {
-      "id": "s7-map-view",
-      "title": "react-native-maps MapView in map tab — event+gromada pins, location priming, map/list toggle",
-      "status": "in_progress",
-      "domain": "frontend"
-    },
-    {
-      "id": "s7-create-event",
-      "title": "Commit app/(app)/(map)/create-event.tsx + components/event/CreateEventForm.tsx",
-      "status": "pending",
-      "domain": "frontend"
-    },
-    {
-      "id": "s7-media-upload",
-      "title": "services/api/media.ts — Supabase Storage upload; post composer image attachment",
-      "status": "pending",
-      "domain": "frontend"
-    },
-    {
-      "id": "s7-chat-polish",
-      "title": "Chat bubble layout (sender/receiver), day separators, message reactions",
-      "status": "pending",
-      "domain": "frontend"
-    },
-    {
-      "id": "s7-friends",
-      "title": "Commit friends.tsx + friend/[id].tsx direct message thread",
-      "status": "pending",
-      "domain": "frontend"
-    },
-    {
-      "id": "s7-favors",
-      "title": "Favor list + create form in Gromada info panel; commit hooks/useFavors.ts",
-      "status": "pending",
-      "domain": "frontend"
-    },
-    {
-      "id": "s7-notifications-infra",
-      "title": "Commit services/notifications.ts + supabase/migrations/004_push_tokens.sql",
-      "status": "pending",
-      "domain": "infra"
-    },
-    {
-      "id": "s7-code-review",
-      "title": "Run code-reviewer on all Sprint 7 files",
-      "status": "pending",
-      "domain": "qa"
-    }
+    { "id": "s7-map-view", "title": "react-native-maps MapView with event pins, location priming, map/list toggle", "status": "done", "domain": "frontend" },
+    { "id": "s7-create-event", "title": "create-event.tsx + CreateEventForm.tsx committed", "status": "done", "domain": "frontend" },
+    { "id": "s7-media-upload", "title": "services/api/media.ts — Supabase Storage upload; post composer image attachment", "status": "done", "domain": "frontend" },
+    { "id": "s7-chat-polish", "title": "Chat bubble layout, day separators, 44pt tap targets", "status": "done", "domain": "frontend" },
+    { "id": "s7-friends", "title": "friends.tsx + friend/[id].tsx direct message thread", "status": "done", "domain": "frontend" },
+    { "id": "s7-favors", "title": "useFavors.ts + services/api/favors.ts + favor UI in info panel", "status": "done", "domain": "frontend" },
+    { "id": "s7-notifications-infra", "title": "services/notifications.ts + 004_push_tokens.sql committed", "status": "done", "domain": "infra" },
+    { "id": "s7-code-review", "title": "Preflight clean. Fixed: nextEvent type, missing users.ts exports, native module type stubs.", "status": "done", "domain": "qa" }
   ]
 }
