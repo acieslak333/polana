@@ -101,7 +101,7 @@ export default function SearchScreen() {
           ItemSeparatorComponent={() => <View style={{ height: theme.spacing.sm }} />}
           ListEmptyComponent={
             <View style={styles.center}>
-              <Text style={styles.emptyText}>Brak wyników. Spróbuj innej nazwy lub miasta.</Text>
+              <Text style={styles.emptyText}>{t('gromady:search_empty')}</Text>
             </View>
           }
         />

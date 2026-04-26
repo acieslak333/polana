@@ -267,7 +267,7 @@ export default function PublicProfileScreen(): React.JSX.Element {
               source={{ uri: profile.custom_avatar_url }}
               style={styles.customAvatar}
               resizeMode="cover"
-              accessibilityLabel={`Zdjęcie profilowe ${displayName}`}
+              accessibilityLabel={t('common:image_preview')}
             />
           ) : (
             <ProceduralAvatar config={profile.avatar_config} size={88} />

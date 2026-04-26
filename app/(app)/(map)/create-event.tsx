@@ -1,12 +1,14 @@
 import { View, Text, StyleSheet, Pressable, KeyboardAvoidingView, Platform } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { router, useLocalSearchParams } from 'expo-router';
+import { useTranslation } from 'react-i18next';
 
 import { CreateEventForm } from '@/components/event/CreateEventForm';
 import { theme } from '@/constants/theme';
 import { useAuthStore } from '@/stores/authStore';
 
 export default function CreateEventScreen() {
+  const { t } = useTranslation('common');
   const { profile } = useAuthStore();
   const { gromadaId } = useLocalSearchParams<{ gromadaId?: string }>();
   const cityId = profile?.city_id ?? '';
@@ -19,7 +21,7 @@ export default function CreateEventScreen() {
             onPress={() => router.back()}
             style={styles.backBtn}
             accessibilityRole="button"
-            accessibilityLabel="Wróć"
+            accessibilityLabel={t('back')}
           >
             <Text style={styles.backText}>‹</Text>
           </Pressable>

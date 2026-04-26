@@ -71,5 +71,17 @@
   "explore_create_first": "Create the first one",
   "explore_joined": "Already a member",
   "explore_join_toast": "Joined {{name}}",
-  "gromada_full": "Full"
+  "gromada_full": "Full",
+  "size_small_label": "Small",
+  "size_medium_label": "Medium",
+  "size_large_label": "Large",
+  "size_small_desc": "~12 people",
+  "size_medium_desc": "~24 people",
+  "size_large_desc": "~36 people",
+  "name_required": "Enter a Gromada name",
+  "size_label": "Size",
+  "founded": "Founded",
+  "favors_section": "Helping hands",
+  "crossover_vote": "Vote for crossover {{title}}",
+  "search_empty": "No results. Try a different name or city."
 }

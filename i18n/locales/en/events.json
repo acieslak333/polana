@@ -38,5 +38,7 @@
     "games": "Games",
     "talk": "Chat",
     "other": "Other"
-  }
+  },
+  "tap_to_view": "Tap to view",
+  "enable_location": "Enable location to see nearby events"
 }

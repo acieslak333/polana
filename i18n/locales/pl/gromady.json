@@ -71,5 +71,17 @@
   "explore_create_first": "Utwórz pierwszą",
   "explore_joined": "Już w Gromadzie",
   "explore_join_toast": "Dołączono do {{name}}",
-  "gromada_full": "Pełna"
+  "gromada_full": "Pełna",
+  "size_small_label": "Mała",
+  "size_medium_label": "Średnia",
+  "size_large_label": "Duża",
+  "size_small_desc": "~12 osób",
+  "size_medium_desc": "~24 osoby",
+  "size_large_desc": "~36 osób",
+  "name_required": "Podaj nazwę Gromady",
+  "size_label": "Rozmiar",
+  "founded": "Założona",
+  "favors_section": "Potrzebne ręce",
+  "crossover_vote": "Zagłosuj na crossover {{title}}",
+  "search_empty": "Brak wyników. Spróbuj innej nazwy lub miasta."
 }

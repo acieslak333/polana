@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, Pressable, ActivityIndicator } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { router, useLocalSearchParams } from 'expo-router';
+import { useTranslation } from 'react-i18next';
 
 import { ProceduralAvatar } from '@/components/avatar/ProceduralAvatar';
 import { Button } from '@/components/ui/Button';
@@ -17,6 +18,7 @@ import {
 import { getOrCreateDM } from '@/services/api/messages';
 
 export default function FriendProfileScreen() {
+  const { t } = useTranslation(['messages', 'profile', 'common']);
   const { id: _rawId } = useLocalSearchParams<{ id: string | string[] }>();
   const id = Array.isArray(_rawId) ? _rawId[0] : _rawId;
   const { user } = useAuthStore();
@@ -64,7 +66,7 @@ export default function FriendProfileScreen() {
 
   if (!profile) return (
     <SafeAreaView style={styles.safe}>
-      <View style={styles.center}><Text style={styles.errorText}>Nie znaleziono profilu</Text></View>
+      <View style={styles.center}><Text style={styles.errorText}>{t('profile:public_error')}</Text></View>
     </SafeAreaView>
   );
 
@@ -96,7 +98,7 @@ export default function FriendProfileScreen() {
           <View style={styles.actions}>
             {friendStatus === 'accepted' && (
               <Button
-                label="Wyślij wiadomość"
+                label={t("profile:public_send_message")}
                 onPress={handleDM}
                 loading={acting}
                 size="lg"
@@ -106,7 +108,7 @@ export default function FriendProfileScreen() {
 
             {friendStatus === 'none' && (
               <Button
-                label="Dodaj do znajomych"
+                label={t('profile:public_add_friend')}
                 onPress={handleAddFriend}
                 loading={acting}
                 size="lg"
@@ -116,13 +118,13 @@ export default function FriendProfileScreen() {
 
             {friendStatus === 'pending_sent' && (
               <View style={styles.statusBadge}>
-                <Text style={styles.statusText}>Zaproszenie wysłane</Text>
+                <Text style={styles.statusText}>{t('profile:public_friend_sent')}</Text>
               </View>
             )}
 
             {friendStatus === 'pending_received' && (
               <View style={styles.statusBadge}>
-                <Text style={styles.statusText}>Czeka na Twoją odpowiedź</Text>
+                <Text style={styles.statusText}>{t('messages:friend_request_received')}</Text>
               </View>
             )}
           </View>

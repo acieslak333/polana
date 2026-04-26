@@ -139,7 +139,7 @@ export default function PostDetailScreen() {
           ItemSeparatorComponent={() => <View style={{ height: theme.spacing.sm }} />}
           ListEmptyComponent={
             <View style={styles.emptyComments}>
-              <Text style={styles.emptyText}>Bądź pierwszą osobą, która skomentuje!</Text>
+              <Text style={styles.emptyText}>{t('feed:no_comments')}</Text>
             </View>
           }
         />
@@ -149,7 +149,7 @@ export default function PostDetailScreen() {
           {replyTo && (
             <View style={styles.replyIndicator}>
               <Text style={styles.replyText}>
-                ↩ {replyTo.profiles?.nickname ?? replyTo.profiles?.first_name ?? 'Ktoś'}
+                ↩ {replyTo.profiles?.nickname ?? replyTo.profiles?.first_name ?? '?'}
               </Text>
               <Pressable onPress={() => setReplyTo(null)} hitSlop={8}>
                 <Text style={styles.replyCancel}>✕</Text>

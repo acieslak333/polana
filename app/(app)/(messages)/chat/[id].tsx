@@ -1,4 +1,5 @@
 import { useState, useRef, useCallback, useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   View, Text, StyleSheet, FlatList, TextInput,
   Pressable, KeyboardAvoidingView, Platform, ActivityIndicator,
@@ -20,14 +21,15 @@ type ListItem =
   | { kind: 'message'; message: Message; showAvatar: boolean }
   | { kind: 'separator'; label: string };
 
-function daySeparatorLabel(iso: string): string {
+function daySeparatorLabel(iso: string, today: string, yesterday: string): string {
   const date = new Date(iso);
-  if (isToday(date)) return 'Dzisiaj';
-  if (isYesterday(date)) return 'Wczoraj';
+  if (isToday(date)) return today;
+  if (isYesterday(date)) return yesterday;
   return format(date, 'd MMMM yyyy', { locale: pl });
 }
 
 export default function ChatScreen() {
+  const { t } = useTranslation(['messages', 'common']);
   const { id: _rawId } = useLocalSearchParams<{ id: string | string[] }>();
   const chatRoomId = Array.isArray(_rawId) ? _rawId[0] : (_rawId ?? '');
   const { user } = useAuthStore();
@@ -38,13 +40,16 @@ export default function ChatScreen() {
   const listRef = useRef<FlatList>(null);
 
   // Build list items: interleave day separators between date-boundary messages
+  const todayLabel = t('common:today');
+  const yesterdayLabel = t('common:yesterday');
+
   const listItems = useMemo<ListItem[]>(() => {
     const items: ListItem[] = [];
     let lastDay = '';
 
     for (let i = 0; i < messages.length; i++) {
       const msg = messages[i];
-      const dayLabel = daySeparatorLabel(msg.created_at);
+      const dayLabel = daySeparatorLabel(msg.created_at, todayLabel, yesterdayLabel);
 
       if (dayLabel !== lastDay) {
         items.push({ kind: 'separator', label: dayLabel });
@@ -93,12 +98,12 @@ export default function ChatScreen() {
             onPress={() => router.back()}
             style={styles.backBtn}
             accessibilityRole="button"
-            accessibilityLabel="Wróć"
+            accessibilityLabel={t("common:back")}
             hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
           >
             <Text style={styles.backText}>‹</Text>
           </Pressable>
-          <Text style={styles.headerTitle}>Czat</Text>
+          <Text style={styles.headerTitle}>{t('messages:chats')}</Text>
         </View>
 
         {/* Messages */}
@@ -146,13 +151,13 @@ export default function ChatScreen() {
         <View style={styles.composer}>
           <TextInput
             style={styles.input}
-            placeholder="Napisz wiadomość..."
+            placeholder={t("messages:message_placeholder")}
             placeholderTextColor={theme.colors.textTertiary}
             value={text}
             onChangeText={(v) => setText(v.slice(0, MAX_MSG))}
             multiline
             maxLength={MAX_MSG}
-            accessibilityLabel="Napisz wiadomość"
+            accessibilityLabel={t("messages:message_placeholder")}
             returnKeyType="send"
             blurOnSubmit={false}
             onSubmitEditing={handleSend}
@@ -161,7 +166,7 @@ export default function ChatScreen() {
             onPress={handleSend}
             disabled={!text.trim() || sending}
             accessibilityRole="button"
-            accessibilityLabel="Wyślij"
+            accessibilityLabel={t("common:send")}
             hitSlop={{ top: 4, bottom: 4, left: 4, right: 4 }}
             style={({ pressed }) => [
               styles.sendBtn,

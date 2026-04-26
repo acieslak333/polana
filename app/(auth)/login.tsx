@@ -131,7 +131,7 @@ export default function LoginScreen() {
 
           {/* Forgot password */}
           <Link href="/(auth)/forgot-password" asChild>
-            <Text style={[styles.link, styles.forgotLink]}>Nie pamiętam hasła</Text>
+            <Text style={[styles.link, styles.forgotLink]}>{t('auth:forgot_link')}</Text>
           </Link>
 
           {/* Footer links */}

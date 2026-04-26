@@ -93,7 +93,7 @@ function GromadaExploreCard({ gromada, userId, onJoined, joinedLabel, joinLabel,
         </Text>
         <View style={styles.cardMeta}>
           <Text style={styles.cardMetaText}>
-            {gromada.member_count}/{gromada.max_members} osób
+            {`${gromada.member_count}/${gromada.max_members}`}
           </Text>
           <Text style={styles.cardMetaText}>
             {'🔥 '}

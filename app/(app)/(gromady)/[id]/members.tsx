@@ -54,7 +54,7 @@ export default function MembersScreen() {
           keyExtractor={(m) => m.user_id}
           contentContainerStyle={styles.list}
           renderItem={({ item }) => {
-            const name = item.profiles?.nickname ?? item.profiles?.first_name ?? 'Ktoś';
+            const name = item.profiles?.nickname ?? item.profiles?.first_name ?? '?';
             return (
               <View style={styles.row}>
                 <ProceduralAvatar config={item.profiles?.avatar_config} size={44} />

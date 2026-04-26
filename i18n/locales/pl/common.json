@@ -49,5 +49,9 @@
   "reason_harassment": "Nękanie",
   "reason_inappropriate": "Nieodpowiednia treść",
   "reason_other": "Inne",
-  "no_content": "(brak treści)"
+  "no_content": "(brak treści)",
+  "add_image": "Dodaj zdjęcie",
+  "remove_image": "Usuń zdjęcie",
+  "image_preview": "Podgląd wybranego zdjęcia",
+  "people_count": "{{count}}/{{max}} osób"
 }

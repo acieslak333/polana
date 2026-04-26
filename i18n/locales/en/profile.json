@@ -68,5 +68,11 @@
   "public_error": "Couldn't load profile",
   "privacy_link": "Privacy Policy",
   "data_link": "Your data (GDPR)",
-  "favors_empty": "No active help requests."
+  "favors_empty": "No active help requests.",
+  "section_appearance": "APPEARANCE",
+  "section_account": "ACCOUNT",
+  "calendar_title": "My Calendar",
+  "upcoming_empty": "No upcoming events. Time to change that!",
+  "past_empty": "No past events.",
+  "data_delete_input_a11y": "Account deletion confirmation field"
 }

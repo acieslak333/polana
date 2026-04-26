@@ -71,5 +71,17 @@
   "explore_create_first": "Створити першу",
   "explore_joined": "Вже учасник",
   "explore_join_toast": "Приєдналися до {{name}}",
-  "gromada_full": "Заповнена"
+  "gromada_full": "Заповнена",
+  "size_small_label": "Маленька",
+  "size_medium_label": "Середня",
+  "size_large_label": "Велика",
+  "size_small_desc": "~12 людей",
+  "size_medium_desc": "~24 людини",
+  "size_large_desc": "~36 людей",
+  "name_required": "Введіть назву Громади",
+  "size_label": "Розмір",
+  "founded": "Засновано",
+  "favors_section": "Потрібна допомога",
+  "crossover_vote": "Проголосувати за кросовер {{title}}",
+  "search_empty": "Немає результатів. Спробуйте іншу назву або місто."
 }

@@ -49,5 +49,9 @@
   "reason_harassment": "Harassment",
   "reason_inappropriate": "Inappropriate content",
   "reason_other": "Other",
-  "no_content": "(no content)"
+  "no_content": "(no content)",
+  "add_image": "Add image",
+  "remove_image": "Remove image",
+  "image_preview": "Selected image preview",
+  "people_count": "{{count}}/{{max}} people"
 }

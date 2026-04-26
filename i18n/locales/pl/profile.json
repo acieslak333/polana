@@ -68,5 +68,11 @@
   "public_error": "Nie można załadować profilu",
   "privacy_link": "Polityka prywatności",
   "data_link": "Twoje dane (RODO)",
-  "favors_empty": "Brak aktywnych próśb o pomoc."
+  "favors_empty": "Brak aktywnych próśb o pomoc.",
+  "section_appearance": "WYGLĄD",
+  "section_account": "KONTO",
+  "calendar_title": "Mój Kalendarz",
+  "upcoming_empty": "Brak nadchodzących wydarzeń. Czas to zmienić!",
+  "past_empty": "Brak minionych wydarzeń.",
+  "data_delete_input_a11y": "Pole potwierdzenia usunięcia konta"
 }

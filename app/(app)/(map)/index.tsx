@@ -121,7 +121,7 @@ export default function MapScreen() {
             initialRegion={initialRegion}
             showsUserLocation={locationGranted === true}
             showsMyLocationButton={locationGranted === true}
-            accessibilityLabel="Mapa wydarzeń"
+            accessibilityLabel={t('events:map_view')}
           >
             {events.map((event) => {
               const coords = parsePoint(event.location_point);
@@ -143,7 +143,7 @@ export default function MapScreen() {
                       <Text style={styles.calloutDate}>
                         {format(new Date(event.starts_at), 'EEE d MMM, HH:mm', { locale: pl })}
                       </Text>
-                      <Text style={styles.calloutCta}>Dotknij, aby zobaczyć</Text>
+                      <Text style={styles.calloutCta}>{t('events:tap_to_view')}</Text>
                     </View>
                   </Callout>
                 </Marker>
@@ -154,7 +154,7 @@ export default function MapScreen() {
           {locationGranted === false && locationPrimed && (
             <View style={styles.locationBanner}>
               <Text style={styles.locationBannerText}>
-                Włącz lokalizację aby zobaczyć pobliskie wydarzenia
+                {t('events:enable_location')}
               </Text>
             </View>
           )}
@@ -162,7 +162,7 @@ export default function MapScreen() {
           <Pressable
             style={styles.fab}
             onPress={() => router.push('/(app)/(map)/create-event' as never)}
-            accessibilityLabel="Stwórz wydarzenie"
+            accessibilityLabel={t('events:create_event')}
             accessibilityRole="button"
             hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
           >

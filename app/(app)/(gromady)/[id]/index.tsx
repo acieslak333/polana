@@ -144,14 +144,14 @@ export default function GromadaPanelScreen() {
         <View style={styles.identityText}>
           <Text style={styles.gromadaName}>{gromada?.name ?? '…'}</Text>
           <Text style={styles.memberCount}>
-            {gromada?.member_count ?? 0}/{gromada?.max_members ?? 24} osób
+            {t('common:people_count', { count: gromada?.member_count ?? 0, max: gromada?.max_members ?? 24 })}
           </Text>
         </View>
         <Pressable
           onPress={() => router.push(`/(app)/(gromady)/${id}/info`)}
           style={styles.infoBtn}
           accessibilityRole="button"
-          accessibilityLabel="O Gromadzie"
+          accessibilityLabel={t('gromady:info')}
         >
           <Text style={styles.infoBtnText}>ℹ️</Text>
         </Pressable>
@@ -160,9 +160,9 @@ export default function GromadaPanelScreen() {
       {/* Tab bar */}
       <View style={styles.tabs}>
         {[
-          { label: 'Posty', active: true },
-          { label: 'Kalendarz', onPress: () => router.push(`/(app)/(gromady)/${id}/calendar`) },
-          { label: 'Członkowie', onPress: () => router.push(`/(app)/(gromady)/${id}/members`) },
+          { label: t('gromady:posts'), active: true },
+          { label: t('gromady:calendar'), onPress: () => router.push(`/(app)/(gromady)/${id}/calendar`) },
+          { label: t('gromady:members'), onPress: () => router.push(`/(app)/(gromady)/${id}/members`) },
         ].map((tab) => (
           <Pressable
             key={tab.label}
@@ -238,14 +238,14 @@ export default function GromadaPanelScreen() {
                   source={{ uri: pendingImageUri }}
                   style={styles.previewThumb}
                   resizeMode="cover"
-                  accessibilityLabel="Podgląd wybranego zdjęcia"
+                  accessibilityLabel={t('common:image_preview')}
                 />
                 <Pressable
                   onPress={() => setPendingImageUri(null)}
                   style={styles.previewRemove}
                   hitSlop={8}
                   accessibilityRole="button"
-                  accessibilityLabel="Usuń zdjęcie"
+                  accessibilityLabel={t('common:remove_image')}
                 >
                   <Text style={styles.previewRemoveText}>✕</Text>
                 </Pressable>
@@ -275,7 +275,7 @@ export default function GromadaPanelScreen() {
                 onPress={pickImage}
                 disabled={posting}
                 accessibilityRole="button"
-                accessibilityLabel="Dodaj zdjęcie"
+                accessibilityLabel={t('common:add_image')}
                 style={({ pressed }) => [
                   styles.attachBtn,
                   pressed && styles.attachBtnPressed,

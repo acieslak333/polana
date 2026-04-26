@@ -36,7 +36,7 @@ export default function DataScreen() {
       const resp = await fetch(`${SUPABASE_URL}/functions/v1/export-data`, {
         headers: { Authorization: `Bearer ${token}` },
       })
-      if (!resp.ok) throw new Error('Błąd serwera')
+      if (!resp.ok) throw new Error('Server error')
       const json = await resp.json()
       await Share.share({
         message: JSON.stringify(json, null, 2),
@@ -62,7 +62,7 @@ export default function DataScreen() {
         method: 'POST',
         headers: { Authorization: `Bearer ${token}` },
       })
-      if (!resp.ok) throw new Error('Błąd serwera')
+      if (!resp.ok) throw new Error('Server error')
       await supabase.auth.signOut()
       router.replace('/(auth)/welcome')
     } catch {
@@ -120,7 +120,7 @@ export default function DataScreen() {
             placeholder={t('profile:data_delete_placeholder')}
             placeholderTextColor={theme.colors.textTertiary}
             autoCapitalize="characters"
-            accessibilityLabel="Pole potwierdzenia usunięcia konta"
+            accessibilityLabel={t('profile:data_delete_input_a11y')}
           />
           <Pressable
             style={[

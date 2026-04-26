@@ -49,5 +49,9 @@
   "reason_harassment": "Переслідування",
   "reason_inappropriate": "Неприйнятний вміст",
   "reason_other": "Інше",
-  "no_content": "(немає вмісту)"
+  "no_content": "(немає вмісту)",
+  "add_image": "Додати зображення",
+  "remove_image": "Видалити зображення",
+  "image_preview": "Перегляд вибраного зображення",
+  "people_count": "{{count}}/{{max}} людей"
 }

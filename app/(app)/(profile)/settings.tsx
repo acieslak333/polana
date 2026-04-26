@@ -71,7 +71,7 @@ export default function SettingsScreen() {
       </View>
 
       <ScrollView contentContainerStyle={styles.scroll} showsVerticalScrollIndicator={false}>
-        <Text style={styles.groupLabel}>WYGLĄD</Text>
+        <Text style={styles.groupLabel}>{t('profile:section_appearance')}</Text>
         <View style={styles.group}>
           <SettingsRow
             label={t('profile:theme')}
@@ -85,7 +85,7 @@ export default function SettingsScreen() {
           />
         </View>
 
-        <Text style={styles.groupLabel}>KONTO</Text>
+        <Text style={styles.groupLabel}>{t('profile:section_account')}</Text>
         <View style={styles.group}>
           <SettingsRow label={t('profile:privacy_link')} onPress={() => router.push('/(auth)/privacy')} />
           <SettingsRow label={t('profile:data_link')} onPress={() => router.push('/(app)/(profile)/data')} />

@@ -81,11 +81,11 @@ export default function UserCalendarScreen() {
   return (
     <SafeAreaView style={styles.safe}>
       <ScrollView contentContainerStyle={styles.scroll} showsVerticalScrollIndicator={false}>
-        <Text style={styles.heading}>Mój Kalendarz</Text>
+        <Text style={styles.heading}>{t('profile:calendar_title')}</Text>
 
-        <Text style={styles.sectionTitle}>Nadchodzące</Text>
+        <Text style={styles.sectionTitle}>{t('profile:upcoming_events')}</Text>
         {upcoming.length === 0 ? (
-          <Text style={styles.empty}>Brak nadchodzących wydarzeń. Czas to zmienić!</Text>
+          <Text style={styles.empty}>{t('profile:upcoming_empty')}</Text>
         ) : (
           <FlatList
             data={upcoming}
@@ -97,7 +97,7 @@ export default function UserCalendarScreen() {
 
         <Text style={[styles.sectionTitle, styles.pastTitle]}>Minione</Text>
         {past.length === 0 ? (
-          <Text style={styles.empty}>Brak minionych wydarzeń.</Text>
+          <Text style={styles.empty}>{t('profile:past_empty')}</Text>
         ) : (
           <FlatList
             data={past}

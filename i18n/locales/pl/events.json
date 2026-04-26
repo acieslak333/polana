@@ -38,5 +38,7 @@
     "games": "Gry",
     "talk": "Pogaduchy",
     "other": "Inne"
-  }
+  },
+  "tap_to_view": "Dotknij, aby zobaczyć",
+  "enable_location": "Włącz lokalizację, aby zobaczyć pobliskie wydarzenia"
 }

@@ -16,16 +16,16 @@ import { createGromada } from '@/services/api/gromady';
 import { fetchInterests } from '@/services/api/users';
 import { generateGromadaName } from '@/utils/nameGenerator';
 
-const SIZE_OPTIONS: { key: 'small' | 'medium' | 'large'; label: string; max: number; desc: string }[] = [
-  { key: 'small', label: 'Mała', max: 12, desc: '~12 osób' },
-  { key: 'medium', label: 'Średnia', max: 24, desc: '~24 osoby' },
-  { key: 'large', label: 'Duża', max: 36, desc: '~36 osób' },
-];
-
 type Interest = { id: string; name_pl: string; emoji: string; category: string | null };
 
 export default function CreateGromadaScreen() {
   const { t } = useTranslation(['gromady', 'common']);
+
+  const SIZE_OPTIONS: { key: 'small' | 'medium' | 'large'; label: string; max: number; desc: string }[] = [
+    { key: 'small', label: t('gromady:size_small_label'), max: 12, desc: t('gromady:size_small_desc') },
+    { key: 'medium', label: t('gromady:size_medium_label'), max: 24, desc: t('gromady:size_medium_desc') },
+    { key: 'large', label: t('gromady:size_large_label'), max: 36, desc: t('gromady:size_large_desc') },
+  ];
   const { user, profile } = useAuthStore();
 
   const [name, setName] = useState(generateGromadaName());
@@ -52,7 +52,7 @@ export default function CreateGromadaScreen() {
 
   async function handleCreate() {
     if (!user || !profile?.city_id) return;
-    if (!name.trim()) { setError('Podaj nazwę Gromady'); return; }
+    if (!name.trim()) { setError(t('gromady:name_required')); return; }
 
     setSaving(true);
     setError('');
@@ -69,7 +69,7 @@ export default function CreateGromadaScreen() {
       });
       router.replace(`/(app)/(gromady)/${gromada.id}`);
     } catch (e: any) {
-      setError(e?.message ?? 'Błąd tworzenia Gromady');
+      setError(e?.message ?? t('common:unknown_error'));
     } finally {
       setSaving(false);
     }
@@ -107,7 +107,7 @@ export default function CreateGromadaScreen() {
           </View>
 
           {/* Size */}
-          <Text style={styles.sectionLabel}>{t('gromady:size_small').replace('~12', '').trim() || 'Rozmiar'}</Text>
+          <Text style={styles.sectionLabel}>{t('gromady:size_label')}</Text>
           <View style={styles.sizeRow}>
             {SIZE_OPTIONS.map((opt) => (
               <Pressable

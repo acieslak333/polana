@@ -32,7 +32,7 @@ export default function GromadaSettingsScreen() {
       await updateGromada(id, { name: name.trim(), description: description.trim() || null });
       router.back();
     } catch (e: any) {
-      setError(e?.message ?? 'Błąd zapisu');
+      setError(e?.message ?? t('common:unknown_error'));
     } finally { setSaving(false); }
   }
 

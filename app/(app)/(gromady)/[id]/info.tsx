@@ -99,7 +99,7 @@ export default function GromadaInfoScreen() {
           <Text style={styles.gromadaName}>{gromada.name}</Text>
           {gromada.description ? <Text style={styles.description}>{gromada.description}</Text> : null}
           <Text style={styles.foundedText}>
-            Założona {format(new Date(gromada.created_at), 'd MMMM yyyy', { locale: pl })}
+            {t('gromady:founded')} {format(new Date(gromada.created_at), 'd MMMM yyyy', { locale: pl })}
           </Text>
         </View>
 
@@ -125,7 +125,7 @@ export default function GromadaInfoScreen() {
               { label: t('gromady:meetings_this_month'), value: gromada.meetings_this_month },
               { label: t('gromady:total_meetings'), value: gromada.total_meetings_count },
               { label: t('gromady:favors_exchanged'), value: gromada.favors_exchanged },
-              { label: 'Członkowie', value: `${gromada.member_count}/${gromada.max_members}` },
+              { label: t('gromady:members'), value: `${gromada.member_count}/${gromada.max_members}` },
             ].map((stat) => (
               <View key={stat.label} style={styles.statCard}>
                 <Text style={styles.statValue}>{stat.value}</Text>
@@ -147,7 +147,7 @@ export default function GromadaInfoScreen() {
         {/* Favors */}
         {isMember && (
           <View style={styles.section}>
-            <Text style={styles.sectionLabel}>Potrzebne ręce</Text>
+            <Text style={styles.sectionLabel}>{t('gromady:favors_section')}</Text>
 
             {/* Create favor */}
             <View style={styles.favorComposer}>
@@ -174,7 +174,7 @@ export default function GromadaInfoScreen() {
 
             {favors.length > 0 && favors.map((f) => {
               const isOwn = f.requested_by === user?.id;
-              const authorName = f.profiles?.nickname ?? f.profiles?.first_name ?? 'Ktoś';
+              const authorName = f.profiles?.nickname ?? f.profiles?.first_name ?? '?';
               return (
                 <View key={f.id} style={styles.favorRow}>
                   <View style={styles.favorContent}>
@@ -183,14 +183,14 @@ export default function GromadaInfoScreen() {
                   </View>
                   {isOwn ? (
                     <Button
-                      label="Pomożono ✓"
+                      label={t('profile:favor_helped')}
                       size="sm"
                       variant="ghost"
                       onPress={() => markHelped(f.id)}
                     />
                   ) : (
                     <Button
-                      label="Pomogę"
+                      label={t('profile:favor_offer')}
                       size="sm"
                       onPress={() => offer(f.id)}
                     />
@@ -225,7 +225,7 @@ export default function GromadaInfoScreen() {
                         x.id === c.id ? { ...x, vote_count: x.vote_count + 1 } : x
                       ))
                     ).catch(() => {})}
-                    accessibilityLabel={`Zagłosuj na crossover ${c.title}`}
+                    accessibilityLabel={t('gromady:crossover_vote', { title: c.title })}
                   />
                 )}
               </View>
