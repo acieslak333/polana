@@ -7,6 +7,10 @@ Outputs JSON for Claude Code hook system.
 
 Usage (called automatically by hook, or manually):
   python scripts/branch_guard.py
+
+To merge a sprint branch into main without gh CLI:
+  git checkout sprint-N
+  git push origin sprint-N:main    # guard only checks local branch, not push target
 """
 import subprocess, sys, json
 from pathlib import Path
