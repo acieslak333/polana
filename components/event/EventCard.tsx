@@ -1,3 +1,4 @@
+import React from 'react';
 import { View, Text, Pressable, StyleSheet } from 'react-native';
 import { router } from 'expo-router';
 import { format, isToday, isTomorrow } from 'date-fns';
@@ -28,7 +29,7 @@ type EventCardProps = {
   onRSVP?: (eventId: string, status: 'going' | 'maybe' | 'not_going') => void;
 };
 
-export function EventCard({ event, onRSVP }: EventCardProps) {
+function EventCardBase({ event, onRSVP }: EventCardProps) {
   const rsvpStyle = event.user_rsvp ? RSVP_STYLES[event.user_rsvp] : null;
 
   return (
@@ -93,6 +94,9 @@ export function EventCard({ event, onRSVP }: EventCardProps) {
     </Pressable>
   );
 }
+
+export const EventCard = React.memo(EventCardBase);
+export default EventCard;
 
 const styles = StyleSheet.create({
   card: {

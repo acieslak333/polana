@@ -7,6 +7,14 @@
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "automatic",
     "scheme": "polana",
+    "intentFilters": [
+      {
+        "action": "VIEW",
+        "autoVerify": true,
+        "data": [{ "scheme": "https", "host": "polana.app" }],
+        "category": ["BROWSABLE", "DEFAULT"]
+      }
+    ],
     "splash": {
       "image": "./assets/splash.png",
       "resizeMode": "contain",
@@ -16,6 +24,7 @@
     "ios": {
       "supportsTablet": false,
       "bundleIdentifier": "com.polana.app",
+      "associatedDomains": ["applinks:polana.app"],
       "infoPlist": {
         "NSLocationWhenInUseUsageDescription": "Polana uses your location to show nearby events and Gromady.",
         "NSCameraUsageDescription": "Polana uses your camera to upload profile photos.",

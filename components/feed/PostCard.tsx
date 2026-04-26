@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { View, Text, Pressable, Image, StyleSheet, ActionSheetIOS, Platform, Alert } from 'react-native';
 import { router } from 'expo-router';
 import { formatDistanceToNow } from 'date-fns';
@@ -22,7 +22,7 @@ type PostCardProps = {
   isElder?: boolean;
 };
 
-export function PostCard({ post, onReact, onDelete, isElder = false }: PostCardProps) {
+function PostCardBase({ post, onReact, onDelete, isElder = false }: PostCardProps) {
   const { user } = useAuthStore();
   const [expanded, setExpanded] = useState(false);
   const isOwn = post.author_id === user?.id;
@@ -72,22 +72,32 @@ export function PostCard({ post, onReact, onDelete, isElder = false }: PostCardP
     }
   }
 
+  function handleAuthorPress(): void {
+    if (isOwn) {
+      router.push('/(app)/(profile)');
+    } else {
+      router.push(`/(app)/(profile)/${post.author_id}`);
+    }
+  }
+
   return (
     <View style={styles.card}>
-      {/* Header — tap title area navigates to post detail */}
-      <Pressable
-        onPress={() => router.push(`/(app)/(feed)/post/${post.id}`)}
-        accessibilityRole="button"
-        accessibilityLabel={`Post od ${authorName}`}
-        style={styles.header}
-      >
-        <View accessibilityRole="none">
-          <ProceduralAvatar config={post.profiles?.avatar_config} size={36} />
-        </View>
-        <View style={styles.authorInfo}>
-          <Text style={styles.authorName}>{authorName}</Text>
-          <Text style={styles.time}>{timeAgo}</Text>
-        </View>
+      {/* Header — author area taps to profile; menu button is independent */}
+      <View style={styles.header}>
+        <Pressable
+          onPress={handleAuthorPress}
+          accessibilityRole="button"
+          accessibilityLabel={`Profil ${authorName}`}
+          style={styles.authorPressable}
+        >
+          <View accessibilityRole="none">
+            <ProceduralAvatar config={post.profiles?.avatar_config} size={36} />
+          </View>
+          <View style={styles.authorInfo}>
+            <Text style={styles.authorName}>{authorName}</Text>
+            <Text style={styles.time}>{timeAgo}</Text>
+          </View>
+        </Pressable>
         <Pressable
           onPress={openMenu}
           hitSlop={8}
@@ -97,7 +107,7 @@ export function PostCard({ post, onReact, onDelete, isElder = false }: PostCardP
         >
           <Text style={styles.menuIcon}>•••</Text>
         </Pressable>
-      </Pressable>
+      </View>
 
       {/* Text content */}
       {post.content ? (
@@ -168,6 +178,9 @@ export function PostCard({ post, onReact, onDelete, isElder = false }: PostCardP
   );
 }
 
+export const PostCard = React.memo(PostCardBase);
+export default PostCard;
+
 const styles = StyleSheet.create({
   card: {
     backgroundColor: theme.colors.backgroundCard,
@@ -177,7 +190,19 @@ const styles = StyleSheet.create({
     padding: theme.spacing.md,
     gap: theme.spacing.sm,
   },
-  header: { flexDirection: 'row', alignItems: 'center', gap: theme.spacing.sm, minHeight: 44 },
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: theme.spacing.sm,
+    minHeight: 44,
+  },
+  authorPressable: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: theme.spacing.sm,
+    minHeight: 44,
+  },
   authorInfo: { flex: 1 },
   authorName: { fontSize: theme.fontSize.body, fontWeight: theme.fontWeight.semibold, color: theme.colors.textPrimary },
   time: { fontSize: theme.fontSize.sm, color: theme.colors.textTertiary },
