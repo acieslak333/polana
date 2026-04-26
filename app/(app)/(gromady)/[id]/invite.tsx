@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { View, Text, StyleSheet, Pressable, ActivityIndicator, Share } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { useLocalSearchParams, router } from 'expo-router'
+import { useTranslation } from 'react-i18next'
 
 import { theme } from '@/constants/theme'
 import { useAuthStore } from '@/stores/authStore'
@@ -11,6 +12,7 @@ import { buildDeepLink } from '@/utils/routing'
 export default function InviteScreen() {
   const { id } = useLocalSearchParams<{ id: string }>()
   const { user } = useAuthStore()
+  const { t } = useTranslation(['gromady', 'common'])
   const [link, setLink] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -24,7 +26,7 @@ export default function InviteScreen() {
       const url = buildDeepLink({ type: 'invite', code: invite.code })
       setLink(url)
     } catch {
-      setError('Nie udało się wygenerować zaproszenia. Spróbuj ponownie.')
+      setError(t('gromady:invite_error'))
     } finally {
       setLoading(false)
     }
@@ -44,17 +46,17 @@ export default function InviteScreen() {
           onPress={() => router.back()}
           style={styles.backBtn}
           accessibilityRole="button"
-          accessibilityLabel="Wróć"
+          accessibilityLabel={t('common:back')}
         >
           <Text style={styles.backText}>‹</Text>
         </Pressable>
-        <Text style={styles.title}>Zaproś do Gromady</Text>
+        <Text style={styles.title}>{t('gromady:invite_title')}</Text>
       </View>
 
       <View style={styles.content}>
         <Text style={styles.emoji}>🔗</Text>
         <Text style={styles.description}>
-          Wygeneruj link zaproszenia ważny przez 7 dni. Ktokolwiek go kliknie, dołączy do Waszej Gromady.
+          {t('gromady:invite_description')}
         </Text>
 
         {link ? (
@@ -66,17 +68,17 @@ export default function InviteScreen() {
               style={styles.primaryBtn}
               onPress={() => { void handleShare() }}
               accessibilityRole="button"
-              accessibilityLabel="Udostępnij link"
+              accessibilityLabel={t('gromady:invite_share')}
             >
-              <Text style={styles.primaryBtnText}>Udostępnij link</Text>
+              <Text style={styles.primaryBtnText}>{t('gromady:invite_share')}</Text>
             </Pressable>
             <Pressable
               style={styles.ghostBtn}
               onPress={() => { setLink(null) }}
               accessibilityRole="button"
-              accessibilityLabel="Wygeneruj nowy link"
+              accessibilityLabel={t('gromady:invite_new_link')}
             >
-              <Text style={styles.ghostBtnText}>Nowy link</Text>
+              <Text style={styles.ghostBtnText}>{t('gromady:invite_new_link')}</Text>
             </Pressable>
           </>
         ) : (
@@ -85,12 +87,12 @@ export default function InviteScreen() {
             onPress={() => { void handleGenerate() }}
             disabled={loading}
             accessibilityRole="button"
-            accessibilityLabel="Wygeneruj link zaproszenia"
+            accessibilityLabel={t('gromady:invite_generate')}
             accessibilityState={{ disabled: loading }}
           >
             {loading
               ? <ActivityIndicator color="#fff" />
-              : <Text style={styles.primaryBtnText}>Wygeneruj link</Text>
+              : <Text style={styles.primaryBtnText}>{t('gromady:invite_generate')}</Text>
             }
           </Pressable>
         )}

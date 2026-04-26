@@ -4,6 +4,7 @@ import {
 } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { useLocalSearchParams, router } from 'expo-router'
+import { useTranslation } from 'react-i18next'
 
 import { theme } from '@/constants/theme'
 import { useAuthStore } from '@/stores/authStore'
@@ -21,6 +22,7 @@ interface Member {
 export default function AdminScreen() {
   const { id } = useLocalSearchParams<{ id: string }>()
   const { user } = useAuthStore()
+  const { t } = useTranslation(['gromady', 'common'])
 
   const [gromada, setGromada] = useState<GromadaWithInterests | null>(null)
   const [members, setMembers] = useState<Member[]>([])
@@ -65,8 +67,8 @@ export default function AdminScreen() {
     setSaving(true)
     try {
       await updateGromada(id, { name: name.trim(), description: description.trim() || null })
-      showToast('Zapisano zmiany')
-    } catch { showToast('Nie udało się zapisać zmian') }
+      showToast(t('gromady:admin_saved'))
+    } catch { showToast(t('gromady:admin_save_error')) }
     finally { setSaving(false) }
   }
 
@@ -74,10 +76,10 @@ export default function AdminScreen() {
     setMembers((prev) => prev.filter((m) => m.user_id !== memberId))
     try {
       await leaveGromada(id!, memberId)
-      showToast(`Usunięto ${memberName} z Gromady`)
+      showToast(t('gromady:admin_removed', { name: memberName }))
     } catch {
       await load()
-      showToast('Nie udało się usunąć członka')
+      showToast(t('gromady:admin_remove_error'))
     }
   }
 
@@ -89,18 +91,18 @@ export default function AdminScreen() {
         .update({ elder_id: newElderId })
         .eq('id', id)
       if (error) throw error
-      showToast(`${memberName} jest teraz Starszym Gromady`)
+      showToast(t('gromady:admin_transferred', { name: memberName }))
       await load()
-    } catch { showToast('Nie udało się przekazać roli') }
+    } catch { showToast(t('gromady:admin_transfer_error')) }
   }
 
   async function handleArchive(): Promise<void> {
     if (!id) return
     try {
       await updateGromada(id, { status: 'archived' })
-      showToast('Gromada zarchiwizowana')
+      showToast(t('gromady:admin_archived'))
       setTimeout(() => router.replace('/(app)/(gromady)'), 2000)
-    } catch { showToast('Nie udało się zarchiwizować Gromady') }
+    } catch { showToast(t('gromady:admin_save_error')) }
   }
 
   if (loading) {
@@ -116,7 +118,7 @@ export default function AdminScreen() {
     return (
       <SafeAreaView style={styles.safe}>
         <View style={styles.center}>
-          <Text style={styles.errorText}>Tylko Starszy Gromady może wejść do panelu administracyjnego.</Text>
+          <Text style={styles.errorText}>{t('gromady:admin_not_elder')}</Text>
         </View>
       </SafeAreaView>
     )
@@ -125,10 +127,10 @@ export default function AdminScreen() {
   return (
     <SafeAreaView style={styles.safe}>
       <View style={styles.header}>
-        <Pressable onPress={() => router.back()} style={styles.backBtn} accessibilityRole="button" accessibilityLabel="Wróć">
+        <Pressable onPress={() => router.back()} style={styles.backBtn} accessibilityRole="button" accessibilityLabel={t('common:back')}>
           <Text style={styles.backText}>‹</Text>
         </Pressable>
-        <Text style={styles.title}>Panel Starszego</Text>
+        <Text style={styles.title}>{t('gromady:admin_title')}</Text>
       </View>
 
       <FlatList
@@ -137,16 +139,16 @@ export default function AdminScreen() {
         contentContainerStyle={styles.list}
         ListHeaderComponent={
           <View style={styles.section}>
-            <Text style={styles.sectionTitle}>Edytuj Gromadę</Text>
-            <Text style={styles.label}>Nazwa</Text>
+            <Text style={styles.sectionTitle}>{t('gromady:admin_edit_section')}</Text>
+            <Text style={styles.label}>{t('gromady:admin_name_label')}</Text>
             <TextInput
               style={styles.input}
               value={name}
               onChangeText={setName}
               maxLength={60}
-              accessibilityLabel="Nazwa Gromady"
+              accessibilityLabel={t('gromady:admin_name_label')}
             />
-            <Text style={styles.label}>Opis (opcjonalny)</Text>
+            <Text style={styles.label}>{t('gromady:admin_description_label')}</Text>
             <TextInput
               style={[styles.input, styles.inputMulti]}
               value={description}
@@ -154,18 +156,18 @@ export default function AdminScreen() {
               maxLength={300}
               multiline
               numberOfLines={3}
-              accessibilityLabel="Opis Gromady"
+              accessibilityLabel={t('gromady:admin_description_label')}
             />
             <Pressable
               style={[styles.btn, styles.btnPrimary, saving && styles.btnDisabled]}
               onPress={() => { void handleSave() }}
               disabled={saving}
               accessibilityRole="button"
-              accessibilityLabel="Zapisz zmiany"
+              accessibilityLabel={t('gromady:admin_save')}
             >
               {saving
                 ? <ActivityIndicator color="#fff" size="small" />
-                : <Text style={styles.btnPrimaryText}>Zapisz zmiany</Text>
+                : <Text style={styles.btnPrimaryText}>{t('gromady:admin_save')}</Text>
               }
             </Pressable>
 
@@ -173,50 +175,53 @@ export default function AdminScreen() {
               style={[styles.btn, styles.btnOutline]}
               onPress={() => router.push(`/(app)/(gromady)/${id}/invite`)}
               accessibilityRole="button"
-              accessibilityLabel="Zaproś do Gromady"
+              accessibilityLabel={t('gromady:admin_invite_button')}
             >
-              <Text style={styles.btnOutlineText}>🔗 Zaproś do Gromady</Text>
+              <Text style={styles.btnOutlineText}>🔗 {t('gromady:admin_invite_button')}</Text>
             </Pressable>
 
-            <Text style={[styles.sectionTitle, { marginTop: theme.spacing.xl }]}>Członkowie</Text>
+            <Text style={[styles.sectionTitle, { marginTop: theme.spacing.xl }]}>{t('gromady:admin_members_section')}</Text>
           </View>
         }
-        renderItem={({ item }) => (
-          <View style={styles.memberRow}>
-            <View style={styles.memberInfo}>
-              <Text style={styles.memberName}>{item.nickname ?? item.first_name}</Text>
-              <Text style={styles.memberRole}>{item.role}</Text>
+        renderItem={({ item }) => {
+          const displayName = item.nickname ?? item.first_name
+          return (
+            <View style={styles.memberRow}>
+              <View style={styles.memberInfo}>
+                <Text style={styles.memberName}>{displayName}</Text>
+                <Text style={styles.memberRole}>{item.role}</Text>
+              </View>
+              <View style={styles.memberActions}>
+                <Pressable
+                  style={[styles.memberBtn, styles.memberBtnTransfer]}
+                  onPress={() => { void handleTransferElder(item.user_id, displayName) }}
+                  accessibilityRole="button"
+                  accessibilityLabel={`${t('gromady:admin_transfer_elder')} ${displayName}`}
+                >
+                  <Text style={styles.memberBtnText}>👑</Text>
+                </Pressable>
+                <Pressable
+                  style={[styles.memberBtn, styles.memberBtnRemove]}
+                  onPress={() => { void handleRemoveMember(item.user_id, displayName) }}
+                  accessibilityRole="button"
+                  accessibilityLabel={`${t('gromady:admin_remove_member')} ${displayName}`}
+                >
+                  <Text style={styles.memberBtnText}>✕</Text>
+                </Pressable>
+              </View>
             </View>
-            <View style={styles.memberActions}>
-              <Pressable
-                style={[styles.memberBtn, styles.memberBtnTransfer]}
-                onPress={() => { void handleTransferElder(item.user_id, item.nickname ?? item.first_name) }}
-                accessibilityRole="button"
-                accessibilityLabel={`Przekaż rolę Starszego użytkownikowi ${item.nickname ?? item.first_name}`}
-              >
-                <Text style={styles.memberBtnText}>👑</Text>
-              </Pressable>
-              <Pressable
-                style={[styles.memberBtn, styles.memberBtnRemove]}
-                onPress={() => { void handleRemoveMember(item.user_id, item.nickname ?? item.first_name) }}
-                accessibilityRole="button"
-                accessibilityLabel={`Usuń ${item.nickname ?? item.first_name} z Gromady`}
-              >
-                <Text style={styles.memberBtnText}>✕</Text>
-              </Pressable>
-            </View>
-          </View>
-        )}
+          )
+        }}
         ListFooterComponent={
           <View style={[styles.section, { marginTop: theme.spacing.xl }]}>
-            <Text style={[styles.sectionTitle, { color: theme.colors.error }]}>Strefa niebezpieczna</Text>
+            <Text style={[styles.sectionTitle, { color: theme.colors.error }]}>{t('gromady:admin_danger_zone')}</Text>
             <Pressable
               style={[styles.btn, styles.btnDanger]}
               onPress={() => { void handleArchive() }}
               accessibilityRole="button"
-              accessibilityLabel="Zarchiwizuj Gromadę"
+              accessibilityLabel={t('gromady:admin_archive')}
             >
-              <Text style={styles.btnDangerText}>Zarchiwizuj Gromadę</Text>
+              <Text style={styles.btnDangerText}>{t('gromady:admin_archive')}</Text>
             </Pressable>
           </View>
         }

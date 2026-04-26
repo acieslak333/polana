@@ -11,6 +11,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
+import { useTranslation } from 'react-i18next';
 
 import { ProceduralAvatar } from '@/components/avatar/ProceduralAvatar';
 import { theme } from '@/constants/theme';
@@ -50,9 +51,10 @@ type GromadaExploreCardProps = {
   gromada: GromadaRow;
   userId: string;
   onJoined: (name: string) => void;
+  joinedLabel: string;
 };
 
-function GromadaExploreCard({ gromada, userId, onJoined }: GromadaExploreCardProps) {
+function GromadaExploreCard({ gromada, userId, onJoined, joinedLabel }: GromadaExploreCardProps) {
   const [joinState, setJoinState] = useState<JoinState>('idle');
   const [joining, setJoining] = useState(false);
   const isFull = gromada.member_count >= gromada.max_members;
@@ -73,7 +75,7 @@ function GromadaExploreCard({ gromada, userId, onJoined }: GromadaExploreCardPro
 
   const isJoined = joinState === 'joined';
   const buttonLabel = isJoined
-    ? 'Już w Gromadzie'
+    ? joinedLabel
     : isFull
     ? 'Pełna'
     : 'Dołącz';
@@ -133,6 +135,7 @@ function GromadaExploreCard({ gromada, userId, onJoined }: GromadaExploreCardPro
 
 export default function ExploreScreen(): React.JSX.Element {
   const { profile, user } = useAuthStore();
+  const { t } = useTranslation(['gromady', 'common']);
   const cityId = profile?.city_id ?? '';
   const userId = user?.id ?? '';
 
@@ -201,10 +204,11 @@ export default function ExploreScreen(): React.JSX.Element {
   }
 
   function handleJoined(name: string): void {
-    showToast(`Dołączono do ${name}`);
+    showToast(t('gromady:explore_join_toast', { name }));
   }
 
   const isEmpty = !loading && gromady.length === 0;
+  const joinedLabel = t('gromady:explore_joined');
 
   return (
     <SafeAreaView style={styles.safe}>
@@ -214,11 +218,11 @@ export default function ExploreScreen(): React.JSX.Element {
           onPress={() => router.back()}
           style={styles.backBtn}
           accessibilityRole="button"
-          accessibilityLabel="Wróć"
+          accessibilityLabel={t('common:back')}
         >
           <Text style={styles.backText}>‹</Text>
         </Pressable>
-        <Text style={styles.title}>Odkryj Gromady</Text>
+        <Text style={styles.title}>{t('gromady:explore_title')}</Text>
       </View>
 
       {/* Interest filter chips */}
@@ -229,6 +233,17 @@ export default function ExploreScreen(): React.JSX.Element {
           contentContainerStyle={styles.chipsContainer}
           style={styles.chipsScroll}
         >
+          <Pressable
+            onPress={() => { void handleSelectInterest(null); }}
+            style={[styles.chip, selectedInterestId === null && styles.chipActive]}
+            accessibilityRole="checkbox"
+            accessibilityLabel={t('gromady:explore_filter_all')}
+            accessibilityState={{ checked: selectedInterestId === null }}
+          >
+            <Text style={[styles.chipText, selectedInterestId === null && styles.chipTextActive]}>
+              {t('gromady:explore_filter_all')}
+            </Text>
+          </Pressable>
           {interests.map((interest) => {
             const isActive = selectedInterestId === interest.id;
             return (
@@ -257,14 +272,14 @@ export default function ExploreScreen(): React.JSX.Element {
         </View>
       ) : isEmpty ? (
         <View style={styles.center}>
-          <Text style={styles.emptyTitle}>Nie ma Gromad w twoim mieście</Text>
+          <Text style={styles.emptyTitle}>{t('gromady:explore_empty')}</Text>
           <Pressable
             onPress={() => router.push('/(app)/(gromady)/create')}
             style={styles.emptyBtn}
             accessibilityRole="button"
-            accessibilityLabel="Utwórz pierwszą Gromadę"
+            accessibilityLabel={t('gromady:explore_create_first')}
           >
-            <Text style={styles.emptyBtnText}>Utwórz pierwszą</Text>
+            <Text style={styles.emptyBtnText}>{t('gromady:explore_create_first')}</Text>
           </Pressable>
         </View>
       ) : (
@@ -276,6 +291,7 @@ export default function ExploreScreen(): React.JSX.Element {
               gromada={item}
               userId={userId}
               onJoined={handleJoined}
+              joinedLabel={joinedLabel}
             />
           )}
           ItemSeparatorComponent={() => <View style={styles.separator} />}

@@ -2,6 +2,7 @@ import React, { Component, type ReactNode } from 'react'
 import { View, Text, Pressable, StyleSheet } from 'react-native'
 import { theme } from '@/constants/theme'
 import { captureError } from '@/services/sentry'
+import i18n from '@/i18n'
 
 interface Props {
   children: ReactNode
@@ -32,17 +33,17 @@ export class ErrorBoundary extends Component<Props, State> {
     return (
       <View style={styles.container}>
         <Text style={styles.emoji}>⚠️</Text>
-        <Text style={styles.title}>Coś poszło nie tak</Text>
+        <Text style={styles.title}>{i18n.t('common:error_boundary_title')}</Text>
         <Text style={styles.body}>
-          {this.props.fallbackLabel ?? 'Spróbuj ponownie lub wróć do poprzedniego ekranu.'}
+          {this.props.fallbackLabel ?? i18n.t('common:error_boundary_body')}
         </Text>
         <Pressable
           style={styles.btn}
           onPress={this.reset}
           accessibilityRole="button"
-          accessibilityLabel="Spróbuj ponownie"
+          accessibilityLabel={i18n.t('common:error_boundary_button')}
         >
-          <Text style={styles.btnText}>Spróbuj ponownie</Text>
+          <Text style={styles.btnText}>{i18n.t('common:error_boundary_button')}</Text>
         </Pressable>
       </View>
     )
