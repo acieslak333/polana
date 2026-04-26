@@ -33,8 +33,8 @@ export function useGromadaPosts(gromadaId: string) {
       setPosts((prev) => (reset ? data : [...prev, ...data]));
       if (data.length < 25) setHasMore(false);
       pageRef.current += 1;
-    } catch (e: any) {
-      setError(e?.message ?? 'Błąd ładowania postów');
+    } catch (e: unknown) {
+      setError(e instanceof Error ? e.message : 'Błąd ładowania postów');
     } finally {
       setLoading(false);
       setRefreshing(false);
@@ -44,7 +44,7 @@ export function useGromadaPosts(gromadaId: string) {
   const refresh = useCallback(() => load(true), [load]);
 
   const addPost = useCallback(
-    async (content: string) => {
+    async (content: string, mediaUrls: string[] = []) => {
       if (!user) return;
 
       // Optimistic insert
@@ -53,8 +53,8 @@ export function useGromadaPosts(gromadaId: string) {
         gromada_id: gromadaId,
         author_id: user.id,
         content,
-        media_urls: [],
-        media_types: [],
+        media_urls: mediaUrls,
+        media_types: mediaUrls.map(() => 'image'),
         event_id: null,
         is_hidden: false,
         created_at: new Date().toISOString(),
@@ -66,10 +66,16 @@ export function useGromadaPosts(gromadaId: string) {
       setPosts((prev) => [optimistic, ...prev]);
 
       try {
-        const real = await createPost({ gromada_id: gromadaId, author_id: user.id, content });
+        const real = await createPost({
+          gromada_id: gromadaId,
+          author_id: user.id,
+          content,
+          media_urls: mediaUrls,
+          media_types: mediaUrls.map(() => 'image'),
+        });
         setPosts((prev) => prev.map((p) => (p.id === optimistic.id ? real : p)));
       } catch {
-        // Revert
+        // Revert optimistic insert
         setPosts((prev) => prev.filter((p) => p.id !== optimistic.id));
       }
     },

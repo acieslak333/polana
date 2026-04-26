@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { View, Text, Pressable, StyleSheet, ActionSheetIOS, Platform, Alert } from 'react-native';
+import { View, Text, Pressable, Image, StyleSheet, ActionSheetIOS, Platform, Alert } from 'react-native';
 import { router } from 'expo-router';
 import { formatDistanceToNow } from 'date-fns';
 import { pl } from 'date-fns/locale';
@@ -11,6 +11,9 @@ import { reportPost, hidePost } from '@/services/api/posts';
 import { useAuthStore } from '@/stores/authStore';
 
 const MAX_LINES = 4;
+
+// Maximum images rendered in a grid
+const MAX_GRID_IMAGES = 4;
 
 type PostCardProps = {
   post: Post;
@@ -27,6 +30,12 @@ export function PostCard({ post, onReact, onDelete, isElder = false }: PostCardP
 
   const authorName = post.profiles?.nickname ?? post.profiles?.first_name ?? 'Ktoś';
   const timeAgo = formatDistanceToNow(new Date(post.created_at), { addSuffix: true, locale: pl });
+
+  const mediaUrls = Array.isArray(post.media_urls)
+    ? post.media_urls.slice(0, MAX_GRID_IMAGES)
+    : [];
+  const hasMedia = mediaUrls.length > 0;
+  const isSingle = mediaUrls.length === 1;
 
   function openMenu() {
     const options = canModerate
@@ -72,11 +81,9 @@ export function PostCard({ post, onReact, onDelete, isElder = false }: PostCardP
         accessibilityLabel={`Post od ${authorName}`}
         style={styles.header}
       >
-        <View
-          accessibilityRole="none"
-        >
+        <View accessibilityRole="none">
           <ProceduralAvatar config={post.profiles?.avatar_config} size={36} />
-        </Pressable>
+        </View>
         <View style={styles.authorInfo}>
           <Text style={styles.authorName}>{authorName}</Text>
           <Text style={styles.time}>{timeAgo}</Text>
@@ -92,7 +99,7 @@ export function PostCard({ post, onReact, onDelete, isElder = false }: PostCardP
         </Pressable>
       </Pressable>
 
-      {/* Content — tap "Pokaż więcej" to expand; tap comment count to open detail */}
+      {/* Text content */}
       {post.content ? (
         <View>
           <Text
@@ -102,12 +109,41 @@ export function PostCard({ post, onReact, onDelete, isElder = false }: PostCardP
             {post.content}
           </Text>
           {!expanded && post.content.length > 200 && (
-            <Pressable onPress={() => setExpanded(true)} hitSlop={4}>
+            <Pressable
+              onPress={() => setExpanded(true)}
+              hitSlop={4}
+              accessibilityRole="button"
+              accessibilityLabel="Pokaż więcej"
+            >
               <Text style={styles.expand}>Pokaż więcej</Text>
             </Pressable>
           )}
         </View>
       ) : null}
+
+      {/* Media */}
+      {hasMedia && isSingle && (
+        <Image
+          source={{ uri: mediaUrls[0] }}
+          style={styles.singleImage}
+          resizeMode="cover"
+          accessibilityLabel="Zdjęcie w poście"
+        />
+      )}
+
+      {hasMedia && !isSingle && (
+        <View style={styles.imageGrid}>
+          {mediaUrls.map((url) => (
+            <Image
+              key={url}
+              source={{ uri: url }}
+              style={styles.gridImage}
+              resizeMode="cover"
+              accessibilityLabel="Zdjęcie w poście"
+            />
+          ))}
+        </View>
+      )}
 
       {/* Footer */}
       <View style={styles.footer}>
@@ -149,6 +185,23 @@ const styles = StyleSheet.create({
   menuIcon: { fontSize: theme.fontSize.sm, color: theme.colors.textTertiary, letterSpacing: 1 },
   content: { fontSize: theme.fontSize.body, color: theme.colors.textPrimary, lineHeight: theme.fontSize.body * theme.lineHeight.normal },
   expand: { fontSize: theme.fontSize.sm, color: theme.colors.accent, marginTop: 2 },
+  // Single image: full width, fixed height
+  singleImage: {
+    width: '100%',
+    height: 200,
+    borderRadius: theme.borderRadius.lg,
+  },
+  // Grid: 2-column, each ~48% width
+  imageGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: theme.spacing.xs,
+  },
+  gridImage: {
+    width: '48%',
+    height: 140,
+    borderRadius: theme.borderRadius.sm,
+  },
   footer: { flexDirection: 'row', alignItems: 'center', gap: theme.spacing.sm, flexWrap: 'wrap' },
   commentBtn: { flexDirection: 'row', alignItems: 'center', gap: 4, padding: 4, minHeight: 32 },
   commentIcon: { fontSize: 16 },

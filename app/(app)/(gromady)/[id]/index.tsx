@@ -2,11 +2,12 @@ import { useEffect, useState, useRef, useCallback } from 'react';
 import {
   View, Text, StyleSheet, FlatList, RefreshControl,
   TextInput, Pressable, KeyboardAvoidingView, Platform,
-  ActivityIndicator,
+  ActivityIndicator, Image,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useLocalSearchParams, router } from 'expo-router';
 import { useTranslation } from 'react-i18next';
+import * as ImagePicker from 'expo-image-picker';
 
 import { PostCard } from '@/components/feed/PostCard';
 import { EventPinned } from '@/components/gromada/EventPinned';
@@ -15,8 +16,43 @@ import { theme } from '@/constants/theme';
 import { useAuthStore } from '@/stores/authStore';
 import { useGromadaPosts } from '@/hooks/usePosts';
 import { fetchGromada, fetchUpcomingEvents, type GromadaWithInterests } from '@/services/api/gromady';
+import { uploadPostImage } from '@/services/api/media';
 
 const MAX_POST = 5000;
+
+// Minimal toast — renders as a floating text overlay for 5 s
+function Toast({ message, onHide }: { message: string; onHide: () => void }) {
+  useEffect(() => {
+    const id = setTimeout(onHide, 5000);
+    return () => clearTimeout(id);
+  }, [onHide]);
+
+  return (
+    <View style={toastStyles.container} accessibilityLiveRegion="polite">
+      <Text style={toastStyles.text}>{message}</Text>
+    </View>
+  );
+}
+
+const toastStyles = StyleSheet.create({
+  container: {
+    position: 'absolute',
+    bottom: 100,
+    left: theme.spacing.xl,
+    right: theme.spacing.xl,
+    backgroundColor: theme.colors.backgroundElevated,
+    borderRadius: theme.borderRadius.md,
+    borderWidth: 1,
+    borderColor: theme.colors.border,
+    padding: theme.spacing.md,
+    alignItems: 'center',
+  },
+  text: {
+    fontSize: theme.fontSize.sm,
+    color: theme.colors.textPrimary,
+    textAlign: 'center',
+  },
+});
 
 export default function GromadaPanelScreen() {
   const { id: _rawId } = useLocalSearchParams<{ id: string | string[] }>();
@@ -25,17 +61,23 @@ export default function GromadaPanelScreen() {
   const { user } = useAuthStore();
 
   const [gromada, setGromada] = useState<GromadaWithInterests | null>(null);
-  const [nextEvent, setNextEvent] = useState<any | null>(null);
+  const [nextEvent, setNextEvent] = useState<unknown>(null);
   const [gLoading, setGLoading] = useState(true);
   const [composer, setComposer] = useState('');
   const [posting, setPosting] = useState(false);
+
+  // Image attachment state
+  const [pendingImageUri, setPendingImageUri] = useState<string | null>(null);
+  const [uploadingImage, setUploadingImage] = useState(false);
+  const [toastMessage, setToastMessage] = useState<string | null>(null);
+
   const inputRef = useRef<TextInput>(null);
 
   const { posts, loading, refreshing, hasMore, load, refresh, addPost, removePost, react } =
     useGromadaPosts(id!);
 
   const isElder = gromada?.elder_id === user?.id;
-  const isMember = gromada?.gromada_members?.some((m) => m.user_id === user?.id) ?? false;
+  const isMember = gromada?.gromada_members?.some((m: { user_id: string }) => m.user_id === user?.id) ?? false;
   const charNearLimit = composer.length >= MAX_POST - 20;
   const charColor = composer.length >= MAX_POST
     ? theme.colors.error
@@ -54,11 +96,43 @@ export default function GromadaPanelScreen() {
     load();
   }, [id]);
 
-  async function handlePost() {
-    if (!composer.trim() || posting) return;
+  async function pickImage(): Promise<void> {
+    try {
+      const result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        quality: 0.8,
+        allowsEditing: false,
+      });
+      if (!result.canceled && result.assets.length > 0) {
+        setPendingImageUri(result.assets[0].uri);
+      }
+    } catch {
+      setToastMessage('Nie udało się otworzyć galerii');
+    }
+  }
+
+  async function handlePost(): Promise<void> {
+    if ((!composer.trim() && !pendingImageUri) || posting) return;
     setPosting(true);
-    await addPost(composer.trim());
+
+    let uploadedUrls: string[] = [];
+
+    if (pendingImageUri && user) {
+      setUploadingImage(true);
+      try {
+        const url = await uploadPostImage(user.id, pendingImageUri);
+        uploadedUrls = [url];
+      } catch {
+        setToastMessage('Nie udało się przesłać zdjęcia');
+        // Continue posting without the image
+      } finally {
+        setUploadingImage(false);
+      }
+    }
+
+    await addPost(composer.trim(), uploadedUrls);
     setComposer('');
+    setPendingImageUri(null);
     setPosting(false);
   }
 
@@ -119,6 +193,8 @@ export default function GromadaPanelScreen() {
     );
   }
 
+  const sendDisabled = (!composer.trim() && !pendingImageUri) || posting;
+
   return (
     <SafeAreaView style={styles.safe} edges={['top']}>
       <KeyboardAvoidingView style={styles.flex} behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
@@ -154,41 +230,86 @@ export default function GromadaPanelScreen() {
 
         {/* Composer */}
         {isMember && (
-          <View style={styles.composer}>
-            <TextInput
-              ref={inputRef}
-              style={styles.composerInput}
-              placeholder={t('feed:write_something')}
-              placeholderTextColor={theme.colors.textTertiary}
-              value={composer}
-              onChangeText={(v) => setComposer(v.slice(0, MAX_POST))}
-              multiline
-              maxLength={MAX_POST}
-              accessibilityLabel={t('feed:write_something')}
-            />
-            {charNearLimit && (
-              <Text style={[styles.charCount, { color: charColor }]}>
-                {MAX_POST - composer.length}
-              </Text>
+          <View style={styles.composerWrapper}>
+            {/* Image preview thumbnail */}
+            {pendingImageUri && (
+              <View style={styles.previewRow}>
+                <Image
+                  source={{ uri: pendingImageUri }}
+                  style={styles.previewThumb}
+                  resizeMode="cover"
+                  accessibilityLabel="Podgląd wybranego zdjęcia"
+                />
+                <Pressable
+                  onPress={() => setPendingImageUri(null)}
+                  style={styles.previewRemove}
+                  hitSlop={8}
+                  accessibilityRole="button"
+                  accessibilityLabel="Usuń zdjęcie"
+                >
+                  <Text style={styles.previewRemoveText}>✕</Text>
+                </Pressable>
+              </View>
             )}
-            <Pressable
-              onPress={handlePost}
-              disabled={!composer.trim() || posting}
-              accessibilityRole="button"
-              accessibilityLabel={t('feed:post_cta')}
-              style={({ pressed }) => [
-                styles.sendBtn,
-                (!composer.trim() || posting) && styles.sendBtnDisabled,
-                pressed && styles.sendBtnPressed,
-              ]}
-            >
-              {posting
-                ? <ActivityIndicator color="#fff" size="small" />
-                : <Text style={styles.sendIcon}>↑</Text>}
-            </Pressable>
+
+            <View style={styles.composer}>
+              <TextInput
+                ref={inputRef}
+                style={styles.composerInput}
+                placeholder={t('feed:write_something')}
+                placeholderTextColor={theme.colors.textTertiary}
+                value={composer}
+                onChangeText={(v) => setComposer(v.slice(0, MAX_POST))}
+                multiline
+                maxLength={MAX_POST}
+                accessibilityLabel={t('feed:write_something')}
+              />
+              {charNearLimit && (
+                <Text style={[styles.charCount, { color: charColor }]}>
+                  {MAX_POST - composer.length}
+                </Text>
+              )}
+
+              {/* Image attach button */}
+              <Pressable
+                onPress={pickImage}
+                disabled={posting}
+                accessibilityRole="button"
+                accessibilityLabel="Dodaj zdjęcie"
+                style={({ pressed }) => [
+                  styles.attachBtn,
+                  pressed && styles.attachBtnPressed,
+                  posting && styles.attachBtnDisabled,
+                ]}
+              >
+                <Text style={styles.attachIcon}>📷</Text>
+              </Pressable>
+
+              {/* Send button */}
+              <Pressable
+                onPress={handlePost}
+                disabled={sendDisabled}
+                accessibilityRole="button"
+                accessibilityLabel={t('feed:post_cta')}
+                style={({ pressed }) => [
+                  styles.sendBtn,
+                  sendDisabled && styles.sendBtnDisabled,
+                  pressed && styles.sendBtnPressed,
+                ]}
+              >
+                {posting || uploadingImage
+                  ? <ActivityIndicator color="#fff" size="small" />
+                  : <Text style={styles.sendIcon}>↑</Text>}
+              </Pressable>
+            </View>
           </View>
         )}
       </KeyboardAvoidingView>
+
+      {/* Toast */}
+      {toastMessage && (
+        <Toast message={toastMessage} onHide={() => setToastMessage(null)} />
+      )}
     </SafeAreaView>
   );
 }
@@ -226,15 +347,39 @@ const styles = StyleSheet.create({
   emptyEmoji: { fontSize: 48 },
   emptyTitle: { fontSize: theme.fontSize.lg, fontWeight: theme.fontWeight.semibold, color: theme.colors.textSecondary },
   emptyBody: { fontSize: theme.fontSize.body, color: theme.colors.textTertiary, textAlign: 'center' },
+  composerWrapper: {
+    borderTopWidth: 1,
+    borderTopColor: theme.colors.border,
+    backgroundColor: theme.colors.background,
+  },
+  // Image preview above the input row
+  previewRow: {
+    paddingHorizontal: theme.spacing.md,
+    paddingTop: theme.spacing.sm,
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+  },
+  previewThumb: {
+    width: 60,
+    height: 60,
+    borderRadius: theme.borderRadius.sm,
+  },
+  previewRemove: {
+    marginLeft: theme.spacing.xs,
+    width: 24,
+    height: 24,
+    borderRadius: 12,
+    backgroundColor: theme.colors.backgroundElevated,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  previewRemoveText: { fontSize: theme.fontSize.xs, color: theme.colors.textSecondary },
   composer: {
     flexDirection: 'row',
     alignItems: 'flex-end',
     gap: theme.spacing.sm,
     paddingHorizontal: theme.spacing.md,
     paddingVertical: theme.spacing.sm,
-    borderTopWidth: 1,
-    borderTopColor: theme.colors.border,
-    backgroundColor: theme.colors.background,
   },
   composerInput: {
     flex: 1,
@@ -249,7 +394,22 @@ const styles = StyleSheet.create({
     fontSize: theme.fontSize.body,
     color: theme.colors.textPrimary,
   },
-  charCount: { position: 'absolute', right: 60, bottom: 16, fontSize: theme.fontSize.xs },
+  charCount: { position: 'absolute', right: 100, bottom: 16, fontSize: theme.fontSize.xs },
+  // Attach image button
+  attachBtn: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: theme.colors.backgroundCard,
+    borderWidth: 1,
+    borderColor: theme.colors.border,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  attachBtnPressed: { opacity: 0.7 },
+  attachBtnDisabled: { opacity: 0.4 },
+  attachIcon: { fontSize: 18 },
+  // Send button
   sendBtn: {
     width: 40,
     height: 40,
