@@ -7,6 +7,7 @@ export type EventRow = {
   title: string;
   description: string | null;
   location_name: string;
+  location_point: string | null;
   city_id: string | null;
   starts_at: string;
   ends_at: string | null;
@@ -26,7 +27,7 @@ export type EventWithRSVP = EventRow & {
 
 const EVENT_QUERY = `
   id, gromada_id, created_by, title, description, location_name,
-  city_id, starts_at, ends_at, max_attendees, is_public,
+  location_point, city_id, starts_at, ends_at, max_attendees, is_public,
   is_auto_generated, event_type, status, created_at,
   gromady(name, avatar_config),
   event_rsvps(user_id, status)
@@ -47,11 +48,11 @@ export async function fetchCityEvents(
     .range(from, from + 29);
   if (error) throw error;
 
-  return (data ?? []).map((e: any) => ({
+  return (data ?? []).map((e: Record<string, unknown>) => ({
     ...e,
-    rsvp_count: (e.event_rsvps ?? []).filter((r: any) => r.status === 'going').length,
-    user_rsvp: (e.event_rsvps ?? []).find((r: any) => r.user_id === userId)?.status ?? null,
-    gromady: e.gromady ?? null,
+    rsvp_count: (e.event_rsvps as Array<{ status: string }> ?? []).filter((r) => r.status === 'going').length,
+    user_rsvp: (e.event_rsvps as Array<{ user_id: string; status: string }> ?? []).find((r) => r.user_id === userId)?.status ?? null,
+    gromady: (e.gromady as EventWithRSVP['gromady']) ?? null,
   })) as EventWithRSVP[];
 }
 
@@ -62,13 +63,13 @@ export async function fetchEvent(id: string, userId: string): Promise<EventWithR
     .eq('id', id)
     .single();
   if (error) throw error;
-  const e = data as any;
+  const e = data as Record<string, unknown>;
   return {
     ...e,
-    rsvp_count: (e.event_rsvps ?? []).filter((r: any) => r.status === 'going').length,
-    user_rsvp: (e.event_rsvps ?? []).find((r: any) => r.user_id === userId)?.status ?? null,
-    gromady: e.gromady ?? null,
-  };
+    rsvp_count: (e.event_rsvps as Array<{ status: string }> ?? []).filter((r) => r.status === 'going').length,
+    user_rsvp: (e.event_rsvps as Array<{ user_id: string; status: string }> ?? []).find((r) => r.user_id === userId)?.status ?? null,
+    gromady: (e.gromady as EventWithRSVP['gromady']) ?? null,
+  } as EventWithRSVP;
 }
 
 export async function createEvent(payload: {
