@@ -1,126 +1,57 @@
 {
-  "sprint": 6,
-  "sprint_name": "Auto-generation + Polish",
-  "started": "2026-04-25",
-  "last_updated": "2026-04-26T01:55:00.000000+00:00",
-  "last_completed_task": "s6-code-review",
+  "sprint": 7,
+  "sprint_name": "Maps + Media + Chat Polish",
+  "started": "2026-04-26",
+  "last_updated": "2026-04-26T02:10:00.000000+00:00",
+  "last_completed_task": null,
   "tasks": [
     {
-      "id": "s6-ts-fixes",
-      "title": "Fix 6 pre-existing TypeScript errors surfaced by preflight: members.tsx, gromada-pick.tsx, ready.tsx, Input.tsx, useNotifications.ts, notifications.ts",
-      "status": "done",
+      "id": "s7-map-view",
+      "title": "react-native-maps MapView in map tab — event+gromada pins, location priming, map/list toggle",
+      "status": "in_progress",
+      "domain": "frontend"
+    },
+    {
+      "id": "s7-create-event",
+      "title": "Commit app/(app)/(map)/create-event.tsx + components/event/CreateEventForm.tsx",
+      "status": "pending",
+      "domain": "frontend"
+    },
+    {
+      "id": "s7-media-upload",
+      "title": "services/api/media.ts — Supabase Storage upload; post composer image attachment",
+      "status": "pending",
+      "domain": "frontend"
+    },
+    {
+      "id": "s7-chat-polish",
+      "title": "Chat bubble layout (sender/receiver), day separators, message reactions",
+      "status": "pending",
+      "domain": "frontend"
+    },
+    {
+      "id": "s7-friends",
+      "title": "Commit friends.tsx + friend/[id].tsx direct message thread",
+      "status": "pending",
+      "domain": "frontend"
+    },
+    {
+      "id": "s7-favors",
+      "title": "Favor list + create form in Gromada info panel; commit hooks/useFavors.ts",
+      "status": "pending",
+      "domain": "frontend"
+    },
+    {
+      "id": "s7-notifications-infra",
+      "title": "Commit services/notifications.ts + supabase/migrations/004_push_tokens.sql",
+      "status": "pending",
+      "domain": "infra"
+    },
+    {
+      "id": "s7-code-review",
+      "title": "Run code-reviewer on all Sprint 7 files",
+      "status": "pending",
       "domain": "qa"
-    },
-    {
-      "id": "s6-edge-generate-events",
-      "title": "supabase/functions/generate-events/index.ts",
-      "status": "done",
-      "domain": "backend"
-    },
-    {
-      "id": "s6-edge-expire-favors",
-      "title": "supabase/functions/expire-favors/index.ts",
-      "status": "done",
-      "domain": "backend"
-    },
-    {
-      "id": "s6-edge-dormant-check",
-      "title": "supabase/functions/dormant-check/index.ts",
-      "status": "done",
-      "domain": "backend"
-    },
-    {
-      "id": "s6-edge-cron",
-      "title": "Schedule all 3 Edge Functions as cron jobs in Supabase",
-      "status": "done",
-      "domain": "backend"
-    },
-    {
-      "id": "s6-crossovers-api",
-      "title": "services/api/crossovers.ts — CRUD",
-      "status": "done",
-      "domain": "frontend"
-    },
-    {
-      "id": "s6-crossovers-form",
-      "title": "Crossover proposal form + vote UI in Gromada info panel",
-      "status": "done",
-      "domain": "frontend"
-    },
-    {
-      "id": "s6-crossovers-status",
-      "title": "Crossover status flow: proposed → accepted → happening → completed",
-      "status": "done",
-      "domain": "frontend"
-    },
-    {
-      "id": "s6-allies",
-      "title": "gromada_allies display + elder CRUD in app/(app)/(gromady)/[id]/info.tsx",
-      "status": "done",
-      "domain": "frontend"
-    },
-    {
-      "id": "s6-user-calendar",
-      "title": "app/(app)/(profile)/calendar.tsx — upcoming + past RSVPd events",
-      "status": "done",
-      "domain": "frontend"
-    },
-    {
-      "id": "s6-gromada-stats",
-      "title": "Gromada stats + warmth score formula in app/(app)/(gromady)/[id]/info.tsx",
-      "status": "done",
-      "domain": "frontend"
-    },
-    {
-      "id": "s6-warmth-indicator",
-      "title": "components/gromada/WarmthIndicator.tsx — visual bar + campfire icon",
-      "status": "done",
-      "domain": "frontend"
-    },
-    {
-      "id": "s6-mindful-texts",
-      "title": "MindfulText in all empty states + loading skeletons across the app",
-      "status": "done",
-      "domain": "frontend"
-    },
-    {
-      "id": "s6-sentry",
-      "title": "services/sentry.ts — error monitoring integration",
-      "status": "done",
-      "domain": "infra"
-    },
-    {
-      "id": "s6-analytics",
-      "title": "Plausible/PostHog event tracking — screen views + key actions, privacy-first",
-      "status": "done",
-      "domain": "infra"
-    },
-    {
-      "id": "s6-eas",
-      "title": "eas.json — development, preview, production build profiles",
-      "status": "done",
-      "domain": "infra"
-    },
-    {
-      "id": "s6-a11y-audit",
-      "title": "Full accessibility audit — VoiceOver + TalkBack manual test",
-      "status": "deferred",
-      "domain": "qa",
-      "note": "Requires physical device with VoiceOver/TalkBack — deferred to Sprint 8 device testing window"
-    },
-    {
-      "id": "s6-perf-audit",
-      "title": "Performance audit — FPS profiling, bundle size, cold start time",
-      "status": "deferred",
-      "domain": "qa",
-      "note": "Requires device profiler — deferred to Sprint 8 device testing window"
-    },
-    {
-      "id": "s6-code-review",
-      "title": "Run code-reviewer agent on all Sprint 6 files",
-      "status": "done",
-      "domain": "qa",
-      "note": "Ran code-reviewer: A grade (96.7/100). Fixed 1 real security issue: missing auth on send-notification Edge Function"
     }
   ]
 }

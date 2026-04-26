@@ -61,7 +61,7 @@ export default function GromadaPanelScreen() {
   const { user } = useAuthStore();
 
   const [gromada, setGromada] = useState<GromadaWithInterests | null>(null);
-  const [nextEvent, setNextEvent] = useState<unknown>(null);
+  const [nextEvent, setNextEvent] = useState<{ id: string; title: string; location_name: string; starts_at: string; event_type: string } | null>(null);
   const [gLoading, setGLoading] = useState(true);
   const [composer, setComposer] = useState('');
   const [posting, setPosting] = useState(false);

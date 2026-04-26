@@ -273,9 +273,186 @@
 - [ ] Fix all confirmed bugs before marking sprint done
 
 ### Beta Prep
-- [ ] Sentry integration (`services/sentry.ts`)
-- [ ] Plausible / PostHog event tracking (screen views, key actions only — privacy-first)
-- [ ] EAS build configuration (development, preview, production)
-- [ ] App Store + Google Play metadata prep
-- [ ] Full accessibility audit (VoiceOver + TalkBack manual test)
-- [ ] Performance audit (FPS profiling, bundle size, cold start time)
+- [x] Sentry integration (`services/sentry.ts`)
+- [x] Plausible / PostHog event tracking (screen views, key actions only — privacy-first)
+- [x] EAS build configuration (development, preview, production)
+- [ ] App Store + Google Play metadata prep — Sprint 11
+- [ ] Full accessibility audit — deferred Sprint 8
+- [ ] Performance audit — deferred Sprint 8
+
+---
+
+## Sprint 7 — Maps + Media + Chat Polish
+
+**Goal:** Map tab shows real events/gromady. Users can post images. Chat is polished. Friends + favors complete.
+
+### Map Tab
+- [ ] `react-native-maps` integration — event + gromada pins on MapView
+- [ ] Map/list toggle in `app/(app)/(map)/index.tsx` — map view with clustered pins
+- [ ] Location permission priming before requesting
+- [ ] `app/(app)/(map)/create-event.tsx` — event creation form with location picker
+- [ ] `components/event/CreateEventForm.tsx` — full form with type picker, datetime, location
+
+### Media
+- [ ] `services/api/media.ts` — upload image to Supabase Storage bucket `post-media`
+- [ ] Post composer: image attachment button → expo-image-picker → upload → preview
+- [ ] `components/feed/PostCard.tsx` — render image media inline (single or grid)
+- [ ] Avatar photo upload in profile editor (custom_avatar_url)
+
+### Chat Polish
+- [ ] Chat bubble layout — sender right, receiver left, timestamps grouped by day
+- [ ] Seen/sent indicator (single tick = sent, double = seen)
+- [ ] Message reactions in chat (emoji tap to react to a message)
+- [ ] Image sharing in chat
+
+### Friends + Social
+- [ ] `app/(app)/(messages)/friends.tsx` — friends list + pending requests
+- [ ] `app/(app)/(messages)/friend/[id].tsx` — direct message thread
+- [ ] Send friend request from profile view
+- [ ] Accept/decline friend request with undo toast
+
+### Favors
+- [ ] Favor list in Gromada info panel (open + helped)
+- [ ] Create favor form (description, 7-day expiry auto-set)
+- [ ] "Offer help" → opens direct message with requester
+- [ ] `hooks/useFavors.ts` — favor CRUD with optimistic updates
+
+### Infrastructure
+- [ ] Commit `services/notifications.ts` + `supabase/migrations/004_push_tokens.sql`
+
+### Code Review (end of sprint)
+- [ ] Run code-reviewer on all Sprint 7 files
+
+---
+
+## Sprint 8 — Discovery + Social Graph + Deep Linking
+
+**Goal:** Users can discover Gromady beyond onboarding. Public profiles browsable. App is deep-linkable.
+
+### Discovery
+- [ ] `app/(app)/(gromady)/explore.tsx` — browse all Gromady: filter by city, interest, size; paginated
+- [ ] `components/gromada/GromadaCard.tsx` — list-style card for explore view
+- [ ] Join request flow for full Gromady (elder approval if at capacity)
+- [ ] `app/(app)/(map)/index.tsx` — map pin tap → gromada preview sheet
+
+### Public Profiles
+- [ ] `app/(app)/(profile)/[id].tsx` — public profile: avatar, name, bio, shared gromady, send friend request
+- [ ] `services/api/users.ts` — `fetchPublicProfile(userId)` RLS-safe
+- [ ] Profile link from PostCard author tap
+
+### Deep Linking
+- [ ] `app.json` — `scheme: "polana"`, universal link domain config
+- [ ] Link handlers: `polana://gromada/[id]`, `polana://event/[id]`, `polana://profile/[id]`
+- [ ] Share button on event + gromada screens (uses `expo-sharing`)
+- [ ] `utils/routing.ts` — `buildDeepLink(type, id)` + `resolveDeepLink(url)`
+
+### Social Graph
+- [ ] Mutual friends count on profile view
+- [ ] "People you may know" stub in friends screen (shared gromada members)
+
+### Accessibility Audit (deferred from S6)
+- [ ] Manual VoiceOver + TalkBack checklist on all main screens — document findings
+- [ ] Fix any critical a11y issues found (accessibilityLabel, accessibilityHint, roles)
+
+### Performance
+- [ ] Bundle size analysis: `npx expo-bundle-explorer` — document large deps
+- [ ] FlatList `getItemLayout` + `windowSize` tuning on feed + member list
+- [ ] Memo guards on PostCard, GromadaCard, EventCard
+
+### Code Review (end of sprint)
+- [ ] Run code-reviewer on all Sprint 8 files
+
+---
+
+## Sprint 9 — Safety + Resilience
+
+**Goal:** Users can block/mute. Moderators have a queue. App survives crashes and offline gracefully.
+
+### Block + Mute
+- [ ] `supabase/migrations/006_blocks.sql` — `user_blocks(blocker_id, blocked_id, created_at)`
+- [ ] RLS: blocked users cannot see each other's posts, profiles, chats
+- [ ] `services/api/safety.ts` — `blockUser`, `unblockUser`, `muteUser`
+- [ ] Block/mute action in profile view (3-dot menu)
+- [ ] Chat mute: `chat_mutes` already in schema — wire up UI toggle
+
+### Moderation Queue
+- [ ] `app/(app)/(profile)/moderation.tsx` — elder-only: list of pending reports for their Gromady
+- [ ] Report card: content preview, reporter reason, action buttons (dismiss / hide content)
+- [ ] `services/api/moderation.ts` — `fetchPendingReports`, `resolveReport`
+- [ ] Elder notification when new report arrives in their Gromada
+
+### Error Boundaries
+- [ ] `components/ui/ErrorBoundary.tsx` — React error boundary with Sentry capture + retry button
+- [ ] Wrap every tab screen and every modal in ErrorBoundary
+- [ ] `components/ui/NetworkError.tsx` — offline banner + retry CTA
+
+### Offline Cache
+- [ ] `stores/cacheStore.ts` — Zustand + AsyncStorage persist for: feed posts, gromady list, user profile
+- [ ] Stale-while-revalidate pattern in `usePosts`, `useGromady`, `useEvents`
+- [ ] Show cached data with "offline" badge when network unavailable
+
+### Code Review (end of sprint)
+- [ ] Run code-reviewer on all Sprint 9 files
+
+---
+
+## Sprint 10 — Invites + Emails + Admin
+
+**Goal:** Gromady can invite people. Email flows are branded. Elders have admin tools.
+
+### Invite System
+- [ ] `supabase/migrations/007_invites.sql` — `gromada_invites(id, gromada_id, created_by, code, expires_at, used_by)`
+- [ ] `supabase/functions/create-invite/index.ts` — generate unique code, return deep link
+- [ ] `app/(app)/(gromady)/[id]/invite.tsx` — elder generates link, share sheet
+- [ ] Deep link handler: `polana://invite/[code]` → join flow with context card
+
+### Branded Emails (Supabase)
+- [ ] `supabase/templates/welcome.html` — welcome email after registration
+- [ ] `supabase/templates/invite.html` — gromada invite email with CTA button
+- [ ] `supabase/templates/reset.html` — password reset email
+- [ ] Configure custom SMTP or Supabase email settings in docs
+
+### Password Reset
+- [ ] `app/(auth)/forgot-password.tsx` — email input → Supabase `resetPasswordForEmail`
+- [ ] `app/(auth)/reset-password.tsx` — deep link lands here, new password form
+- [ ] Deep link: `polana://reset-password?token=...`
+
+### Elder Admin Panel
+- [ ] `app/(app)/(gromady)/[id]/admin.tsx` — elder-only: remove member, pin/unpin event, edit gromada info
+- [ ] Remove member: confirmation undo-toast, triggers `gromada_members` delete
+- [ ] Transfer elder role to another member
+- [ ] Archive gromada (status → archived)
+
+### Code Review (end of sprint)
+- [ ] Run code-reviewer on all Sprint 10 files
+
+---
+
+## Sprint 11 — Legal + GDPR
+
+**Goal:** App is legally compliant, GDPR-ready, and submitted to App Store + Google Play.
+
+### Legal Screens
+- [ ] `app/(auth)/privacy.tsx` — full privacy policy (Polish + English)
+- [ ] `app/(auth)/terms.tsx` — update terms to final version with GDPR references
+- [ ] Link to both from registration screen and profile settings
+
+### GDPR Compliance
+- [ ] `supabase/functions/export-data/index.ts` — export all user data as JSON (profile, posts, messages, RSVPs)
+- [ ] `supabase/functions/delete-account/index.ts` — hard delete user + all content (GDPR Art. 17)
+- [ ] `app/(app)/(profile)/data.tsx` — "Your data" screen: request export, delete account button
+- [ ] Confirm delete: type "USUŃ" to confirm (no modal — undo impossible, so warning is right)
+- [ ] Cookie/tracking consent banner (only if using any analytics)
+
+### Final QA
+- [ ] End-to-end flow test: register → onboarding → join gromada → RSVP event → chat → invite friend
+- [ ] Test on iOS + Android physical devices
+- [ ] Fix any crash bugs found in final QA
+
+### App Store + Play Store
+- [ ] App icon (1024×1024) — export from avatar system
+- [ ] Splash screen (`app.json` splash config)
+- [ ] `app.json` — final bundle ID, version 1.0.0, permissions rationale strings
+- [ ] App Store screenshots (6.5" + 5.5" iPhone, 12.9" iPad)
+- [ ] Play Store screenshots + feature graphic
+- [ ] Store listings: Polish (primary) + English description, keywords

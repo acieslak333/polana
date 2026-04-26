@@ -65,3 +65,105 @@ export async function joinGromada(gromadaId: string, userId: string) {
     .insert({ gromada_id: gromadaId, user_id: userId, role: 'member' });
   if (error && error.code !== '23505') throw error;
 }
+
+export interface PublicProfile {
+  id: string;
+  first_name: string;
+  nickname: string | null;
+  bio: string | null;
+  avatar_config: Record<string, unknown>;
+  custom_avatar_url: string | null;
+  city_id: string | null;
+}
+
+export type FriendshipStatus = 'none' | 'pending_sent' | 'pending_received' | 'accepted';
+
+export async function fetchPublicProfile(userId: string): Promise<PublicProfile> {
+  const { data, error } = await supabase
+    .from('profiles')
+    .select('id, first_name, nickname, bio, avatar_config, custom_avatar_url, city_id')
+    .eq('id', userId)
+    .single();
+  if (error) throw error;
+  return data as PublicProfile;
+}
+
+export async function fetchFriendshipStatus(
+  currentUserId: string,
+  targetUserId: string,
+): Promise<FriendshipStatus> {
+  const { data, error } = await supabase
+    .from('friendships')
+    .select('status, requester_id')
+    .or(
+      `and(requester_id.eq.${currentUserId},addressee_id.eq.${targetUserId}),` +
+      `and(requester_id.eq.${targetUserId},addressee_id.eq.${currentUserId})`,
+    )
+    .maybeSingle();
+  if (error) throw error;
+  if (!data) return 'none';
+  if (data.status === 'accepted') return 'accepted';
+  if (data.requester_id === currentUserId) return 'pending_sent';
+  return 'pending_received';
+}
+
+export async function sendFriendRequest(requesterId: string, addresseeId: string): Promise<void> {
+  const { error } = await supabase
+    .from('friendships')
+    .insert({ requester_id: requesterId, addressee_id: addresseeId, status: 'pending' });
+  if (error && error.code !== '23505') throw error;
+}
+
+export async function fetchFriends(userId: string): Promise<PublicProfile[]> {
+  const { data, error } = await supabase
+    .from('friendships')
+    .select(`
+      status, requester_id, addressee_id,
+      requester:profiles!friendships_requester_id_fkey(id, first_name, nickname, bio, avatar_config, custom_avatar_url, city_id),
+      addressee:profiles!friendships_addressee_id_fkey(id, first_name, nickname, bio, avatar_config, custom_avatar_url, city_id)
+    `)
+    .eq('status', 'accepted')
+    .or(`requester_id.eq.${userId},addressee_id.eq.${userId}`);
+  if (error) throw error;
+  return (data ?? []).map((row) => {
+    const r = row as unknown as {
+      requester_id: string;
+      requester: PublicProfile;
+      addressee: PublicProfile;
+    };
+    return r.requester_id === userId ? r.addressee : r.requester;
+  });
+}
+
+export async function fetchPendingRequests(userId: string): Promise<PublicProfile[]> {
+  const { data, error } = await supabase
+    .from('friendships')
+    .select(`
+      requester:profiles!friendships_requester_id_fkey(id, first_name, nickname, bio, avatar_config, custom_avatar_url, city_id)
+    `)
+    .eq('addressee_id', userId)
+    .eq('status', 'pending');
+  if (error) throw error;
+  return (data ?? []).map((row) => {
+    const r = row as unknown as { requester: PublicProfile };
+    return r.requester;
+  });
+}
+
+export async function acceptFriendRequest(requesterId: string, addresseeId: string): Promise<void> {
+  const { error } = await supabase
+    .from('friendships')
+    .update({ status: 'accepted' })
+    .eq('requester_id', requesterId)
+    .eq('addressee_id', addresseeId);
+  if (error) throw error;
+}
+
+export async function declineFriendRequest(requesterId: string, addresseeId: string): Promise<void> {
+  const { error } = await supabase
+    .from('friendships')
+    .delete()
+    .eq('requester_id', requesterId)
+    .eq('addressee_id', addresseeId);
+  if (error) throw error;
+}
