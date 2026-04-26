@@ -1,17 +1,15 @@
 {
-  "sprint": 7,
-  "sprint_name": "Maps + Media + Chat Polish",
+  "sprint": 8,
+  "sprint_name": "Discovery + Social Graph + Deep Linking",
   "started": "2026-04-26",
-  "last_updated": "2026-04-26T03:30:00.000000+00:00",
-  "last_completed_task": "s7-code-review",
+  "last_updated": "2026-04-26T03:35:00.000000+00:00",
+  "last_completed_task": null,
   "tasks": [
-    { "id": "s7-map-view", "title": "react-native-maps MapView with event pins, location priming, map/list toggle", "status": "done", "domain": "frontend" },
-    { "id": "s7-create-event", "title": "create-event.tsx + CreateEventForm.tsx committed", "status": "done", "domain": "frontend" },
-    { "id": "s7-media-upload", "title": "services/api/media.ts — Supabase Storage upload; post composer image attachment", "status": "done", "domain": "frontend" },
-    { "id": "s7-chat-polish", "title": "Chat bubble layout, day separators, 44pt tap targets", "status": "done", "domain": "frontend" },
-    { "id": "s7-friends", "title": "friends.tsx + friend/[id].tsx direct message thread", "status": "done", "domain": "frontend" },
-    { "id": "s7-favors", "title": "useFavors.ts + services/api/favors.ts + favor UI in info panel", "status": "done", "domain": "frontend" },
-    { "id": "s7-notifications-infra", "title": "services/notifications.ts + 004_push_tokens.sql committed", "status": "done", "domain": "infra" },
-    { "id": "s7-code-review", "title": "Preflight clean. Fixed: nextEvent type, missing users.ts exports, native module type stubs.", "status": "done", "domain": "qa" }
+    { "id": "s8-explore", "title": "app/(app)/(gromady)/explore.tsx — browse all gromady: filter by city/interest, paginated", "status": "in_progress", "domain": "frontend" },
+    { "id": "s8-public-profile", "title": "app/(app)/(profile)/[id].tsx — public profile view + send friend request", "status": "in_progress", "domain": "frontend" },
+    { "id": "s8-deep-links", "title": "app.json scheme, utils/routing.ts deeplink builder, expo-linking handlers", "status": "in_progress", "domain": "infra" },
+    { "id": "s8-perf-memo", "title": "FlatList getItemLayout + memo on PostCard/GromadaCard/EventCard", "status": "pending", "domain": "qa" },
+    { "id": "s8-ci-update", "title": ".github/workflows/ci.yml — add expo-doctor check, update node cache", "status": "pending", "domain": "infra" },
+    { "id": "s8-code-review", "title": "Preflight + code review on all Sprint 8 files", "status": "pending", "domain": "qa" }
   ]
 }
