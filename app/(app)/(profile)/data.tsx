@@ -5,6 +5,7 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { router } from 'expo-router'
 import { Share } from 'react-native'
+import { useTranslation } from 'react-i18next'
 
 import { theme } from '@/constants/theme'
 import { useAuthStore } from '@/stores/authStore'
@@ -13,6 +14,7 @@ import { supabase } from '@/services/supabase'
 const SUPABASE_URL = process.env.EXPO_PUBLIC_SUPABASE_URL ?? ''
 
 export default function DataScreen() {
+  const { t } = useTranslation(['profile', 'common'])
   const { user } = useAuthStore()
   const [exporting, setExporting] = useState(false)
   const [deleting, setDeleting] = useState(false)
@@ -41,14 +43,16 @@ export default function DataScreen() {
         title: 'Eksport danych Polana',
       })
     } catch {
-      setError('Nie udało się wyeksportować danych. Spróbuj ponownie.')
+      setError(t('profile:data_error'))
     } finally {
       setExporting(false)
     }
   }
 
+  const confirmWord = t('profile:data_delete_confirm_word')
+
   async function handleDelete(): Promise<void> {
-    if (confirmText !== 'USUŃ') return
+    if (confirmText !== confirmWord) return
     setDeleting(true)
     setError(null)
     try {
@@ -62,7 +66,7 @@ export default function DataScreen() {
       await supabase.auth.signOut()
       router.replace('/(auth)/welcome')
     } catch {
-      setError('Nie udało się usunąć konta. Skontaktuj się z nami: privacy@polana.app')
+      setError(t('profile:data_error'))
       setDeleting(false)
     }
   }
@@ -74,47 +78,46 @@ export default function DataScreen() {
           onPress={() => router.back()}
           style={styles.backBtn}
           accessibilityRole="button"
-          accessibilityLabel="Wróć"
+          accessibilityLabel={t('common:back')}
         >
           <Text style={styles.backText}>‹</Text>
         </Pressable>
-        <Text style={styles.title}>Twoje dane</Text>
+        <Text style={styles.title}>{t('profile:data_title')}</Text>
       </View>
 
       <View style={styles.content}>
         {/* Export */}
         <View style={styles.card}>
-          <Text style={styles.cardTitle}>📦 Eksport danych</Text>
+          <Text style={styles.cardTitle}>📦 {t('profile:data_export_title')}</Text>
           <Text style={styles.cardBody}>
-            Pobierz wszystkie dane powiązane z Twoim kontem: profil, posty, komentarze, wiadomości, RSVPs.
+            {t('profile:data_export_description')}
           </Text>
           <Pressable
             style={[styles.btn, styles.btnOutline, exporting && styles.btnDisabled]}
             onPress={() => { void handleExport() }}
             disabled={exporting}
             accessibilityRole="button"
-            accessibilityLabel="Eksportuj moje dane"
+            accessibilityLabel={t('profile:data_export_button')}
             accessibilityState={{ disabled: exporting }}
           >
             {exporting
               ? <ActivityIndicator color={theme.colors.accent} size="small" />
-              : <Text style={styles.btnOutlineText}>Eksportuj moje dane</Text>
+              : <Text style={styles.btnOutlineText}>{t('profile:data_export_button')}</Text>
             }
           </Pressable>
         </View>
 
         {/* Delete */}
         <View style={[styles.card, styles.cardDanger]}>
-          <Text style={styles.cardTitle}>🗑️ Usuń konto</Text>
+          <Text style={styles.cardTitle}>🗑️ {t('profile:data_delete_title')}</Text>
           <Text style={styles.cardBody}>
-            Trwale usuwa Twoje konto i wszystkie dane. Tej operacji nie można cofnąć.
-            Wpisz USUŃ i potwierdź.
+            {t('profile:data_delete_description')}
           </Text>
           <TextInput
             style={styles.confirmInput}
             value={confirmText}
             onChangeText={setConfirmText}
-            placeholder="Wpisz: USUŃ"
+            placeholder={t('profile:data_delete_placeholder')}
             placeholderTextColor={theme.colors.textTertiary}
             autoCapitalize="characters"
             accessibilityLabel="Pole potwierdzenia usunięcia konta"
@@ -122,17 +125,17 @@ export default function DataScreen() {
           <Pressable
             style={[
               styles.btn, styles.btnDanger,
-              (confirmText !== 'USUŃ' || deleting) && styles.btnDisabled,
+              (confirmText !== confirmWord || deleting) && styles.btnDisabled,
             ]}
             onPress={() => { void handleDelete() }}
-            disabled={confirmText !== 'USUŃ' || deleting}
+            disabled={confirmText !== confirmWord || deleting}
             accessibilityRole="button"
-            accessibilityLabel="Usuń konto na zawsze"
-            accessibilityState={{ disabled: confirmText !== 'USUŃ' || deleting }}
+            accessibilityLabel={t('profile:data_delete_button')}
+            accessibilityState={{ disabled: confirmText !== confirmWord || deleting }}
           >
             {deleting
               ? <ActivityIndicator color="#fff" size="small" />
-              : <Text style={styles.btnDangerText}>Usuń konto na zawsze</Text>
+              : <Text style={styles.btnDangerText}>{t('profile:data_delete_button')}</Text>
             }
           </Pressable>
         </View>

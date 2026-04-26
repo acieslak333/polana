@@ -4,6 +4,7 @@ import {
 } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { router } from 'expo-router'
+import { useTranslation } from 'react-i18next'
 
 import { Input } from '@/components/ui/Input'
 import { Button } from '@/components/ui/Button'
@@ -11,6 +12,7 @@ import { theme } from '@/constants/theme'
 import { supabase } from '@/services/supabase'
 
 export default function ForgotPasswordScreen() {
+  const { t } = useTranslation(['auth', 'common'])
   const [email, setEmail] = useState('')
   const [loading, setLoading] = useState(false)
   const [sent, setSent] = useState(false)
@@ -19,7 +21,7 @@ export default function ForgotPasswordScreen() {
   async function handleReset(): Promise<void> {
     const trimmed = email.trim().toLowerCase()
     if (!trimmed.includes('@')) {
-      setError('Podaj poprawny adres e-mail')
+      setError(t('auth:forgot_password_invalid_email'))
       return
     }
     setLoading(true)
@@ -31,7 +33,7 @@ export default function ForgotPasswordScreen() {
       if (err) throw err
       setSent(true)
     } catch {
-      setError('Nie udało się wysłać e-maila. Sprawdź adres i spróbuj ponownie.')
+      setError(t('auth:forgot_password_error'))
     } finally {
       setLoading(false)
     }
@@ -45,23 +47,23 @@ export default function ForgotPasswordScreen() {
             onPress={() => router.back()}
             style={styles.backBtn}
             accessibilityRole="button"
-            accessibilityLabel="Wróć"
+            accessibilityLabel={t('common:back')}
           >
             <Text style={styles.backText}>‹</Text>
           </Pressable>
         </View>
 
         <View style={styles.content}>
-          <Text style={styles.title}>Resetuj hasło</Text>
+          <Text style={styles.title}>{t('auth:forgot_password_title')}</Text>
 
           {sent ? (
             <>
               <Text style={styles.emoji}>📬</Text>
               <Text style={styles.successText}>
-                Wysłaliśmy link do zresetowania hasła na adres {email.trim()}. Sprawdź skrzynkę.
+                {t('auth:forgot_password_sent', { email: email.trim() })}
               </Text>
               <Button
-                label="Wróć do logowania"
+                label={t('auth:forgot_password_back')}
                 onPress={() => router.replace('/(auth)/login')}
                 variant="ghost"
               />
@@ -69,7 +71,7 @@ export default function ForgotPasswordScreen() {
           ) : (
             <>
               <Text style={styles.description}>
-                Podaj adres e-mail powiązany z kontem. Wyślemy Ci link do ustawienia nowego hasła.
+                {t('auth:forgot_password_description')}
               </Text>
               <Input
                 label="E-mail"
@@ -82,7 +84,7 @@ export default function ForgotPasswordScreen() {
                 error={error ?? undefined}
               />
               <Button
-                label="Wyślij link"
+                label={t('auth:forgot_password_send')}
                 onPress={() => { void handleReset() }}
                 loading={loading}
                 disabled={!email.trim()}

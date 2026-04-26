@@ -1,6 +1,7 @@
 import { ScrollView, View, Text, StyleSheet, Pressable } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { router } from 'expo-router'
+import { useTranslation } from 'react-i18next'
 import { theme } from '@/constants/theme'
 
 const sections = [
@@ -39,6 +40,8 @@ const sections = [
 ]
 
 export default function PrivacyScreen() {
+  const { t } = useTranslation(['auth', 'common'])
+
   return (
     <SafeAreaView style={styles.safe}>
       <View style={styles.header}>
@@ -46,15 +49,15 @@ export default function PrivacyScreen() {
           onPress={() => router.back()}
           style={styles.backBtn}
           accessibilityRole="button"
-          accessibilityLabel="Wróć"
+          accessibilityLabel={t('common:back')}
         >
           <Text style={styles.backText}>‹</Text>
         </Pressable>
-        <Text style={styles.title}>Polityka prywatności</Text>
+        <Text style={styles.title}>{t('auth:privacy_title')}</Text>
       </View>
 
       <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
-        <Text style={styles.updated}>Ostatnia aktualizacja: 26 kwietnia 2026</Text>
+        <Text style={styles.updated}>{t('auth:privacy_updated', { date: '26 kwietnia 2026' })}</Text>
 
         {sections.map((s) => (
           <View key={s.title} style={styles.section}>

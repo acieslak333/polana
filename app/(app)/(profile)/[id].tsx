@@ -11,6 +11,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useLocalSearchParams, router } from 'expo-router';
+import { useTranslation } from 'react-i18next';
 
 import { ProceduralAvatar } from '@/components/avatar/ProceduralAvatar';
 import { theme } from '@/constants/theme';
@@ -27,6 +28,7 @@ import { getOrCreateDM } from '@/services/api/messages';
 import { blockUser, unblockUser } from '@/services/api/safety';
 
 export default function PublicProfileScreen(): React.JSX.Element {
+  const { t } = useTranslation(['profile', 'common']);
   const { id } = useLocalSearchParams<{ id: string }>();
   const { user } = useAuthStore();
 
@@ -103,7 +105,7 @@ export default function PublicProfileScreen(): React.JSX.Element {
             onPress={() => router.back()}
             style={styles.backBtn}
             accessibilityRole="button"
-            accessibilityLabel="Wróć"
+            accessibilityLabel={t('common:back')}
           >
             <Text style={styles.backText}>‹</Text>
           </Pressable>
@@ -123,20 +125,20 @@ export default function PublicProfileScreen(): React.JSX.Element {
             onPress={() => router.back()}
             style={styles.backBtn}
             accessibilityRole="button"
-            accessibilityLabel="Wróć"
+            accessibilityLabel={t('common:back')}
           >
             <Text style={styles.backText}>‹</Text>
           </Pressable>
         </View>
         <View style={styles.center}>
-          <Text style={styles.errorText}>Nie można załadować profilu</Text>
+          <Text style={styles.errorText}>{t('profile:public_error')}</Text>
           <Pressable
             onPress={() => { void load(); }}
             style={styles.retryBtn}
             accessibilityRole="button"
-            accessibilityLabel="Spróbuj ponownie"
+            accessibilityLabel={t('common:retry')}
           >
-            <Text style={styles.retryBtnText}>Spróbuj ponownie</Text>
+            <Text style={styles.retryBtnText}>{t('common:retry')}</Text>
           </Pressable>
         </View>
       </SafeAreaView>
@@ -147,10 +149,10 @@ export default function PublicProfileScreen(): React.JSX.Element {
 
   const friendButtonLabel = (() => {
     switch (friendStatus) {
-      case 'none': return 'Dodaj do znajomych';
-      case 'pending_sent': return 'Zaproszenie wysłane';
-      case 'pending_received': return 'Akceptuj zaproszenie';
-      case 'accepted': return 'Znajomi ✓';
+      case 'none': return t('profile:public_add_friend');
+      case 'pending_sent': return t('profile:public_friend_sent');
+      case 'pending_received': return t('profile:public_friend_accept');
+      case 'accepted': return t('profile:public_friend_accepted');
     }
   })();
 
@@ -171,10 +173,13 @@ export default function PublicProfileScreen(): React.JSX.Element {
     setMenuVisible(false);
     try {
       await blockUser(user.id, id);
-      showUndoToast(`Zablokowano ${profile?.first_name ?? 'użytkownika'}`, async () => {
-        await unblockUser(user.id, id);
-        setUndoToast(null);
-      });
+      showUndoToast(
+        t('profile:public_blocked', { name: profile?.first_name ?? '' }),
+        async () => {
+          await unblockUser(user.id, id);
+          setUndoToast(null);
+        },
+      );
     } catch { /* silently ignore — user can retry */ }
   }
 
@@ -186,7 +191,7 @@ export default function PublicProfileScreen(): React.JSX.Element {
           onPress={() => router.back()}
           style={styles.backBtn}
           accessibilityRole="button"
-          accessibilityLabel="Wróć"
+          accessibilityLabel={t('common:back')}
         >
           <Text style={styles.backText}>‹</Text>
         </Pressable>
@@ -197,7 +202,7 @@ export default function PublicProfileScreen(): React.JSX.Element {
           onPress={() => setMenuVisible(true)}
           style={styles.menuBtn}
           accessibilityRole="button"
-          accessibilityLabel="Więcej opcji"
+          accessibilityLabel={t('common:more_options')}
         >
           <Text style={styles.menuDots}>⋯</Text>
         </Pressable>
@@ -217,10 +222,10 @@ export default function PublicProfileScreen(): React.JSX.Element {
               style={styles.menuItem}
               onPress={() => { void handleBlock(); }}
               accessibilityRole="button"
-              accessibilityLabel="Zablokuj użytkownika"
+              accessibilityLabel={t('profile:public_block')}
             >
               <Text style={[styles.menuItemText, { color: theme.colors.error }]}>
-                Zablokuj użytkownika
+                {t('profile:public_block')}
               </Text>
             </Pressable>
             <View style={styles.menuDivider} />
@@ -243,10 +248,10 @@ export default function PublicProfileScreen(): React.JSX.Element {
           <Pressable
             onPress={undoToast.onUndo}
             accessibilityRole="button"
-            accessibilityLabel="Cofnij"
+            accessibilityLabel={t('common:undo')}
             hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
           >
-            <Text style={styles.undoBtn}>Cofnij</Text>
+            <Text style={styles.undoBtn}>{t('common:undo')}</Text>
           </Pressable>
         </View>
       )}
@@ -315,14 +320,14 @@ export default function PublicProfileScreen(): React.JSX.Element {
             disabled={dmLoading}
             style={[styles.actionBtn, styles.actionBtnGhost]}
             accessibilityRole="button"
-            accessibilityLabel="Wyślij wiadomość"
+            accessibilityLabel={t('profile:public_send_message')}
             accessibilityState={{ disabled: dmLoading }}
           >
             {dmLoading ? (
               <ActivityIndicator size="small" color={theme.colors.accent} />
             ) : (
               <Text style={[styles.actionBtnText, styles.actionBtnTextGhost]}>
-                Wyślij wiadomość
+                {t('profile:public_send_message')}
               </Text>
             )}
           </Pressable>

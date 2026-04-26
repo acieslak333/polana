@@ -6,20 +6,26 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
 import { formatDistanceToNow } from 'date-fns';
 import { pl } from 'date-fns/locale';
+import { useTranslation } from 'react-i18next';
+import { type TFunction } from 'i18next';
 
 import { theme } from '@/constants/theme';
 import { useAuthStore } from '@/stores/authStore';
 import { fetchPendingReports, resolveReport, undoResolveReport, type ReportRow } from '@/services/api/moderation';
 import { fetchGromadyForElder } from '@/services/api/gromady';
 
-const REASON_LABELS: Record<string, string> = {
-  spam: 'Spam',
-  harassment: 'Nękanie',
-  inappropriate: 'Nieodpowiednia treść',
-  other: 'Inne',
-};
+function getReasonLabel(reason: string, t: TFunction): string {
+  switch (reason) {
+    case 'spam': return t('common:reason_spam');
+    case 'harassment': return t('common:reason_harassment');
+    case 'inappropriate': return t('common:reason_inappropriate');
+    case 'other': return t('common:reason_other');
+    default: return reason;
+  }
+}
 
 export default function ModerationScreen() {
+  const { t } = useTranslation(['profile', 'common']);
   const { user } = useAuthStore();
   const [reports, setReports] = useState<ReportRow[]>([]);
   const [loading, setLoading] = useState(true);
@@ -72,7 +78,7 @@ export default function ModerationScreen() {
 
     const timerId = setTimeout(() => setUndoToast(null), 7000);
     setUndoToast({
-      message: action === 'hide' ? 'Treść ukryta' : 'Zgłoszenie odrzucone',
+      message: action === 'hide' ? t('profile:moderation_hidden') : t('profile:moderation_dismissed'),
       timerId,
       onUndo: async () => {
         clearTimeout(timerId);
@@ -92,11 +98,11 @@ export default function ModerationScreen() {
           onPress={() => router.back()}
           style={styles.backBtn}
           accessibilityRole="button"
-          accessibilityLabel="Wróć"
+          accessibilityLabel={t('common:back')}
         >
           <Text style={styles.backText}>‹</Text>
         </Pressable>
-        <Text style={styles.title}>Zgłoszenia</Text>
+        <Text style={styles.title}>{t('profile:moderation_title')}</Text>
       </View>
 
       {loading ? (
@@ -111,13 +117,13 @@ export default function ModerationScreen() {
           renderItem={({ item }) => (
             <View style={styles.card}>
               <View style={styles.cardTop}>
-                <Text style={styles.reason}>{REASON_LABELS[item.reason] ?? item.reason}</Text>
+                <Text style={styles.reason}>{getReasonLabel(item.reason, t)}</Text>
                 <Text style={styles.time}>
                   {formatDistanceToNow(new Date(item.created_at), { addSuffix: true, locale: pl })}
                 </Text>
               </View>
               <Text style={styles.content} numberOfLines={3}>
-                {item.post_content ?? item.comment_content ?? '(brak treści)'}
+                {item.post_content ?? item.comment_content ?? t('common:no_content')}
               </Text>
               {item.description && (
                 <Text style={styles.description}>„{item.description}"</Text>
@@ -127,17 +133,17 @@ export default function ModerationScreen() {
                   style={[styles.btn, styles.btnHide]}
                   onPress={() => { void handleAction(item, 'hide'); }}
                   accessibilityRole="button"
-                  accessibilityLabel="Ukryj treść"
+                  accessibilityLabel={t('profile:moderation_hide')}
                 >
-                  <Text style={styles.btnHideText}>Ukryj treść</Text>
+                  <Text style={styles.btnHideText}>{t('profile:moderation_hide')}</Text>
                 </Pressable>
                 <Pressable
                   style={[styles.btn, styles.btnDismiss]}
                   onPress={() => { void handleAction(item, 'dismiss'); }}
                   accessibilityRole="button"
-                  accessibilityLabel="Odrzuć zgłoszenie"
+                  accessibilityLabel={t('profile:moderation_dismiss')}
                 >
-                  <Text style={styles.btnDismissText}>Odrzuć</Text>
+                  <Text style={styles.btnDismissText}>{t('profile:moderation_dismiss')}</Text>
                 </Pressable>
               </View>
             </View>
@@ -145,7 +151,7 @@ export default function ModerationScreen() {
           ListEmptyComponent={
             <View style={styles.center}>
               <Text style={styles.emptyEmoji}>✅</Text>
-              <Text style={styles.emptyText}>Brak oczekujących zgłoszeń</Text>
+              <Text style={styles.emptyText}>{t('profile:moderation_empty')}</Text>
             </View>
           }
         />
@@ -157,10 +163,10 @@ export default function ModerationScreen() {
           <Pressable
             onPress={undoToast.onUndo}
             accessibilityRole="button"
-            accessibilityLabel="Cofnij"
+            accessibilityLabel={t('common:undo')}
             hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
           >
-            <Text style={styles.toastUndo}>Cofnij</Text>
+            <Text style={styles.toastUndo}>{t('common:undo')}</Text>
           </Pressable>
         </View>
       )}

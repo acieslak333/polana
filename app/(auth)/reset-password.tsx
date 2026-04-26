@@ -4,6 +4,7 @@ import {
 } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { router } from 'expo-router'
+import { useTranslation } from 'react-i18next'
 
 import { Input } from '@/components/ui/Input'
 import { Button } from '@/components/ui/Button'
@@ -11,6 +12,7 @@ import { theme } from '@/constants/theme'
 import { supabase } from '@/services/supabase'
 
 export default function ResetPasswordScreen() {
+  const { t } = useTranslation(['auth', 'common'])
   const [password, setPassword] = useState('')
   const [confirm, setConfirm] = useState('')
   const [loading, setLoading] = useState(false)
@@ -19,11 +21,11 @@ export default function ResetPasswordScreen() {
 
   async function handleUpdate(): Promise<void> {
     if (password.length < 8) {
-      setError('Hasło musi mieć co najmniej 8 znaków')
+      setError(t('auth:reset_password_min_length'))
       return
     }
     if (password !== confirm) {
-      setError('Hasła nie są identyczne')
+      setError(t('auth:reset_password_no_match'))
       return
     }
     setLoading(true)
@@ -33,7 +35,7 @@ export default function ResetPasswordScreen() {
       if (err) throw err
       setDone(true)
     } catch {
-      setError('Nie udało się ustawić hasła. Link mógł wygasnąć — spróbuj ponownie od początku.')
+      setError(t('auth:reset_password_error'))
     } finally {
       setLoading(false)
     }
@@ -47,43 +49,43 @@ export default function ResetPasswordScreen() {
             onPress={() => router.replace('/(auth)/login')}
             style={styles.backBtn}
             accessibilityRole="button"
-            accessibilityLabel="Wróć do logowania"
+            accessibilityLabel={t('auth:forgot_password_back')}
           >
             <Text style={styles.backText}>‹</Text>
           </Pressable>
         </View>
 
         <View style={styles.content}>
-          <Text style={styles.title}>Nowe hasło</Text>
+          <Text style={styles.title}>{t('auth:reset_password_title')}</Text>
 
           {done ? (
             <>
               <Text style={styles.emoji}>✅</Text>
-              <Text style={styles.successText}>Hasło zostało zmienione. Możesz się teraz zalogować.</Text>
+              <Text style={styles.successText}>{t('auth:reset_password_success')}</Text>
               <Button
-                label="Zaloguj się"
+                label={t('auth:reset_password_login')}
                 onPress={() => router.replace('/(auth)/login')}
               />
             </>
           ) : (
             <>
               <Input
-                label="Nowe hasło"
+                label={t('auth:reset_password_title')}
                 value={password}
                 onChangeText={setPassword}
                 secureTextEntry
                 placeholder="Minimum 8 znaków"
               />
               <Input
-                label="Powtórz hasło"
+                label={t('auth:reset_password_confirm_placeholder')}
                 value={confirm}
                 onChangeText={setConfirm}
                 secureTextEntry
-                placeholder="Powtórz nowe hasło"
+                placeholder={t('auth:reset_password_confirm_placeholder')}
                 error={error ?? undefined}
               />
               <Button
-                label="Ustaw nowe hasło"
+                label={t('auth:reset_password_submit')}
                 onPress={() => { void handleUpdate() }}
                 loading={loading}
                 disabled={!password || !confirm}
