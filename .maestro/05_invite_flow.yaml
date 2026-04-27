@@ -1,0 +1,42 @@
+appId: com.polana.app
+name: "05 — Generate invite link from Gromada admin panel"
+tags:
+  - critical
+  - invites
+
+---
+
+- launchApp
+
+# Navigate to Gromady tab
+- tapOn:
+    id: "tab-gromady"
+
+# Open first gromada
+- tapOn:
+    index: 0
+    id: "gromada-card"
+
+# Open info panel
+- tapOn:
+    id: "gromada-info-button"
+
+# In info panel navigate to admin (only visible for elders)
+# If not elder: tap back and skip test
+- assertVisible: "O Gromadzie"
+
+# Navigate to invite screen
+- tapOn: "Zaproś do Gromady"
+
+# Invite screen visible
+- assertVisible: "Zaproś do Gromady"
+
+# Generate link
+- tapOn: "Wygeneruj link"
+
+# Wait for generation
+- waitForAnimationToEnd
+
+# Link appeared
+- assertVisible: "polana://"
+- assertVisible: "Udostępnij link"

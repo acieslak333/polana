@@ -1,0 +1,34 @@
+appId: com.polana.app
+name: "02 — Create a post in a Gromada"
+tags:
+  - critical
+  - posts
+
+---
+
+- launchApp
+
+# Navigate to Gromady tab
+- tapOn:
+    id: "tab-gromady"
+
+# Open first gromada
+- tapOn:
+    index: 0
+    id: "gromada-card"
+
+# Gromada panel is visible
+- assertVisible: "Posty"
+
+# Tap composer
+- tapOn:
+    id: "post-composer-input"
+- inputText: "Cześć Gromado! E2E test post."
+
+# Submit
+- tapOn:
+    id: "post-submit-button"
+
+# Wait and verify post appears
+- waitForAnimationToEnd
+- assertVisible: "Cześć Gromado! E2E test post."

@@ -1,16 +1,12 @@
 {
-  "sprint": 18,
-  "sprint_name": "Observability + Admin Panel",
+  "sprint": 19,
+  "sprint_name": "E2E Tests (Maestro)",
   "started": "2026-04-27",
-  "last_updated": "2026-04-27T07:00:00.000000+00:00",
-  "last_completed_task": "s18-admin-docs",
+  "last_updated": "2026-04-27T08:00:00.000000+00:00",
+  "last_completed_task": "s19-docs",
   "tasks": [
-    { "id": "s18-analytics", "title": "services/analytics.ts — PostHog wrapper with typed event catalogue", "status": "done", "domain": "infra" },
-    { "id": "s18-screen-tracking", "title": "app/_layout.tsx — ScreenTracker + identifyUser + initAnalytics", "status": "done", "domain": "frontend" },
-    { "id": "s18-event-tracking", "title": "trackEvent calls in users/events/posts/messages services", "status": "done", "domain": "frontend" },
-    { "id": "s18-app-logs", "title": "supabase/migrations/008_app_logs.sql + _shared/logger.ts", "status": "done", "domain": "backend" },
-    { "id": "s18-user-flags", "title": "supabase/migrations/009_user_flags.sql — is_banned column + RLS", "status": "done", "domain": "backend" },
-    { "id": "s18-edge-logging", "title": "send-notification Edge Function wired with makeLogger", "status": "done", "domain": "backend" },
-    { "id": "s18-admin-docs", "title": "docs/admin-panel.md — Retool setup guide with 4 pages + SQL", "status": "done", "domain": "infra" }
+    { "id": "s19-maestro-flows", "title": ".maestro/ — 5 critical flows: register, post, rsvp, message, invite", "status": "done", "domain": "qa" },
+    { "id": "s19-e2e-ci", "title": ".github/workflows/e2e.yml — nightly iOS Simulator run + junit report", "status": "done", "domain": "infra" },
+    { "id": "s19-docs", "title": "docs/e2e.md — setup guide, flow table, troubleshooting", "status": "done", "domain": "infra" }
   ]
 }

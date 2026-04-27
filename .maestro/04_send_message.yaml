@@ -1,0 +1,34 @@
+appId: com.polana.app
+name: "04 — Send a message in a Gromada chat"
+tags:
+  - critical
+  - chat
+
+---
+
+- launchApp
+
+# Navigate to Messages tab
+- tapOn:
+    id: "tab-messages"
+
+# Open first chat room
+- tapOn:
+    index: 0
+    id: "chat-room-row"
+
+# Chat screen visible
+- assertVisible: "Czat"
+
+# Type a message
+- tapOn:
+    id: "message-input"
+- inputText: "Hej! Wiadomość z E2E testu."
+
+# Send
+- tapOn:
+    id: "send-button"
+
+# Message appears in the list
+- waitForAnimationToEnd
+- assertVisible: "Hej! Wiadomość z E2E testu."

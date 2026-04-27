@@ -1,0 +1,78 @@
+appId: com.polana.app
+name: "01 — Register and complete onboarding"
+tags:
+  - critical
+  - onboarding
+
+---
+
+# Launch the app
+- launchApp:
+    clearState: true
+
+# Should land on welcome screen
+- assertVisible: "Witaj na Polanie"
+
+# Tap "Zarejestruj się"
+- tapOn: "Zarejestruj się"
+
+# Fill registration form
+- tapOn:
+    id: "email-input"
+- inputText: "test.e2e@polana.app"
+
+- tapOn:
+    id: "password-input"
+- inputText: "TestPass123!"
+
+- tapOn:
+    id: "password-confirm-input"
+- inputText: "TestPass123!"
+
+- tapOn: "Zarejestruj się"
+
+# Email verification step — in test env use a seeded verified account
+# In CI: use EXPO_PUBLIC_E2E_MODE=true to skip email verification
+- waitForAnimationToEnd
+
+# Step 1/7 — Profile setup
+- assertVisible: "Kim jesteś?"
+- tapOn:
+    id: "first-name-input"
+- inputText: "TestUser"
+- tapOn: "Dalej"
+
+# Step 2/7 — Interests (pick 3)
+- assertVisible: "Co lubisz robić?"
+- tapOn: "Kawa i herbata"
+- tapOn: "Spacery z psami"
+- tapOn: "Gry planszowe"
+- tapOn: "Dalej"
+
+# Step 3/7 — City
+- assertVisible: "Gdzie mieszkasz?"
+- tapOn: "Warszawa"
+- tapOn: "Dalej"
+
+# Step 4/7 — Gromady
+- assertVisible: "Twoje Gromady"
+- tapOn:
+    index: 0
+    text: "Dołącz"
+- tapOn: "Dalej"
+
+# Step 5/7 — Notifications
+- assertVisible: "Powiadomienia"
+- tapOn: "Nie teraz"
+
+# Step 6/7 — Rules
+- assertVisible: "3 zasady Polany"
+- tapOn: "Rozumiem i akceptuję zasady"
+- tapOn: "Dalej"
+
+# Step 7/7 — Ready
+- assertVisible: "Witaj na Polanie"
+- tapOn: "Zaczynamy"
+
+# Should land on the main feed
+- assertVisible: "Feed"

@@ -1,0 +1,71 @@
+name: E2E Tests (Maestro)
+
+on:
+  schedule:
+    # Nightly at 02:00 UTC (04:00 Warsaw time)
+    - cron: '0 2 * * *'
+  workflow_dispatch:
+    inputs:
+      flow:
+        description: 'Specific flow to run (e.g. 01_register_onboard). Leave empty to run all.'
+        required: false
+
+jobs:
+  e2e:
+    name: Maestro E2E
+    runs-on: macos-latest
+    timeout-minutes: 40
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Maestro CLI
+        run: |
+          curl -Ls "https://get.maestro.mobile.dev" | bash
+          echo "$HOME/.maestro/bin" >> $GITHUB_PATH
+
+      - name: Boot iOS Simulator
+        run: |
+          xcrun simctl boot "iPhone 15" || true
+          xcrun simctl list devices | grep "iPhone 15"
+
+      - name: Build Expo app for simulator
+        env:
+          EXPO_PUBLIC_SUPABASE_URL: ${{ secrets.E2E_SUPABASE_URL }}
+          EXPO_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.E2E_SUPABASE_ANON_KEY }}
+          EXPO_PUBLIC_E2E_MODE: 'true'
+        run: npx expo run:ios --configuration Release --device "iPhone 15"
+
+      - name: Run all Maestro flows
+        if: ${{ !inputs.flow }}
+        run: |
+          maestro test .maestro/ --format junit --output e2e-results.xml
+
+      - name: Run specific Maestro flow
+        if: ${{ inputs.flow }}
+        run: |
+          maestro test .maestro/${{ inputs.flow }}.yaml --format junit --output e2e-results.xml
+
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: e2e-results
+          path: e2e-results.xml
+          retention-days: 30
+
+      - name: Publish test summary
+        if: always()
+        uses: dorny/test-reporter@v1
+        with:
+          name: E2E Results
+          path: e2e-results.xml
+          reporter: java-junit
