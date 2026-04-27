@@ -1,5 +1,6 @@
 import { supabase } from '@/services/supabase';
 import type { PostRow, CommentRow, ProfileSnippet } from '@polana/db-types';
+import { trackEvent } from '@/services/analytics';
 
 export type { PostRow, CommentRow };
 
@@ -101,6 +102,7 @@ export async function createPost(payload: {
     .select(POST_QUERY)
     .single();
   if (error) throw error;
+  trackEvent('create_post');
   return { ...(data as any), comment_count: 0 } as Post;
 }
 

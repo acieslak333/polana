@@ -1,14 +1,16 @@
 {
-  "sprint": 17,
-  "sprint_name": "Architecture: Clean Separation",
+  "sprint": 18,
+  "sprint_name": "Observability + Admin Panel",
   "started": "2026-04-27",
-  "last_updated": "2026-04-27T06:00:00.000000+00:00",
-  "last_completed_task": "s17-docs",
+  "last_updated": "2026-04-27T07:00:00.000000+00:00",
+  "last_completed_task": "s18-admin-docs",
   "tasks": [
-    { "id": "s17-db-types-pkg", "title": "packages/db-types — @polana/db-types with all table interfaces + enums", "status": "done", "domain": "infra" },
-    { "id": "s17-tsconfig", "title": "tsconfig.json + jest moduleNameMapper — @polana/db-types path alias", "status": "done", "domain": "infra" },
-    { "id": "s17-metro", "title": "metro.config.js — watchFolders + extraNodeModules for packages/", "status": "done", "domain": "infra" },
-    { "id": "s17-services-migrate", "title": "All services/api/*.ts — inline types replaced with imports from @polana/db-types", "status": "done", "domain": "frontend" },
-    { "id": "s17-docs", "title": "docs/architecture.md — data flow, directory guide, adding-a-feature guide", "status": "done", "domain": "infra" }
+    { "id": "s18-analytics", "title": "services/analytics.ts — PostHog wrapper with typed event catalogue", "status": "done", "domain": "infra" },
+    { "id": "s18-screen-tracking", "title": "app/_layout.tsx — ScreenTracker + identifyUser + initAnalytics", "status": "done", "domain": "frontend" },
+    { "id": "s18-event-tracking", "title": "trackEvent calls in users/events/posts/messages services", "status": "done", "domain": "frontend" },
+    { "id": "s18-app-logs", "title": "supabase/migrations/008_app_logs.sql + _shared/logger.ts", "status": "done", "domain": "backend" },
+    { "id": "s18-user-flags", "title": "supabase/migrations/009_user_flags.sql — is_banned column + RLS", "status": "done", "domain": "backend" },
+    { "id": "s18-edge-logging", "title": "send-notification Edge Function wired with makeLogger", "status": "done", "domain": "backend" },
+    { "id": "s18-admin-docs", "title": "docs/admin-panel.md — Retool setup guide with 4 pages + SQL", "status": "done", "domain": "infra" }
   ]
 }

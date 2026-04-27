@@ -1,5 +1,6 @@
 import { supabase } from '@/services/supabase';
 import type { EventRow, RsvpStatus } from '@polana/db-types';
+import { trackEvent } from '@/services/analytics';
 
 export type { EventRow, RsvpStatus };
 
@@ -87,6 +88,7 @@ export async function upsertRSVP(
     .from('event_rsvps')
     .upsert({ event_id: eventId, user_id: userId, status, responded_at: new Date().toISOString() });
   if (error) throw error;
+  trackEvent(status === 'going' ? 'rsvp_event' : 'cancel_rsvp');
 }
 
 export async function cancelEvent(id: string): Promise<void> {

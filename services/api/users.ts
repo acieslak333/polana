@@ -1,5 +1,6 @@
 import { supabase } from '@/services/supabase';
 import type { PublicProfile, FriendshipStatus } from '@polana/db-types';
+import { trackEvent } from '@/services/analytics';
 
 export type { PublicProfile, FriendshipStatus };
 
@@ -67,6 +68,7 @@ export async function joinGromada(gromadaId: string, userId: string) {
     .from('gromada_members')
     .insert({ gromada_id: gromadaId, user_id: userId, role: 'member' });
   if (error && error.code !== '23505') throw error;
+  if (!error) trackEvent('join_gromada');
 }
 
 

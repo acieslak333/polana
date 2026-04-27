@@ -1,5 +1,6 @@
 import { supabase } from '@/services/supabase';
 import type { Message, ChatRoom } from '@polana/db-types';
+import { trackEvent } from '@/services/analytics';
 
 export type { Message, ChatRoom };
 
@@ -60,6 +61,7 @@ export async function sendMessage(payload: {
     .select(MESSAGE_QUERY)
     .single();
   if (error) throw error;
+  trackEvent('send_message');
   return data as unknown as Message;
 }
 

@@ -1,5 +1,6 @@
 import { serve } from 'https://deno.land/std@0.168.0/http/server.ts'
 import { createAdminClient, corsHeaders } from '../_shared/supabase-admin.ts'
+import { makeLogger } from '../_shared/logger.ts'
 
 interface NotificationPayload {
   userId: string
@@ -35,6 +36,8 @@ serve(async (req) => {
     const { userId, title, body, data } = payload
 
     const supabase = createAdminClient()
+    const log = makeLogger(supabase, 'send-notification')
+    const done = log.start('push', { userId })
 
     const { data: profile, error } = await supabase
       .from('profiles')
@@ -64,6 +67,7 @@ serve(async (req) => {
     })
 
     const result = await response.json()
+    await done(true)
 
     return new Response(
       JSON.stringify({ sent: true, result }),

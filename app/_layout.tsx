@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { Stack } from 'expo-router';
+import { Stack, usePathname } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
@@ -9,14 +9,22 @@ import { router } from 'expo-router';
 
 import '@/i18n';
 import { initSentry } from '@/services/sentry';
+import { initAnalytics, trackScreen, identifyUser } from '@/services/analytics';
 import { supabase } from '@/services/supabase';
 import { getProfile } from '@/services/auth';
 import { useAuthStore } from '@/stores/authStore';
 import { theme } from '@/constants/theme';
 import { resolveDeepLink } from '@/utils/routing';
 
-// Initialise error monitoring before any component renders
+// Initialise error monitoring + analytics before any component renders
 initSentry();
+void initAnalytics();
+
+function ScreenTracker() {
+  const pathname = usePathname();
+  useEffect(() => { trackScreen(pathname); }, [pathname]);
+  return null;
+}
 
 export default function RootLayout() {
   const { setSession, setProfile, setLoading } = useAuthStore();
@@ -43,6 +51,7 @@ export default function RootLayout() {
           try {
             const profile = await getProfile(session.user.id);
             setProfile(profile);
+            identifyUser(session.user.id, profile?.city_id ?? undefined);
           } catch {
             setProfile(null);
           }
@@ -73,6 +82,7 @@ export default function RootLayout() {
   return (
     <GestureHandlerRootView style={styles.root}>
       <SafeAreaProvider>
+        <ScreenTracker />
         <StatusBar style="light" backgroundColor={theme.colors.background} />
         <Stack screenOptions={{ headerShown: false }}>
           <Stack.Screen name="index" />
