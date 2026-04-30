@@ -18,7 +18,7 @@ export async function fetchInterests() {
 export async function fetchCities() {
   const { data, error } = await supabase
     .from('cities')
-    .select('id, name')
+    .select('id, name, emoji, lat, lng, country_code, timezone')
     .eq('is_active', true)
     .order('name');
   if (error) throw error;

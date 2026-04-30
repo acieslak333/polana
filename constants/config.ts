@@ -16,10 +16,4 @@ export const LIMITS = {
   FAVOR_EXPIRY_DAYS: 7,
 } as const;
 
-export const CITIES = {
-  WARSZAWA: 'warszawa',
-  KRAKOW: 'krakow',
-  WROCLAW: 'wroclaw',
-  LODZ: 'lodz',
-  GDANSK: 'gdansk',
-} as const;
+// Cities are fetched from the DB via fetchCities() — no hardcoded list here.

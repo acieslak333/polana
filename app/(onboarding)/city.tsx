@@ -10,7 +10,7 @@ import { theme } from '@/constants/theme';
 import { useOnboardingStore } from '@/stores/onboardingStore';
 import { fetchCities } from '@/services/api/users';
 
-type City = { id: string; name: string };
+type City = { id: string; name: string; emoji: string };
 
 export default function CityScreen() {
   const { t } = useTranslation(['onboarding', 'common']);
@@ -25,14 +25,6 @@ export default function CityScreen() {
       .catch(() => {})
       .finally(() => setLoading(false));
   }, []);
-
-  const CITY_EMOJIS: Record<string, string> = {
-    Warszawa: '🏛️',
-    Kraków: '🏰',
-    Wrocław: '🌉',
-    Łódź: '🧵',
-    Gdańsk: '⚓',
-  };
 
   return (
     <SafeAreaView style={styles.safe}>
@@ -66,7 +58,7 @@ export default function CityScreen() {
                   pressed && styles.cityRowPressed,
                 ]}
               >
-                <Text style={styles.cityEmoji}>{CITY_EMOJIS[item.name] ?? '🏙️'}</Text>
+                <Text style={styles.cityEmoji}>{item.emoji}</Text>
                 <Text style={[styles.cityName, selected && styles.cityNameSelected]}>
                   {item.name}
                 </Text>

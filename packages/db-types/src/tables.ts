@@ -321,6 +321,11 @@ export interface City {
   name: string;
   country_code: string;
   timezone: string;
+  emoji: string;
+  /** Latitude for map centering — derived from location GEOGRAPHY. */
+  lat: number | null;
+  /** Longitude for map centering — derived from location GEOGRAPHY. */
+  lng: number | null;
   is_active: boolean;
   created_at: string;
 }

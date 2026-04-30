@@ -16,18 +16,12 @@ import { EventCard } from '@/components/event/EventCard';
 import { theme } from '@/constants/theme';
 import { useAuthStore } from '@/stores/authStore';
 import { useCityEvents } from '@/hooks/useEvents';
+import { fetchCities } from '@/services/api/users';
 import type { EventWithRSVP } from '@/services/api/events';
 
 type LatLon = { latitude: number; longitude: number };
 
-const CITY_CENTERS: Record<string, LatLon> = {
-  warszawa: { latitude: 52.2297, longitude: 21.0122 },
-  krakow: { latitude: 50.0647, longitude: 19.9450 },
-  wroclaw: { latitude: 51.1079, longitude: 17.0385 },
-  lodz: { latitude: 51.7592, longitude: 19.4560 },
-  gdansk: { latitude: 54.3520, longitude: 18.6466 },
-};
-
+// Warsaw as a safe fallback only — all real cities come from the DB
 const DEFAULT_CENTER: LatLon = { latitude: 52.2297, longitude: 21.0122 };
 
 function parsePoint(wkt: string | null): LatLon | null {
@@ -35,15 +29,6 @@ function parsePoint(wkt: string | null): LatLon | null {
   const m = wkt.match(/POINT\(([^ ]+) ([^ )]+)\)/);
   if (!m) return null;
   return { longitude: parseFloat(m[1]), latitude: parseFloat(m[2]) };
-}
-
-function getCityCenter(cityId: string | null | undefined): LatLon {
-  if (!cityId) return DEFAULT_CENTER;
-  const normalized = cityId.toLowerCase().replace(/ó/g, 'o').replace(/ł/g, 'l').replace(/ą/g, 'a');
-  for (const key of Object.keys(CITY_CENTERS)) {
-    if (normalized.includes(key)) return CITY_CENTERS[key];
-  }
-  return DEFAULT_CENTER;
 }
 
 export default function MapScreen() {
@@ -56,8 +41,19 @@ export default function MapScreen() {
   const [viewMode, setViewMode] = useState<'list' | 'map'>('list');
   const [locationGranted, setLocationGranted] = useState<boolean | null>(null);
   const [locationPrimed, setLocationPrimed] = useState(false);
+  const [cityCenter, setCityCenter] = useState<LatLon>(DEFAULT_CENTER);
 
-  useEffect(() => { if (cityId) load(true); }, [cityId]);
+  useEffect(() => {
+    if (!cityId) return;
+    load(true);
+    // Fetch city coordinates from DB — works for any city, no hardcoding needed
+    fetchCities().then((cities) => {
+      const city = cities?.find((c) => c.id === cityId);
+      if (city?.lat != null && city?.lng != null) {
+        setCityCenter({ latitude: city.lat, longitude: city.lng });
+      }
+    }).catch(() => { /* fall back to DEFAULT_CENTER */ });
+  }, [cityId]);
 
   const handleMapToggle = useCallback(async () => {
     setViewMode('map');
@@ -72,8 +68,6 @@ export default function MapScreen() {
       setLocationGranted(false);
     }
   }, [locationGranted]);
-
-  const cityCenter = getCityCenter(profile?.city_id);
 
   const initialRegion = {
     latitude: cityCenter.latitude,
