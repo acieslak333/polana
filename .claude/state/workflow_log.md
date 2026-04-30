@@ -53,3 +53,4 @@ _→ list any registry updates, threshold changes, or follow-up tasks created_
   Agent: cs-senior-engineer
   Branch: s6/crossovers
 ✓ 01:09 Done s6-crossovers-api — merged to sprint-6
+00:51 Task start: s21-indexes | backend | s21/indexes
