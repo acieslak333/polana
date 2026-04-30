@@ -692,3 +692,433 @@
 
 ### Code Review (end of sprint)
 - [ ] Crash-free rate ≥ 99% in Sentry after 48h TestFlight. Congrats — you shipped.
+
+---
+
+## Sprint 21 — Database Security, Indexing & Scalability
+
+**Goal:** The database is hardened against real-world attack vectors, performs well at 50k+ users, and follows professional backend engineering standards. Every identified gap from the schema audit is fixed.
+
+### Context — What the audit found
+
+After reviewing `001_initial_schema.sql` and `002_rls_policies.sql`, these are the concrete issues:
+
+**Security gaps:**
+- `profiles_select_any` policy uses `USING (true)` — any authenticated user can read every column of every profile, including `date_of_birth`, `push_token`, `last_active_at`. This is GDPR-risky.
+- `chat_rooms_insert_authenticated` uses `USING (auth.uid() IS NOT NULL)` — any logged-in user can create any type of chat room with any participants.
+- `reports_select_own` only lets reporters see their own reports — elders cannot see reports filed against content in their own Gromada.
+- `gromada_allies` has no INSERT/UPDATE/DELETE policies — currently only elders can update `gromady` metadata, but allies have no write protection at DB level.
+- `push_token` stored in plaintext in `profiles` — should use pgcrypto symmetric encryption or Supabase Vault.
+- `date_of_birth` stored in plaintext — encrypt with `pgp_sym_encrypt` or strip to age-range bucket only.
+- No audit trail for sensitive admin actions (ban, delete, remove member).
+- Missing tables from planned sprints: `user_blocks`, `gromada_invites`, `admin_users`.
+
+**Missing indexes (all foreign keys and query columns lack indexes):**
+Every join and filter will cause sequential scans on large tables. Critical missing indexes:
+- `gromada_members(gromada_id)`, `gromada_members(user_id)` — most-joined table in the app
+- `posts(gromada_id, created_at DESC)` — feed query
+- `posts(author_id)`, `posts(is_hidden)`
+- `messages(chat_room_id, created_at DESC)` — chat pagination
+- `events(city_id, starts_at)`, `events(gromada_id, status)`
+- `event_rsvps(event_id)`, `event_rsvps(user_id)`
+- `comments(post_id, created_at)`, `comments(parent_comment_id)`
+- `reactions(post_id)`, `reactions(user_id)`
+- `friendships(requester_id)`, `friendships(addressee_id)`
+- `favor_requests(gromada_id, status, expires_at)`
+- `profiles(city_id)`, `profiles(last_active_at)`, `profiles(is_banned)`
+- PostGIS `GIST` index on `events.location_point` — without this, geo queries are O(n)
+
+**Scalability gaps:**
+- No query timeouts set — a rogue query can stall the whole connection pool
+- `warmth_score` recomputed on every profile load — should be materialized or cached
+- `meetings_this_month` / `meetings_this_week` counters in `gromady` are updated by triggers but never reset — need a cron reset job
+- No `ANALYZE` schedule (Supabase auto-analyzes but explicit schedule helps post-migration)
+- Connection pooler mode: Supabase uses PgBouncer by default in `transaction` mode — confirm Edge Functions use the pooler URL, not the direct URL
+
+### Tasks
+
+#### s21-indexes — `010_indexes.sql`
+- `CREATE INDEX CONCURRENTLY` for all missing indexes listed above
+- `CREATE INDEX CONCURRENTLY` on `messages(chat_room_id, created_at DESC)`
+- `CREATE INDEX CONCURRENTLY` on `posts(gromada_id, created_at DESC) WHERE is_hidden = false` (partial index)
+- `CREATE INDEX CONCURRENTLY` on `events(city_id, starts_at) WHERE status = 'upcoming'` (partial index)
+- `CREATE INDEX CONCURRENTLY` using `GIST` on `events.location_point`
+- `CREATE INDEX CONCURRENTLY` on `profiles(city_id)`, `profiles(last_active_at)`, `profiles(is_banned)`
+- `CREATE INDEX CONCURRENTLY` on all FK columns in junction tables
+- Add `COMMENT ON INDEX` for each, explaining the query it serves
+
+#### s21-rls-fix — `011_rls_fixes.sql`
+- Replace `profiles_select_any` with a view-based approach:
+  - Create `profiles_public` view exposing only: `id, first_name, nickname, bio, city_id, avatar_config, custom_avatar_url, created_at` — no DOB, no push_token, no last_active_at
+  - Grant SELECT on the view to `authenticated` role
+  - Drop the `profiles_select_any` policy; replace with `profiles_select_self` (own full row) + RLS on the view
+- Fix `chat_rooms_insert_authenticated`:
+  - `INSERT WITH CHECK`: gromada-type rooms only if member, event-type rooms only if RSVP'd `going`, direct rooms only if neither participant is blocked
+- Add elder-level report visibility:
+  - `reports_select_elder`: SELECT using EXISTS check — reporter_id = auth.uid() OR (gromada_id is in a gromada where elder_id = auth.uid())
+  - Requires joining reports → posts/comments → gromady
+- Add `gromada_allies` write policies: INSERT/UPDATE/DELETE only for elder of that gromada
+- Add `crossover_proposals` UPDATE policy for status changes (to/from gromada elders only)
+- Verify `friendships_update_addressee` doesn't allow requester to unblock themselves
+
+#### s21-missing-tables — `012_missing_tables.sql`
+- `user_blocks(id, blocker_id, blocked_id, created_at)` — unique on (blocker_id, blocked_id)
+- RLS: SELECT/INSERT/DELETE by blocker_id only
+- `gromada_invites(id, gromada_id, created_by, code TEXT UNIQUE, expires_at, used_by, used_at)`
+- RLS: INSERT by gromada elder, SELECT by any authenticated (needed for link resolution)
+- Trigger: mark invite `used_by` + `used_at` on redemption; enforce `expires_at`; enforce single use
+- `admin_users(id, user_id REFERENCES profiles(id), role TEXT CHECK(role IN ('super_admin','moderator','content_editor')), granted_by UUID, created_at)` — used by both Sprint 21 and Sprint 22
+- RLS: SELECT by auth user for own row + by service role only for writes (never writable from client)
+
+#### s21-encryption — `013_encryption.sql`
+- Enable `pgcrypto` extension: `CREATE EXTENSION IF NOT EXISTS pgcrypto;`
+- **`date_of_birth`**: Replace with age-range bucket only — `ALTER TABLE profiles ADD COLUMN age_group TEXT CHECK (age_group IN ('16-17','18-24','25-34','35-44','45-54','55+'))` — drop `date_of_birth` column (it is not needed after onboarding; we only need it for the 16+ check which can be done at registration time). Migration strips existing DOBs to age group then drops column.
+- **`push_token`**: Encrypt with `pgp_sym_encrypt(push_token, current_setting('app.push_token_key'))` — set `app.push_token_key` via `ALTER DATABASE SET app.push_token_key = '...'` (loaded from Supabase Vault). Service-layer reads with `pgp_sym_decrypt`. App never reads push_token back — it only writes.
+- **`contact_email` in `gromada_allies`**: Same pgcrypto symmetric encryption
+- Document key rotation procedure in `docs/encryption.md`
+
+#### s21-audit — `014_audit_log.sql`
+- `audit_log(id BIGSERIAL PK, table_name TEXT, record_id UUID, action TEXT CHECK(action IN ('INSERT','UPDATE','DELETE')), changed_by UUID, old_data JSONB, new_data JSONB, created_at TIMESTAMPTZ DEFAULT NOW())`
+- Trigger function `audit_trigger()`: fires AFTER INSERT/UPDATE/DELETE on sensitive tables, captures `auth.uid()` via `current_setting('request.jwt.claims')`
+- Attach to: `gromada_members` (joins/leaves), `profiles` (is_banned changes), `gromady` (status changes), `admin_users` (grants/revokes)
+- Retention: pg_cron job deletes rows older than 90 days
+- RLS: no client access (service role only)
+
+#### s21-scalability — `015_scalability.sql` + `docs/database.md`
+- Set `statement_timeout = '30s'` and `lock_timeout = '10s'` at session level in Edge Functions
+- Add `ANALYZE` to the migration so query planner stats are fresh
+- Materialized view `gromada_warmth_scores(gromada_id, warmth_score, refreshed_at)` — refreshed by pg_cron every hour
+- Monthly counter reset: pg_cron job on 1st of each month resets `meetings_this_month = 0` on all gromady; weekly reset for `meetings_this_week`
+- `docs/database.md`: document connection pooler URLs, index strategy, query explain plans for the 5 most expensive queries, growth projections (1k/10k/100k users), partitioning trigger point (>10M messages → partition by month)
+
+#### s21-edge-security — Edge Function hardening
+- All Edge Functions: validate `Authorization` header AND check `admin_users` table when called from admin context
+- Add `X-Request-ID` header passthrough for audit log correlation
+- Rate limit: implement sliding window counter in `api_rate_limits(user_id, endpoint, window_start, count)` — reject if count > threshold
+- `send-notification` function: validate push token belongs to target user before sending
+
+### Code Review (end of sprint)
+- [ ] Run `EXPLAIN ANALYZE` on the 10 most common queries — all use index scans, no sequential scans on tables > 1000 rows
+- [ ] RLS verification: test with 3 users (stranger, member, elder) that each sees only what they should
+- [ ] Encryption: verify push tokens not readable via Supabase dashboard (check pgcrypto output)
+- [ ] Audit log fires correctly for ban action, member removal, admin grant
+
+---
+
+## Sprint 22 — Admin Panel (Web App)
+
+**Goal:** A secure, privately-hosted web admin panel that lets you (and designated admins) manage all configurable aspects of Polana — content, users, gromady, places, event types — without touching code or the database directly.
+
+### Architecture Decision
+
+**Where to host:** Vercel (Next.js App Router)
+- Free tier handles: preview deployments per PR, custom domain, HTTPS, env var management
+- Deploy from `packages/admin/` subfolder in the monorepo
+- `vercel.json` in `packages/admin/` specifies `rootDirectory`
+- Custom domain: `admin.polana.app` — locked behind HTTP Basic Auth at Vercel level as a first gate
+
+**Security model (layered):**
+```
+Browser → Vercel (HTTP Basic Auth) → Next.js (Supabase session check) → Edge Functions (admin_users table) → Supabase (service role)
+```
+1. **Layer 1 — Vercel Password Protection**: Vercel Pro's password protection feature on `admin.polana.app` — simple shared password blocks casual access (not security, just obscurity layer)
+2. **Layer 2 — Supabase Auth**: Email + password login, only pre-approved emails in `admin_users` table can log in
+3. **Layer 3 — admin_users check**: Every page and API route verifies the session user exists in `admin_users` with appropriate role
+4. **Layer 4 — Edge Functions for mutations**: All writes go through Edge Functions that re-verify `admin_users` using service role, never client-side
+
+**Never exposed to browser:** `SUPABASE_SERVICE_ROLE_KEY` — it only exists in Edge Function environment vars
+
+**Granting access to new admins:**
+- You run a script (or Edge Function endpoint): `POST /admin/grant-access { email, role }`
+- Creates a record in `admin_users` + sends a Supabase magic link to their email
+- They follow the link, set a password, and can log in
+- To revoke: `DELETE FROM admin_users WHERE user_id = ?` — next request returns 403
+
+### Tech Stack (admin panel only)
+| Tool | Version | Purpose |
+|---|---|---|
+| Next.js | 14 | App Router, server components, API routes |
+| TypeScript | strict | Same rules as main app |
+| Tailwind CSS | 3 | Utility-first styling (no theme.ts — this is a web app) |
+| shadcn/ui | latest | Pre-built admin UI components (table, form, dialog, toast) |
+| Supabase JS | 2 | Auth + data fetch + realtime |
+| TanStack Table | 8 | Data tables with sort/filter/pagination |
+| Zod | 3 | Form validation schemas |
+| React Hook Form | 7 | Form state management |
+
+### Folder Structure
+```
+packages/admin/
+  app/
+    layout.tsx               — root layout with sidebar + auth guard
+    (auth)/
+      login/page.tsx         — email + password login form
+    (dashboard)/
+      page.tsx               — overview: user count, gromada count, reports count
+      users/page.tsx         — user lookup, ban/unban
+      users/[id]/page.tsx    — user detail: profile, gromady, activity log
+      gromady/page.tsx       — all gromady table: status, member count, filter
+      gromady/[id]/page.tsx  — gromada detail: members, events, change status
+      content/
+        interests/page.tsx   — interests CRUD table
+        names/page.tsx       — adjectives/animals/suffixes CRUD
+        event-types/page.tsx — event type CRUD (after making it a DB table)
+        cities/page.tsx      — city management
+        mindful-texts/page.tsx — mindful text bank management
+      places/page.tsx        — places CRUD (Sprint 23 prerequisite)
+      reports/page.tsx       — moderation queue: pending reports, resolve actions
+      config/page.tsx        — feature flags, limits (max_members, max_gromady_per_user)
+  components/
+    sidebar.tsx
+    data-table.tsx
+    user-row.tsx
+    confirm-dialog.tsx
+  lib/
+    supabase.ts              — admin Supabase client (anon key)
+    admin-check.ts           — server-side admin_users verification middleware
+    edge-functions.ts        — typed wrappers for Edge Function calls
+  middleware.ts              — Next.js middleware: redirect to login if no session
+  vercel.json
+  package.json
+  tailwind.config.ts
+  tsconfig.json
+```
+
+### Tasks
+
+#### s22-scaffold — Admin panel scaffold
+- `packages/admin/` directory with all config files: `package.json`, `tsconfig.json`, `tailwind.config.ts`, `next.config.ts`, `vercel.json`
+- `pnpm-workspace.yaml` updated to include `packages/admin`
+- `.github/workflows/admin-deploy.yml` — Vercel deploy on push to `main`
+- `packages/admin/app/layout.tsx` — root layout with sidebar navigation component
+- `packages/admin/middleware.ts` — redirect to `/login` if no valid Supabase session + admin role check
+- `packages/admin/lib/supabase.ts` — server-side Supabase client using `@supabase/ssr`
+- `packages/admin/lib/admin-check.ts` — `requireAdmin(role?)` function: reads session, checks `admin_users`, throws 403 if not authorized
+- `packages/admin/app/(auth)/login/page.tsx` — clean login form with Supabase email+password auth
+- `packages/admin/app/(dashboard)/page.tsx` — stats overview: users, gromady, reports, recent activity
+
+#### s22-user-management — User management
+- `packages/admin/app/(dashboard)/users/page.tsx` — searchable table: email, name, city, is_banned, created_at
+- `packages/admin/app/(dashboard)/users/[id]/page.tsx` — full profile, list of gromady, ban/unban action
+- Edge Function `admin-ban-user/index.ts` — validates admin role, sets `profiles.is_banned`, logs to audit_log
+- Edge Function `admin-unban-user/index.ts` — same, unsets flag
+- Edge Function `admin-grant-access/index.ts` — creates `admin_users` record, sends magic link
+
+#### s22-content-management — Content CRUD
+- `packages/admin/app/(dashboard)/content/interests/page.tsx` — table of all interests + add/edit/delete inline
+- `packages/admin/app/(dashboard)/content/names/page.tsx` — tabs: adjectives / animals / suffixes, add/remove words
+- **`016_event_types_table.sql`** — migrate `event_type` from CHECK constraint to `event_types(id, name_pl, name_en, emoji, is_active)` table; update events FK; update RLS
+- `packages/admin/app/(dashboard)/content/event-types/page.tsx` — add/toggle active event types
+- **`017_mindful_texts_table.sql`** — `mindful_texts(id, category TEXT, text_pl TEXT, text_en TEXT, is_active)` table seeded from `constants/mindfulTexts.ts` content; update `MindfulText` component to fetch from DB
+- `packages/admin/app/(dashboard)/content/mindful-texts/page.tsx` — manage mindful text bank per category
+- `packages/admin/app/(dashboard)/content/cities/page.tsx` — add/edit city (name, coordinates, timezone, is_active)
+
+#### s22-gromada-management — Gromada management
+- `packages/admin/app/(dashboard)/gromady/page.tsx` — sortable/filterable table: name, city, status, member count, last activity
+- `packages/admin/app/(dashboard)/gromady/[id]/page.tsx` — member list, upcoming events, change status (active/dormant/archived), transfer elder
+- Edge Function `admin-archive-gromada/index.ts` — validates admin role, sets status + notifies members
+- Edge Function `admin-transfer-elder/index.ts` — validates new elder is a member, updates `elder_id`
+
+#### s22-moderation — Reports queue
+- `packages/admin/app/(dashboard)/reports/page.tsx` — pending reports table with content preview, reason, reporter info
+- Resolve actions: hide content / dismiss / warn user (adds note to audit_log)
+- Edge Function `admin-resolve-report/index.ts` — hides post/comment or dismisses report, logs action
+
+#### s22-config — Feature flags & limits
+- **`018_config_table.sql`** — `app_config(key TEXT PK, value TEXT, description TEXT, updated_by UUID, updated_at)` — seed with: `max_members_small=15`, `max_members_medium=30`, `max_members_large=50`, `max_gromady_per_user=3`, `max_upcoming_events=5`, `invite_expiry_days=7`
+- `packages/admin/app/(dashboard)/config/page.tsx` — editable key-value config table
+- Edge Function `admin-update-config/index.ts` — updates `app_config`, logs to audit_log
+- Update existing trigger functions and Edge Functions to read limits from `app_config` instead of hardcoded values
+
+### Code Review (end of sprint)
+- [ ] Login with a non-admin Supabase user → 403 on every route
+- [ ] Ban a user → is_banned = true in DB → audit_log entry → user cannot log in
+- [ ] Add an interest → immediately visible in mobile app
+- [ ] Non-super_admin cannot access `/config` or `/users/[id]/ban`
+- [ ] `SUPABASE_SERVICE_ROLE_KEY` confirmed absent from browser network requests
+
+---
+
+## Sprint 23 — Places & Smart Location Suggestions
+
+**Goal:** Users get intelligent place suggestions when creating events, based on the event type and their Gromada's interests. Daily/weekly recurring events are supported. Google Places API handles ad-hoc location search. A curated places database powers smart suggestions.
+
+### Decision: Where Does Place Data Come From?
+
+**Three-source hybrid:**
+
+| Source | Use case | Storage |
+|---|---|---|
+| **Google Places API** | Ad-hoc location search when user types a custom venue | Do NOT store — extract name + coordinates only (ToS) |
+| **Curated `places` table** | Smart suggestions seeded by admin + user proposals | Our DB, full metadata |
+| **Historical event data** | "Leśne Chomiki always meet at Praga Park" inference | Derived from `events` table |
+
+**Cost:** Google Places API costs $0.017/autocomplete request. With $200/month free credit that's ~11,700 free searches/month — more than enough for early stage. Set a billing alert at $50.
+
+### Database Schema
+
+#### `019_places.sql`
+```sql
+CREATE TABLE public.places (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  name TEXT NOT NULL CHECK (char_length(name) BETWEEN 2 AND 100),
+  address TEXT NOT NULL,
+  city_id UUID NOT NULL REFERENCES public.cities(id),
+  location_point GEOGRAPHY(POINT, 4326) NOT NULL,
+  place_types TEXT[] NOT NULL DEFAULT '{}',
+    -- possible values: 'park','cafe','gym','community_center','library',
+    --                  'sports_field','indoor_hall','restaurant','studio'
+  is_indoor BOOLEAN NOT NULL DEFAULT false,
+  capacity INT,
+  website_url TEXT,
+  is_active BOOLEAN DEFAULT true,
+  source TEXT NOT NULL DEFAULT 'admin_curated' CHECK (source IN ('admin_curated','user_suggested')),
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- Junction: which interests fit this place
+CREATE TABLE public.place_interest_tags (
+  place_id UUID REFERENCES public.places(id) ON DELETE CASCADE,
+  interest_id UUID REFERENCES public.interests(id) ON DELETE CASCADE,
+  PRIMARY KEY (place_id, interest_id)
+);
+
+-- RLS: places are public read, admin-only write
+ALTER TABLE public.places ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "places_select_active" ON public.places FOR SELECT USING (is_active = true);
+-- INSERT/UPDATE/DELETE: service role only (via admin panel Edge Functions)
+
+ALTER TABLE public.place_interest_tags ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "place_tags_select" ON public.place_interest_tags FOR SELECT USING (true);
+
+-- Spatial index for geo queries
+CREATE INDEX idx_places_location ON public.places USING GIST (location_point);
+CREATE INDEX idx_places_city ON public.places (city_id);
+CREATE INDEX idx_places_types ON public.places USING GIN (place_types);
+```
+
+#### `020_recurring_events.sql`
+```sql
+CREATE TABLE public.recurring_event_templates (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  gromada_id UUID NOT NULL REFERENCES public.gromady(id) ON DELETE CASCADE,
+  created_by UUID NOT NULL REFERENCES public.profiles(id),
+  title TEXT NOT NULL CHECK (char_length(title) BETWEEN 2 AND 100),
+  description TEXT CHECK (char_length(description) <= 500),
+  event_type TEXT REFERENCES public.event_types(id),  -- after Sprint 22
+  preferred_place_id UUID REFERENCES public.places(id),
+  preferred_location_name TEXT,   -- fallback if no place selected
+  preferred_location_point GEOGRAPHY(POINT, 4326),
+  recurrence TEXT NOT NULL CHECK (recurrence IN ('daily','weekly','biweekly','monthly')),
+  day_of_week INT CHECK (day_of_week BETWEEN 0 AND 6),  -- 0=Sunday, null for daily
+  time_of_day TIME NOT NULL DEFAULT '18:00',
+  max_attendees INT,
+  is_active BOOLEAN DEFAULT true,
+  last_instantiated_at TIMESTAMPTZ,
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- RLS: elder of gromada can create/manage
+ALTER TABLE public.recurring_event_templates ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "templates_select_member" ON public.recurring_event_templates
+  FOR SELECT USING (
+    EXISTS (SELECT 1 FROM public.gromada_members WHERE gromada_id = recurring_event_templates.gromada_id AND user_id = auth.uid())
+  );
+CREATE POLICY "templates_insert_elder" ON public.recurring_event_templates
+  FOR INSERT WITH CHECK (
+    auth.uid() = created_by AND
+    EXISTS (SELECT 1 FROM public.gromady WHERE id = gromada_id AND elder_id = auth.uid())
+  );
+CREATE POLICY "templates_update_elder" ON public.recurring_event_templates
+  FOR UPDATE USING (EXISTS (SELECT 1 FROM public.gromady WHERE id = gromada_id AND elder_id = auth.uid()));
+CREATE POLICY "templates_delete_elder" ON public.recurring_event_templates
+  FOR DELETE USING (EXISTS (SELECT 1 FROM public.gromady WHERE id = gromada_id AND elder_id = auth.uid()));
+```
+
+### Place Suggestion Algorithm
+
+**Endpoint:** Edge Function `suggest-places/index.ts`
+
+**Input:** `{ gromada_id, event_type, max_results = 5 }`
+
+**Steps:**
+1. Fetch gromada's city center from `gromady JOIN cities`
+2. Fetch gromada's interest IDs from `gromada_interests`
+3. Map interests → expected `place_types` using a lookup table (hardcoded in Edge Function):
+   - sport interests (Rower, Bieganie, Joga, Siatkówka, Badminton, Wspinaczka) → `['park','gym','sports_field','indoor_hall']`
+   - social interests (Kawa i herbata, Gry planszowe, Matcha) → `['cafe','restaurant','library']`
+   - creative (Ceramika, Muzyka, Rysunek, Fotografia) → `['studio','community_center','indoor_hall']`
+   - outdoor (Spacery z psami, Piknik, Ogrodnictwo) → `['park']`
+4. Query `places` with PostGIS: `ST_DWithin(location_point, city_center, 5000)` — within 5km
+5. Filter by `place_types && $expectedTypes` (array overlap)
+6. Exclude places used by this gromada in the last 14 days (join `events WHERE created_at > NOW() - 14 days`)
+7. Score: `(1.0 / ST_Distance(location_point, city_center)) + (capacity_match_bonus) + (freshness_bonus)`
+8. Return top `max_results` with distance and match reason
+
+### Google Places Integration
+
+**Where it's used:** `CreateEventForm` location field only
+
+**Implementation:**
+- `services/api/places.ts` — `searchGooglePlaces(query, cityCenter)` — calls `https://maps.googleapis.com/maps/api/place/autocomplete/json`
+- Returns: `[{ place_id, description }]` — used for autocomplete display only
+- On selection: call `getGooglePlaceDetails(place_id)` to get lat/lng
+- Extract: `{ name: description, lat, lng }` — store as `location_name + location_point` in event
+- **Never store `place_id` in our DB** — Google ToS prohibits caching
+
+**`CreateEventForm` changes:**
+- Location field: `TextInput` with debounced autocomplete (300ms)
+- Dropdown shows: smart suggestions first (from Edge Function), then Google Places results as user types
+- Smart suggestions shown immediately when form opens (0 network calls required)
+- Google Places only called when user starts typing custom location
+- User can tap a suggestion or type freely
+
+**Environment variable:**
+- `EXPO_PUBLIC_GOOGLE_PLACES_KEY` — restricted to bundle ID `com.polana.app` + `Maps JavaScript API` + `Places API`
+- Set billing alert at $50/month in Google Cloud Console
+
+### Recurring Events Edge Function
+
+**`supabase/functions/instantiate-recurring-events/index.ts`**
+- Runs daily at 06:00 via pg_cron (or Supabase scheduled function)
+- Fetches all active `recurring_event_templates WHERE last_instantiated_at < NOW() - recurrence_interval`
+- For each template, checks if a matching upcoming event already exists in the next recurrence window
+- If not: `INSERT INTO events` with title, type, place, starts_at computed from recurrence + day_of_week + time_of_day
+- Respects existing `enforce_max_gromada_events` trigger (max 5 upcoming events)
+- Updates `last_instantiated_at`
+- Logs to `app_logs`
+
+### UI Changes
+
+#### Recurring event UI (Gromada settings screen)
+- `app/(app)/(gromady)/[id]/settings.tsx` — add "Recurring events" section (elder only)
+- List active templates with recurrence badge
+- Add/edit template: title, type, place (from suggestion dropdown), recurrence, day, time
+- Toggle active/inactive
+
+#### CreateEventForm improvements
+- Split location field into two modes:
+  1. "Suggest a place" tab — shows smart suggestions from Edge Function
+  2. "Search address" tab — Google Places autocomplete
+- Show suggestion cards: place name, place type icon, distance, why it was suggested ("Matches your cycling interests")
+
+### Seed Data
+
+**`003_seed_data.sql` update** (or `021_seed_places.sql`):
+```sql
+-- Warsaw places (seed ~20 places per city at launch)
+INSERT INTO places (name, address, city_id, location_point, place_types, is_indoor, capacity) VALUES
+  ('Park Skaryszewski', 'ul. Łazienkowska, Warszawa', <warsaw_city_id>,
+   ST_SetSRID(ST_MakePoint(21.0456, 52.2278), 4326), ARRAY['park','sports_field'], false, NULL),
+  ('Hala Mera', 'ul. Merliniego 5, Warszawa', <warsaw_city_id>,
+   ST_SetSRID(ST_MakePoint(21.0123, 52.1845), 4326), ARRAY['gym','indoor_hall'], true, 200),
+  -- ... 18 more Warsaw, then Kraków, Wrocław, Łódź, Gdańsk
+  ;
+```
+
+### Code Review (end of sprint)
+- [ ] `suggest-places` Edge Function returns relevant results within 200ms for Warsaw seed data
+- [ ] Google Places autocomplete fires only after 300ms debounce, never on form open
+- [ ] `place_id` from Google is never stored in any DB table
+- [ ] Recurring event template for "weekly Thursday run" creates exactly 1 upcoming event when instantiated
+- [ ] `enforce_max_gromada_events` trigger correctly blocks 6th event even from recurring template
