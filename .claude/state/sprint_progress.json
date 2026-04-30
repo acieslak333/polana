@@ -2,64 +2,15 @@
   "sprint": 21,
   "sprint_name": "Database Security, Indexing & Scalability",
   "started": "2026-05-01",
-  "last_updated": "2026-05-01T13:30:00.000000+00:00",
-  "last_completed_task": null,
+  "last_updated": "2026-05-01T16:00:00.000000+00:00",
+  "last_completed_task": "s21-edge-security",
   "tasks": [
-    {
-      "id": "s21-indexes",
-      "title": "010_indexes.sql — CREATE INDEX CONCURRENTLY on all FK columns, feed/chat/event query columns, PostGIS GIST on location_point, partial indexes on is_hidden/status/upcoming",
-      "status": "in_progress",
-      "domain": "backend",
-      "rules": ["supabase-rls"],
-      "branch": "s21/indexes"
-    },
-    {
-      "id": "s21-rls-fix",
-      "title": "011_rls_fixes.sql — Fix profiles_select_any (too open), chat_rooms_insert_authenticated (any user), reports elder visibility, allies write policies, crossover update policy",
-      "status": "pending",
-      "domain": "backend",
-      "rules": ["supabase-rls"],
-      "branch": "s21/rls-fix"
-    },
-    {
-      "id": "s21-missing-tables",
-      "title": "012_missing_tables.sql — user_blocks, gromada_invites (with expiry trigger), admin_users (role system for Sprint 22)",
-      "status": "pending",
-      "domain": "backend",
-      "rules": ["supabase-rls"],
-      "branch": "s21/missing-tables"
-    },
-    {
-      "id": "s21-encryption",
-      "title": "013_encryption.sql — pgcrypto extension, replace date_of_birth with age_group bucket, encrypt push_token and contact_email with pgp_sym_encrypt, docs/encryption.md",
-      "status": "pending",
-      "domain": "backend",
-      "rules": ["supabase-rls"],
-      "branch": "s21/encryption"
-    },
-    {
-      "id": "s21-audit",
-      "title": "014_audit_log.sql — audit_log table, audit_trigger() function, attach to gromada_members/profiles/gromady/admin_users, 90-day pg_cron retention",
-      "status": "pending",
-      "domain": "backend",
-      "rules": ["supabase-rls"],
-      "branch": "s21/audit"
-    },
-    {
-      "id": "s21-scalability",
-      "title": "015_scalability.sql + docs/database.md — statement_timeout/lock_timeout in Edge Functions, warmth_score materialized view, monthly/weekly counter reset cron, query explain plans, growth projections",
-      "status": "pending",
-      "domain": "backend",
-      "rules": ["supabase-rls"],
-      "branch": "s21/scalability"
-    },
-    {
-      "id": "s21-edge-security",
-      "title": "Edge Function hardening — admin_users check in all admin endpoints, X-Request-ID passthrough, sliding window rate limiter in api_rate_limits table, push token ownership check in send-notification",
-      "status": "pending",
-      "domain": "infra",
-      "rules": ["supabase-rls"],
-      "branch": "s21/edge-security"
-    }
+    { "id": "s21-indexes",       "title": "010_indexes.sql — 40 CONCURRENTLY indexes", "status": "done", "domain": "backend", "branch": "s21/indexes" },
+    { "id": "s21-rls-fix",       "title": "011_rls_fixes.sql — 7 RLS policy patches", "status": "done", "domain": "backend", "branch": "s21/rls-fix" },
+    { "id": "s21-missing-tables","title": "012_missing_tables.sql — user_blocks, gromada_invites, admin_users, api_rate_limits", "status": "done", "domain": "backend", "branch": "s21/missing-tables" },
+    { "id": "s21-encryption",    "title": "013_encryption.sql — pgcrypto, age_group, push_token_enc", "status": "done", "domain": "backend", "branch": "s21/encryption" },
+    { "id": "s21-audit",         "title": "014_audit_log.sql — audit trigger on 5 tables, 90d retention", "status": "done", "domain": "backend", "branch": "s21/audit" },
+    { "id": "s21-scalability",   "title": "015_scalability.sql — warmth matview, 7 cron jobs, docs/database.md", "status": "done", "domain": "backend", "branch": "s21/scalability" },
+    { "id": "s21-edge-security", "title": "security.ts shared module — requireAuth, requireAdmin, checkRateLimit; harden send-notification", "status": "done", "domain": "infra", "branch": "s21/edge-security" }
   ]
 }
