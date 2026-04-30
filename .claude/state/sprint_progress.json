@@ -1,12 +1,13 @@
 {
-  "sprint": 19,
-  "sprint_name": "E2E Tests (Maestro)",
-  "started": "2026-04-27",
-  "last_updated": "2026-04-27T08:00:00.000000+00:00",
-  "last_completed_task": "s19-docs",
+  "sprint": 20,
+  "sprint_name": "Pre-Launch Hardening",
+  "started": "2026-05-01",
+  "last_updated": "2026-05-01T12:00:00.000000+00:00",
+  "last_completed_task": "s20-perf",
   "tasks": [
-    { "id": "s19-maestro-flows", "title": ".maestro/ — 5 critical flows: register, post, rsvp, message, invite", "status": "done", "domain": "qa" },
-    { "id": "s19-e2e-ci", "title": ".github/workflows/e2e.yml — nightly iOS Simulator run + junit report", "status": "done", "domain": "infra" },
-    { "id": "s19-docs", "title": "docs/e2e.md — setup guide, flow table, troubleshooting", "status": "done", "domain": "infra" }
+    { "id": "s20-maestro-ids", "title": "Replace hardcoded Polish text in Maestro flows with testID selectors; add testID props to all referenced elements; fix hardcoded Polish strings in components", "status": "done", "domain": "qa" },
+    { "id": "s20-a11y", "title": "Accessibility hardening — i18n all remaining hardcoded accessibility strings; add missing EN locale keys; fix password toggle, search button, section labels in info screen", "status": "done", "domain": "frontend" },
+    { "id": "s20-perf", "title": "FlatList performance — add removeClippedSubviews, maxToRenderPerBatch, windowSize, initialNumToRender to feed, gromady, events, messages lists", "status": "done", "domain": "frontend" },
+    { "id": "s20-appjson", "title": "Verify app.json — all permission rationale strings present, push notification icon configured, EAS profile structure complete", "status": "done", "domain": "infra" }
   ]
 }

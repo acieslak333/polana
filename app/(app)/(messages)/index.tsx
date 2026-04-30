@@ -37,12 +37,17 @@ export default function MessagesScreen() {
           data={rooms}
           keyExtractor={(r) => r.id}
           contentContainerStyle={styles.list}
+          removeClippedSubviews
+          initialNumToRender={15}
+          maxToRenderPerBatch={15}
+          windowSize={5}
           renderItem={({ item }) => (
             <Pressable
               onPress={() => router.push(`/(app)/(messages)/chat/${item.id}`)}
               style={({ pressed }) => [styles.roomRow, pressed && { opacity: 0.7 }]}
               accessibilityRole="button"
               accessibilityLabel={item.display_name ?? item.type}
+              testID="chat-room-row"
             >
               <ProceduralAvatar config={item.display_avatar} size={48} />
               <View style={styles.roomInfo}>

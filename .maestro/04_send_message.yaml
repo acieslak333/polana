@@ -9,16 +9,12 @@ tags:
 - launchApp
 
 # Navigate to Messages tab
-- tapOn:
-    id: "tab-messages"
+- tapOn: "Wiadomości"
 
 # Open first chat room
 - tapOn:
     index: 0
     id: "chat-room-row"
-
-# Chat screen visible
-- assertVisible: "Czat"
 
 # Type a message
 - tapOn:

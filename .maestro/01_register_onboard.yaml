@@ -11,10 +11,12 @@ tags:
     clearState: true
 
 # Should land on welcome screen
-- assertVisible: "Witaj na Polanie"
+- assertVisible:
+    id: "welcome-title"
 
-# Tap "Zarejestruj się"
-- tapOn: "Zarejestruj się"
+# Tap register button
+- tapOn:
+    id: "sign-up-button"
 
 # Fill registration form
 - tapOn:
@@ -29,50 +31,66 @@ tags:
     id: "password-confirm-input"
 - inputText: "TestPass123!"
 
-- tapOn: "Zarejestruj się"
+- tapOn:
+    id: "register-submit-button"
 
 # Email verification step — in test env use a seeded verified account
 # In CI: use EXPO_PUBLIC_E2E_MODE=true to skip email verification
 - waitForAnimationToEnd
 
 # Step 1/7 — Profile setup
-- assertVisible: "Kim jesteś?"
+- assertVisible:
+    id: "onboarding-step-title"
 - tapOn:
     id: "first-name-input"
 - inputText: "TestUser"
-- tapOn: "Dalej"
+- tapOn:
+    id: "next-button"
 
 # Step 2/7 — Interests (pick 3)
-- assertVisible: "Co lubisz robić?"
+- assertVisible:
+    id: "onboarding-step-title"
 - tapOn: "Kawa i herbata"
 - tapOn: "Spacery z psami"
 - tapOn: "Gry planszowe"
-- tapOn: "Dalej"
+- tapOn:
+    id: "next-button"
 
 # Step 3/7 — City
-- assertVisible: "Gdzie mieszkasz?"
+- assertVisible:
+    id: "onboarding-step-title"
 - tapOn: "Warszawa"
-- tapOn: "Dalej"
+- tapOn:
+    id: "next-button"
 
 # Step 4/7 — Gromady
-- assertVisible: "Twoje Gromady"
+- assertVisible:
+    id: "onboarding-step-title"
 - tapOn:
     index: 0
-    text: "Dołącz"
-- tapOn: "Dalej"
+    id: "gromada-card"
+- tapOn:
+    id: "next-button"
 
 # Step 5/7 — Notifications
-- assertVisible: "Powiadomienia"
-- tapOn: "Nie teraz"
+- assertVisible:
+    id: "onboarding-step-title"
+- tapOn:
+    id: "notifications-skip-button"
 
 # Step 6/7 — Rules
-- assertVisible: "3 zasady Polany"
-- tapOn: "Rozumiem i akceptuję zasady"
-- tapOn: "Dalej"
+- assertVisible:
+    id: "onboarding-step-title"
+- tapOn:
+    id: "rules-agree-checkbox"
+- tapOn:
+    id: "next-button"
 
 # Step 7/7 — Ready
-- assertVisible: "Witaj na Polanie"
-- tapOn: "Zaczynamy"
+- assertVisible:
+    id: "ready-title"
+- tapOn:
+    id: "ready-cta-button"
 
 # Should land on the main feed
 - assertVisible: "Feed"

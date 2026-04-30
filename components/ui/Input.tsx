@@ -8,6 +8,7 @@ import {
   type TextInputProps,
   type ViewStyle,
 } from 'react-native';
+import { useTranslation } from 'react-i18next';
 import { theme } from '@/constants/theme';
 
 type InputProps = TextInputProps & {
@@ -20,6 +21,7 @@ type InputProps = TextInputProps & {
 
 export const Input = forwardRef<TextInput, InputProps>(
   ({ label, error, hint, showPasswordToggle, secureTextEntry, containerStyle, style, ...rest }, ref) => {
+    const { t } = useTranslation('common');
     const [isPasswordVisible, setIsPasswordVisible] = useState(false);
     const [isFocused, setIsFocused] = useState(false);
 
@@ -56,7 +58,7 @@ export const Input = forwardRef<TextInput, InputProps>(
             <Pressable
               onPress={() => setIsPasswordVisible((v) => !v)}
               accessibilityRole="button"
-              accessibilityLabel={isPasswordVisible ? 'Ukryj hasło' : 'Pokaż hasło'}
+              accessibilityLabel={isPasswordVisible ? t('hide_password') : t('show_password')}
               style={styles.eyeButton}
               hitSlop={8}
             >

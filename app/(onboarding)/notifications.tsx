@@ -44,16 +44,16 @@ export default function NotificationsScreen() {
 
         <View style={styles.hero}>
           <Text style={styles.bell}>🔔</Text>
-          <Text style={styles.title}>{t('notifications_title')}</Text>
+          <Text style={styles.title} testID="onboarding-step-title">{t('notifications_title')}</Text>
           <MindfulText category="notifications" style={styles.mindful} />
         </View>
 
         <View style={styles.bullets}>
-          {[
-            '📅 Nowe wydarzenie w twojej Gromadzie',
-            '💬 Wiadomości od znajomych',
-            '🤝 Ktoś oferuje pomoc przy twojej prośbie',
-          ].map((item) => (
+          {([
+            t('notifications_bullet_1'),
+            t('notifications_bullet_2'),
+            t('notifications_bullet_3'),
+          ] as const).map((item) => (
             <View key={item} style={styles.bullet}>
               <Text style={styles.bulletText}>{item}</Text>
             </View>
@@ -67,6 +67,7 @@ export default function NotificationsScreen() {
             onPress={handleEnable}
             size="lg"
             style={styles.btn}
+            testID="notifications-enable-button"
           />
           <Button
             label={t('notifications_skip')}
@@ -74,6 +75,7 @@ export default function NotificationsScreen() {
             onPress={handleSkip}
             size="lg"
             style={styles.btn}
+            testID="notifications-skip-button"
           />
         </View>
       </View>

@@ -37,6 +37,7 @@ function EventCardBase({ event, onRSVP }: EventCardProps) {
       onPress={() => router.push(`/event/${event.id}`)}
       accessibilityRole="button"
       accessibilityLabel={event.title}
+      testID="event-card"
       style={({ pressed }) => [styles.card, pressed && styles.pressed]}
     >
       {/* Type icon */}
@@ -75,6 +76,7 @@ function EventCardBase({ event, onRSVP }: EventCardProps) {
                     accessibilityRole="radio"
                     accessibilityState={{ checked: active }}
                     accessibilityLabel={s.label}
+                    testID={`rsvp-${status}-button`}
                     style={({ pressed }) => [
                       styles.rsvpBtn,
                       active && { backgroundColor: s.bg },

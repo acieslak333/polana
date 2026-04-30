@@ -34,6 +34,12 @@
   "ready_title": "Witaj na Polanie!",
   "ready_subtitle": "Twoja Gromada czeka",
   "ready_cta": "Zaczynamy",
+  "creating_profile": "Tworzymy twój profil...",
+  "gromada_empty": "Nie znaleźliśmy Gromad w twoim mieście. Będziemy cię czekać!",
+  "gromada_skip_hint": "Możesz dołączyć do Gromady później",
+  "notifications_bullet_1": "📅 Nowe wydarzenie w twojej Gromadzie",
+  "notifications_bullet_2": "💬 Wiadomości od znajomych",
+  "notifications_bullet_3": "🤝 Ktoś oferuje pomoc przy twojej prośbie",
   "privacy_title": "Twoje dane są bezpieczne",
   "privacy_body": "Przechowujemy je tylko dlatego, że musimy. Nigdy nie trafią do AI ani nie zostaną sprzedane."
 }

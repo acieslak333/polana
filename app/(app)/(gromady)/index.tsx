@@ -49,6 +49,10 @@ export default function GromadyScreen() {
         data={gromady}
         keyExtractor={(g) => g.id}
         contentContainerStyle={styles.list}
+        removeClippedSubviews
+        initialNumToRender={10}
+        maxToRenderPerBatch={10}
+        windowSize={5}
         refreshControl={
           <RefreshControl
             refreshing={refreshing}
@@ -63,7 +67,7 @@ export default function GromadyScreen() {
               onPress={() => router.push('/(app)/(gromady)/search')}
               style={styles.searchBtn}
               accessibilityRole="button"
-              accessibilityLabel="Szukaj Gromad"
+              accessibilityLabel={t('common:search_gromady')}
             >
               <Text style={styles.searchIcon}>🔍</Text>
             </Pressable>

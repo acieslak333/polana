@@ -54,7 +54,7 @@ export default function GromadaPickScreen() {
       <View style={styles.header}>
         <ProgressBar current={4} total={7} />
         <Text style={styles.step}>{t('step_of', { current: 4, total: 7 })}</Text>
-        <Text style={styles.title}>{t('gromada_title')}</Text>
+        <Text style={styles.title} testID="onboarding-step-title">{t('gromada_title')}</Text>
         <Text style={styles.subtitle}>{t('gromada_subtitle')}</Text>
         <Text style={styles.hint}>{t('gromada_pick_one')}</Text>
       </View>
@@ -65,9 +65,7 @@ export default function GromadaPickScreen() {
         </View>
       ) : suggestions.length === 0 ? (
         <View style={styles.center}>
-          <Text style={styles.emptyText}>
-            Nie znaleźliśmy Gromad w twoim mieście. Będziemy cię czekać!
-          </Text>
+          <Text style={styles.emptyText}>{t('gromada_empty')}</Text>
         </View>
       ) : (
         <FlatList
@@ -82,6 +80,7 @@ export default function GromadaPickScreen() {
                 accessibilityRole="checkbox"
                 accessibilityState={{ checked: joined }}
                 accessibilityLabel={item.name}
+                testID="gromada-card"
                 style={({ pressed }) => [
                   styles.card,
                   joined && styles.cardJoined,
@@ -129,9 +128,10 @@ export default function GromadaPickScreen() {
           onPress={() => router.push('/(onboarding)/notifications')}
           size="lg"
           style={styles.btn}
+          testID="next-button"
         />
         {joinedGromadaIds.length === 0 && (
-          <Text style={styles.skipHint}>Możesz dołączyć do Gromady później</Text>
+          <Text style={styles.skipHint}>{t('gromada_skip_hint')}</Text>
         )}
       </View>
     </SafeAreaView>

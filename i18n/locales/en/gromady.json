@@ -83,5 +83,8 @@
   "founded": "Founded",
   "favors_section": "Helping hands",
   "crossover_vote": "Vote for crossover {{title}}",
-  "search_empty": "No results. Try a different name or city."
+  "search_empty": "No results. Try a different name or city.",
+  "favor_placeholder": "What do you need?",
+  "favor_add": "Add",
+  "not_found": "Gromada not found"
 }

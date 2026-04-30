@@ -17,6 +17,7 @@ function GromadaCardBase({ gromada, isMember = true }: GromadaCardProps) {
       onPress={() => router.push(`/(app)/(gromady)/${gromada.id}`)}
       accessibilityRole="button"
       accessibilityLabel={gromada.name}
+      testID="gromada-card"
       style={({ pressed }) => [styles.card, pressed && styles.pressed]}
     >
       <ProceduralAvatar config={gromada.avatar_config} size={52} />

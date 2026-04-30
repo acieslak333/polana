@@ -26,7 +26,7 @@ export default function ProfileSetupScreen() {
       <View style={styles.container}>
         <View style={styles.header}>
           <Text style={styles.step}>{t('step_of', { current: 1, total: 7 })}</Text>
-          <Text style={styles.title}>{t('profile_title')}</Text>
+          <Text style={styles.title} testID="onboarding-step-title">{t('profile_title')}</Text>
           <Text style={styles.subtitle}>{t('profile_subtitle')}</Text>
         </View>
 
@@ -40,6 +40,7 @@ export default function ProfileSetupScreen() {
             autoFocus
             autoCapitalize="words"
             returnKeyType="next"
+            testID="first-name-input"
           />
           <Input
             label={t('nickname')}
@@ -56,6 +57,7 @@ export default function ProfileSetupScreen() {
           size="lg"
           style={styles.btn}
           disabledReason={!firstName.trim() ? t('common:required_field') : undefined}
+          testID="next-button"
         />
       </View>
     </SafeAreaView>

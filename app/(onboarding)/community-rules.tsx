@@ -31,7 +31,7 @@ export default function CommunityRulesScreen() {
         <View style={styles.header}>
           <ProgressBar current={6} total={7} />
           <Text style={styles.step}>{t('step_of', { current: 6, total: 7 })}</Text>
-          <Text style={styles.title}>{t('rules_title')}</Text>
+          <Text style={styles.title} testID="onboarding-step-title">{t('rules_title')}</Text>
         </View>
 
         <View style={styles.rules}>
@@ -54,6 +54,7 @@ export default function CommunityRulesScreen() {
           accessibilityRole="checkbox"
           accessibilityState={{ checked: agreed }}
           accessibilityLabel={t('rules_agree')}
+          testID="rules-agree-checkbox"
           style={styles.checkRow}
         >
           <View style={[styles.checkbox, agreed && styles.checkboxChecked]}>
@@ -69,6 +70,7 @@ export default function CommunityRulesScreen() {
           disabled={!agreed}
           disabledReason={!agreed ? t('rules_agree') : undefined}
           style={styles.btn}
+          testID="next-button"
         />
       </ScrollView>
     </SafeAreaView>

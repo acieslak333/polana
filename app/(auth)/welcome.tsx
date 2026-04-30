@@ -26,7 +26,7 @@ export default function WelcomeScreen() {
           <View style={styles.logoPlaceholder}>
             <Text style={styles.logoEmoji}>🌿</Text>
           </View>
-          <Text style={styles.title}>{t('welcome_title')}</Text>
+          <Text style={styles.title} testID="welcome-title">{t('welcome_title')}</Text>
           <Text style={styles.subtitle}>{t('welcome_subtitle')}</Text>
           <Text style={styles.description}>{t('welcome_description')}</Text>
         </View>
@@ -49,7 +49,7 @@ export default function WelcomeScreen() {
           </View>
 
           <Link href="/(auth)/register" asChild>
-            <Button label={t('sign_up')} variant="primary" size="lg" style={styles.primaryBtn} />
+            <Button label={t('sign_up')} variant="primary" size="lg" style={styles.primaryBtn} testID="sign-up-button" />
           </Link>
 
           <Link href="/(auth)/login" asChild>

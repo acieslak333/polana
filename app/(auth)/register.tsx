@@ -124,6 +124,7 @@ export default function RegisterScreen() {
               autoFocus
               returnKeyType="next"
               onSubmitEditing={() => passwordRef.current?.focus()}
+              testID="email-input"
             />
 
             <Input
@@ -141,6 +142,7 @@ export default function RegisterScreen() {
               autoComplete="new-password"
               returnKeyType="next"
               onSubmitEditing={() => confirmRef.current?.focus()}
+              testID="password-input"
             />
 
             <Input
@@ -158,6 +160,7 @@ export default function RegisterScreen() {
               autoComplete="new-password"
               returnKeyType="done"
               onSubmitEditing={handleRegister}
+              testID="password-confirm-input"
             />
           </View>
 
@@ -178,6 +181,7 @@ export default function RegisterScreen() {
             onPress={handleRegister}
             size="lg"
             style={styles.submitBtn}
+            testID="register-submit-button"
           />
 
           <View style={styles.footer}>

@@ -53,5 +53,13 @@
   "add_image": "Dodaj zdjęcie",
   "remove_image": "Usuń zdjęcie",
   "image_preview": "Podgląd wybranego zdjęcia",
-  "people_count": "{{count}}/{{max}} osób"
+  "people_count": "{{count}}/{{max}} osób",
+  "show_password": "Pokaż hasło",
+  "hide_password": "Ukryj hasło",
+  "search_gromady": "Szukaj Gromad",
+  "interests_section": "Zainteresowania",
+  "stats_section": "Statystyki",
+  "crossovers_section": "Crossovery",
+  "allies_section": "Sojusznicy",
+  "not_found": "Nie znaleziono"
 }

@@ -52,7 +52,7 @@ export default function InterestsScreen() {
       <View style={styles.header}>
         <ProgressBar current={2} total={7} />
         <Text style={styles.step}>{t('step_of', { current: 2, total: 7 })}</Text>
-        <Text style={styles.title}>{t('interests_title')}</Text>
+        <Text style={styles.title} testID="onboarding-step-title">{t('interests_title')}</Text>
         <Text style={styles.subtitle}>
           {remaining > 0
             ? t('interests_min', { count: remaining })
@@ -97,6 +97,7 @@ export default function InterestsScreen() {
           disabled={!canProceed}
           disabledReason={remaining > 0 ? t('interests_min', { count: remaining }) : undefined}
           style={styles.btn}
+          testID="next-button"
         />
       </View>
     </SafeAreaView>

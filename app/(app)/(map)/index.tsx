@@ -94,6 +94,7 @@ export default function MapScreen() {
             accessibilityLabel={t('list_view')}
             accessibilityRole="radio"
             accessibilityState={{ checked: viewMode === 'list' }}
+            testID="events-list-view"
           >
             <Text style={[styles.toggleText, viewMode === 'list' && styles.toggleTextActive]}>
               {t('list_view')}
@@ -182,6 +183,10 @@ export default function MapScreen() {
           refreshing={refreshing}
           onEndReached={() => { if (hasMore) load(); }}
           onEndReachedThreshold={0.3}
+          removeClippedSubviews
+          initialNumToRender={10}
+          maxToRenderPerBatch={10}
+          windowSize={7}
           renderItem={({ item }) => (
             <EventCard event={item} onRSVP={rsvp} />
           )}

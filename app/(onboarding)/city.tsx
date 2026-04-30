@@ -39,7 +39,7 @@ export default function CityScreen() {
       <View style={styles.header}>
         <ProgressBar current={3} total={7} />
         <Text style={styles.step}>{t('step_of', { current: 3, total: 7 })}</Text>
-        <Text style={styles.title}>{t('city_title')}</Text>
+        <Text style={styles.title} testID="onboarding-step-title">{t('city_title')}</Text>
         <Text style={styles.subtitle}>{t('city_subtitle')}</Text>
       </View>
 
@@ -85,6 +85,7 @@ export default function CityScreen() {
           disabled={!cityId}
           disabledReason={!cityId ? t('city_subtitle') : undefined}
           style={styles.btn}
+          testID="next-button"
         />
       </View>
     </SafeAreaView>

@@ -75,7 +75,7 @@ export default function GromadaInfoScreen() {
     <SafeAreaView style={styles.safe}><View style={styles.center}><ActivityIndicator color={theme.colors.accent} /></View></SafeAreaView>
   );
   if (!gromada) return (
-    <SafeAreaView style={styles.safe}><View style={styles.center}><Text style={styles.errorText}>Nie znaleziono Gromady</Text></View></SafeAreaView>
+    <SafeAreaView style={styles.safe}><View style={styles.center}><Text style={styles.errorText}>{t('common:not_found')}</Text></View></SafeAreaView>
   );
 
   return (
@@ -84,11 +84,22 @@ export default function GromadaInfoScreen() {
         <Pressable onPress={() => router.back()} style={styles.backBtn} accessibilityRole="button">
           <Text style={styles.backText}>‹</Text>
         </Pressable>
-        <Text style={styles.title}>{t('gromady:info')}</Text>
+        <Text style={styles.title} testID="gromada-info-title">{t('gromady:info')}</Text>
         {isElder && (
-          <Pressable onPress={() => router.push(`/(app)/(gromady)/${id}/settings`)} style={styles.settingsBtn} accessibilityRole="button">
-            <Text style={styles.settingsIcon}>⚙️</Text>
-          </Pressable>
+          <>
+            <Pressable
+              onPress={() => router.push(`/(app)/(gromady)/${id}/invite` as never)}
+              style={styles.settingsBtn}
+              accessibilityRole="button"
+              accessibilityLabel={t('gromady:invite_title')}
+              testID="invite-button"
+            >
+              <Text style={styles.settingsIcon}>🔗</Text>
+            </Pressable>
+            <Pressable onPress={() => router.push(`/(app)/(gromady)/${id}/settings`)} style={styles.settingsBtn} accessibilityRole="button">
+              <Text style={styles.settingsIcon}>⚙️</Text>
+            </Pressable>
+          </>
         )}
       </View>
 
@@ -106,7 +117,7 @@ export default function GromadaInfoScreen() {
         {/* Interests */}
         {gromada.gromada_interests.length > 0 && (
           <View style={styles.section}>
-            <Text style={styles.sectionLabel}>Zainteresowania</Text>
+            <Text style={styles.sectionLabel}>{t('common:interests_section')}</Text>
             <View style={styles.interestsRow}>
               {gromada.gromada_interests.map((gi) =>
                 gi.interests ? (
@@ -119,7 +130,7 @@ export default function GromadaInfoScreen() {
 
         {/* Stats */}
         <View style={styles.section}>
-          <Text style={styles.sectionLabel}>Statystyki</Text>
+          <Text style={styles.sectionLabel}>{t('common:stats_section')}</Text>
           <View style={styles.statsGrid}>
             {[
               { label: t('gromady:meetings_this_month'), value: gromada.meetings_this_month },
@@ -155,11 +166,11 @@ export default function GromadaInfoScreen() {
                 label=""
                 value={newFavor}
                 onChangeText={(v) => setNewFavor(v.slice(0, 200))}
-                placeholder="Czego potrzebujesz?"
+                placeholder={t('gromady:favor_placeholder')}
                 containerStyle={styles.favorInput}
               />
               <Button
-                label={creatingFavor ? '' : 'Dodaj'}
+                label={creatingFavor ? '' : t('gromady:favor_add')}
                 loading={creatingFavor}
                 size="sm"
                 onPress={async () => {
@@ -208,7 +219,7 @@ export default function GromadaInfoScreen() {
         {/* Crossovers */}
         {crossovers.length > 0 && (
           <View style={styles.section}>
-            <Text style={styles.sectionLabel}>Crossovery</Text>
+            <Text style={styles.sectionLabel}>{t('common:crossovers_section')}</Text>
             {crossovers.map((c) => (
               <View key={c.id} style={styles.crossoverCard}>
                 <View style={styles.crossoverInfo}>
@@ -236,7 +247,7 @@ export default function GromadaInfoScreen() {
         {/* Allies */}
         {allies.length > 0 && (
           <View style={styles.section}>
-            <Text style={styles.sectionLabel}>Sojusznicy</Text>
+            <Text style={styles.sectionLabel}>{t('common:allies_section')}</Text>
             {allies.map((a) => (
               <View key={a.id} style={styles.allyCard}>
                 <Text style={styles.allyName}>{a.business_name}</Text>

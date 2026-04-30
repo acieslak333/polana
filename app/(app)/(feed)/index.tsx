@@ -134,6 +134,10 @@ export default function FeedScreen() {
           }
           onEndReached={() => { if (hasMore) load(); }}
           onEndReachedThreshold={0.3}
+          removeClippedSubviews
+          initialNumToRender={8}
+          maxToRenderPerBatch={8}
+          windowSize={7}
           renderItem={({ item }) => (
             <PostCard post={item} onReact={react} onDelete={remove} />
           )}

@@ -9,8 +9,7 @@ tags:
 - launchApp
 
 # Navigate to Gromady tab
-- tapOn:
-    id: "tab-gromady"
+- tapOn: "Gromady"
 
 # Open first gromada
 - tapOn:
@@ -21,22 +20,26 @@ tags:
 - tapOn:
     id: "gromada-info-button"
 
-# In info panel navigate to admin (only visible for elders)
-# If not elder: tap back and skip test
-- assertVisible: "O Gromadzie"
+# Info screen is visible
+- assertVisible:
+    id: "gromada-info-title"
 
-# Navigate to invite screen
-- tapOn: "Zaproś do Gromady"
+# Invite button only visible for elders — if not elder the test will stop here
+- tapOn:
+    id: "invite-button"
 
 # Invite screen visible
-- assertVisible: "Zaproś do Gromady"
+- assertVisible:
+    id: "invite-screen-title"
 
 # Generate link
-- tapOn: "Wygeneruj link"
+- tapOn:
+    id: "generate-link-button"
 
 # Wait for generation
 - waitForAnimationToEnd
 
 # Link appeared
 - assertVisible: "polana://"
-- assertVisible: "Udostępnij link"
+- assertVisible:
+    id: "share-link-button"

@@ -35,5 +35,11 @@
   "ready_subtitle": "Your Gromada is waiting",
   "ready_cta": "Let's go",
   "privacy_title": "Your data is safe",
-  "privacy_body": "We store it only because we have to. It will never go to AI or be sold."
+  "privacy_body": "We store it only because we have to. It will never go to AI or be sold.",
+  "creating_profile": "Setting up your profile...",
+  "gromada_empty": "We couldn't find any Gromady in your city. We'll let you know when they appear!",
+  "gromada_skip_hint": "You can join a Gromada later",
+  "notifications_bullet_1": "📅 New event in your Gromada",
+  "notifications_bullet_2": "💬 Messages from friends",
+  "notifications_bullet_3": "🤝 Someone offered help with your request"
 }

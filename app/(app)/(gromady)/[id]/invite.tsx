@@ -50,7 +50,7 @@ export default function InviteScreen() {
         >
           <Text style={styles.backText}>‹</Text>
         </Pressable>
-        <Text style={styles.title}>{t('gromady:invite_title')}</Text>
+        <Text style={styles.title} testID="invite-screen-title">{t('gromady:invite_title')}</Text>
       </View>
 
       <View style={styles.content}>
@@ -69,6 +69,7 @@ export default function InviteScreen() {
               onPress={() => { void handleShare() }}
               accessibilityRole="button"
               accessibilityLabel={t('gromady:invite_share')}
+              testID="share-link-button"
             >
               <Text style={styles.primaryBtnText}>{t('gromady:invite_share')}</Text>
             </Pressable>
@@ -89,6 +90,7 @@ export default function InviteScreen() {
             accessibilityRole="button"
             accessibilityLabel={t('gromady:invite_generate')}
             accessibilityState={{ disabled: loading }}
+            testID="generate-link-button"
           >
             {loading
               ? <ActivityIndicator color="#fff" />

@@ -152,6 +152,7 @@ export default function GromadaPanelScreen() {
           style={styles.infoBtn}
           accessibilityRole="button"
           accessibilityLabel={t('gromady:info')}
+          testID="gromada-info-button"
         >
           <Text style={styles.infoBtnText}>ℹ️</Text>
         </Pressable>
@@ -205,6 +206,10 @@ export default function GromadaPanelScreen() {
           refreshControl={
             <RefreshControl refreshing={refreshing} onRefresh={refresh} tintColor={theme.colors.accent} />
           }
+          removeClippedSubviews
+          initialNumToRender={8}
+          maxToRenderPerBatch={8}
+          windowSize={7}
           ListHeaderComponent={renderHeader}
           ListEmptyComponent={
             !loading ? (
@@ -263,6 +268,7 @@ export default function GromadaPanelScreen() {
                 multiline
                 maxLength={MAX_POST}
                 accessibilityLabel={t('feed:write_something')}
+                testID="post-composer-input"
               />
               {charNearLimit && (
                 <Text style={[styles.charCount, { color: charColor }]}>
@@ -291,6 +297,7 @@ export default function GromadaPanelScreen() {
                 disabled={sendDisabled}
                 accessibilityRole="button"
                 accessibilityLabel={t('feed:post_cta')}
+                testID="post-submit-button"
                 style={({ pressed }) => [
                   styles.sendBtn,
                   sendDisabled && styles.sendBtnDisabled,

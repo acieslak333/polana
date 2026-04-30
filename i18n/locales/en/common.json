@@ -53,5 +53,13 @@
   "add_image": "Add image",
   "remove_image": "Remove image",
   "image_preview": "Selected image preview",
-  "people_count": "{{count}}/{{max}} people"
+  "people_count": "{{count}}/{{max}} people",
+  "show_password": "Show password",
+  "hide_password": "Hide password",
+  "search_gromady": "Search Gromady",
+  "interests_section": "Interests",
+  "stats_section": "Statistics",
+  "crossovers_section": "Crossovers",
+  "allies_section": "Allies",
+  "not_found": "Not found"
 }

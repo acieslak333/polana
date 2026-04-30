@@ -83,5 +83,8 @@
   "founded": "Założona",
   "favors_section": "Potrzebne ręce",
   "crossover_vote": "Zagłosuj na crossover {{title}}",
-  "search_empty": "Brak wyników. Spróbuj innej nazwy lub miasta."
+  "search_empty": "Brak wyników. Spróbuj innej nazwy lub miasta.",
+  "favor_placeholder": "Czego potrzebujesz?",
+  "favor_add": "Dodaj",
+  "not_found": "Nie znaleziono Gromady"
 }

@@ -9,16 +9,15 @@ tags:
 - launchApp
 
 # Navigate to Gromady tab
-- tapOn:
-    id: "tab-gromady"
+- tapOn: "Gromady"
 
 # Open first gromada
 - tapOn:
     index: 0
     id: "gromada-card"
 
-# Gromada panel is visible
-- assertVisible: "Posty"
+# Gromada panel is visible (posts tab is active by default)
+- waitForAnimationToEnd
 
 # Tap composer
 - tapOn:

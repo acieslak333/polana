@@ -9,26 +9,26 @@ tags:
 - launchApp
 
 # Navigate to Map/Events tab
-- tapOn:
-    id: "tab-map"
+- tapOn: "Mapa"
 
-# Should see event list
-- assertVisible: "Lista"
+# Switch to list view
+- tapOn:
+    id: "events-list-view"
 
 # Tap first event card
 - tapOn:
     index: 0
     id: "event-card"
 
-# Tap "Idę" RSVP button
-- tapOn: "Idę"
+# Tap "going" RSVP button
+- tapOn:
+    id: "rsvp-going-button"
 
 # Confirm RSVP registered
 - waitForAnimationToEnd
 
 # Navigate to profile calendar
-- tapOn:
-    id: "tab-profile"
+- tapOn: "Profil"
 - tapOn:
     id: "calendar-button"
 

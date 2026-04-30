@@ -101,19 +101,19 @@ export default function ReadyScreen() {
         {saving ? (
           <View style={styles.saving}>
             <ActivityIndicator color={theme.colors.accent} size="large" />
-            <Text style={styles.savingText}>Tworzymy twój profil...</Text>
+            <Text style={styles.savingText}>{t('creating_profile')}</Text>
           </View>
         ) : error ? (
           <View style={styles.errorContainer}>
             <Text style={styles.errorEmoji}>😬</Text>
-            <Text style={styles.errorTitle}>Coś poszło nie tak</Text>
+            <Text style={styles.errorTitle}>{t('common:error')}</Text>
             <Text style={styles.errorBody}>{error}</Text>
             <Button label={t('common:retry')} onPress={() => { setError(null); setSaving(true); setRetryCount((n) => n + 1); }} size="lg" style={styles.btn} />
           </View>
         ) : (
           <View style={styles.success}>
             <Text style={styles.emoji}>🌿</Text>
-            <Text style={styles.title}>{t('ready_title')}</Text>
+            <Text style={styles.title} testID="ready-title">{t('ready_title')}</Text>
             <Text style={styles.subtitle}>{t('ready_subtitle')}</Text>
             <View style={styles.confetti}>
               {['🎉', '🌱', '🔥', '✨', '🤝'].map((e) => (
@@ -125,6 +125,7 @@ export default function ReadyScreen() {
               onPress={handleStart}
               size="lg"
               style={styles.btn}
+              testID="ready-cta-button"
             />
           </View>
         )}
