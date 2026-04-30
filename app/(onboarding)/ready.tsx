@@ -41,7 +41,6 @@ export default function ReadyScreen() {
           first_name: store.firstName.trim(),
           last_name: null,
           nickname: store.nickname.trim() || null,
-          date_of_birth: store.dateOfBirth || '2000-01-01',
           bio: null,
           city_id: store.cityId || null,
           // AvatarConfig is compatible at runtime — cast satisfies strict schema type

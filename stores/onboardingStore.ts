@@ -3,7 +3,6 @@ import { create } from 'zustand';
 type OnboardingState = {
   firstName: string;
   nickname: string;
-  dateOfBirth: string;
   selectedInterestIds: string[];
   cityId: string;
   joinedGromadaIds: string[];
@@ -12,7 +11,6 @@ type OnboardingState = {
 
   setFirstName: (name: string) => void;
   setNickname: (nickname: string) => void;
-  setDateOfBirth: (dob: string) => void;
   toggleInterest: (id: string) => void;
   setCityId: (id: string) => void;
   toggleGromada: (id: string) => void;
@@ -24,7 +22,6 @@ type OnboardingState = {
 const initialState = {
   firstName: '',
   nickname: '',
-  dateOfBirth: '',
   selectedInterestIds: [] as string[],
   cityId: '',
   joinedGromadaIds: [] as string[],
@@ -37,7 +34,6 @@ export const useOnboardingStore = create<OnboardingState>((set, get) => ({
 
   setFirstName: (firstName) => set({ firstName }),
   setNickname: (nickname) => set({ nickname }),
-  setDateOfBirth: (dateOfBirth) => set({ dateOfBirth }),
 
   toggleInterest: (id) => {
     const current = get().selectedInterestIds;

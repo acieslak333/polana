@@ -19,12 +19,15 @@ export interface ProfileSnippet {
 
 // ─── Profiles ────────────────────────────────────────────────────────────────
 
+export type AgeGroup = 'under_18' | '18_24' | '25_34' | '35_44' | '45_54' | '55_plus';
+
 export interface ProfileRow {
   id: string;
   first_name: string;
   last_name: string | null;
   nickname: string | null;
-  date_of_birth: string;
+  /** Age range bucket. Precise DOB is never stored — derived at registration. */
+  age_group: AgeGroup | null;
   bio: string | null;
   city_id: string | null;
   avatar_config: Record<string, unknown>;
@@ -34,8 +37,11 @@ export interface ProfileRow {
   notifications_enabled: boolean;
   language: string;
   onboarding_completed: boolean;
+  /** Deprecated plaintext field — use push_token_enc. Retained until migration completes. */
   push_token: string | null;
   push_token_updated_at: string | null;
+  /** Encrypted push token (pgp_sym_encrypt). Decryption only in Edge Functions. */
+  push_token_enc: Uint8Array | null;
   is_banned: boolean;
   created_at: string;
   last_active_at: string;
@@ -274,6 +280,29 @@ export interface ChatMute {
   chat_room_id: string;
   user_id: string;
   muted_until: string | null;
+}
+
+// ─── Admin ───────────────────────────────────────────────────────────────────
+
+export type AdminRole = 'super_admin' | 'moderator' | 'content_editor';
+
+export interface AdminUser {
+  id: string;
+  user_id: string;
+  role: AdminRole;
+  granted_by: string | null;
+  created_at: string;
+  revoked_at: string | null;
+}
+
+// ─── Rate Limiting ───────────────────────────────────────────────────────────
+
+export interface ApiRateLimit {
+  id: number;
+  user_id: string;
+  endpoint: string;
+  window_start: string;
+  request_count: number;
 }
 
 // ─── Interests & Cities ──────────────────────────────────────────────────────
