@@ -66,7 +66,7 @@ function EventCardBase({ event, onRSVP }: EventCardProps) {
         {/* RSVP row */}
         <View style={styles.rsvpRow}>
           <Text style={styles.attendees}>
-            {t('attendees', { count: event.rsvp_count })}
+            {t(event.rsvp_count === 1 ? 'attendees_one' : 'attendees_other', { count: event.rsvp_count })}
           </Text>
           {onRSVP && (
             <View style={styles.rsvpBtns}>
