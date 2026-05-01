@@ -19,7 +19,7 @@ import { generateGromadaName } from '@/utils/nameGenerator';
 type Interest = { id: string; name_pl: string; emoji: string; category: string | null };
 
 export default function CreateGromadaScreen() {
-  const { t } = useTranslation(['gromady', 'common']);
+  const { t, i18n } = useTranslation(['gromady', 'common']);
 
   const SIZE_OPTIONS: { key: 'small' | 'medium' | 'large'; label: string; max: number; desc: string }[] = [
     { key: 'small', label: t('gromady:size_small_label'), max: 12, desc: t('gromady:size_small_desc') },
@@ -28,7 +28,7 @@ export default function CreateGromadaScreen() {
   ];
   const { user, profile } = useAuthStore();
 
-  const [name, setName] = useState(generateGromadaName());
+  const [name, setName] = useState(generateGromadaName(i18n.language));
   const [sizeType, setSizeType] = useState<'small' | 'medium' | 'large'>('medium');
   const [description, setDescription] = useState('');
   const [selectedInterests, setSelectedInterests] = useState<string[]>([]);
@@ -97,7 +97,7 @@ export default function CreateGromadaScreen() {
               autoCapitalize="words"
             />
             <Pressable
-              onPress={() => setName(generateGromadaName())}
+              onPress={() => setName(generateGromadaName(i18n.language))}
               style={styles.regenBtn}
               accessibilityRole="button"
               accessibilityLabel={t('gromady:regenerate_name')}

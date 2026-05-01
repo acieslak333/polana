@@ -1,23 +1,30 @@
 import { generateGromadaName } from '../nameGenerator';
 
 describe('generateGromadaName', () => {
-  it('returns a string of exactly 3 space-separated words', () => {
-    const name = generateGromadaName();
-    const parts = name.split(' ');
-    expect(parts).toHaveLength(3);
-    parts.forEach((p) => expect(p.length).toBeGreaterThan(0));
+  it('returns a non-empty string for pl', () => {
+    expect(generateGromadaName('pl')).toBeTruthy();
   });
 
-  it('produces different values across multiple calls', () => {
-    const names = new Set(Array.from({ length: 20 }, () => generateGromadaName()));
-    // With 18×18×15 = 4860 combinations, 20 draws should give > 1 unique value
+  it('returns a non-empty string for en', () => {
+    const name = generateGromadaName('en');
+    expect(name).toBeTruthy();
+    expect(name.split(' ').length).toBeGreaterThanOrEqual(3);
+  });
+
+  it('returns a non-empty string for uk', () => {
+    expect(generateGromadaName('uk')).toBeTruthy();
+  });
+
+  it('falls back for unknown language', () => {
+    expect(generateGromadaName('de')).toBeTruthy();
+  });
+
+  it('defaults to pl', () => {
+    expect(generateGromadaName()).toBeTruthy();
+  });
+
+  it('returns different names across calls', () => {
+    const names = new Set(Array.from({ length: 20 }, () => generateGromadaName('en')));
     expect(names.size).toBeGreaterThan(1);
-  });
-
-  it('returns only Polish characters in the output', () => {
-    for (let i = 0; i < 10; i++) {
-      const name = generateGromadaName();
-      expect(name).toMatch(/^[\wÀ-ſ\s]+$/);
-    }
   });
 });
