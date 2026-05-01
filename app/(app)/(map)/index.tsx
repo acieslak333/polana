@@ -10,7 +10,7 @@ import { router } from 'expo-router';
 import MapView, { Marker, Callout, PROVIDER_GOOGLE } from 'react-native-maps';
 import * as Location from 'expo-location';
 import { format } from 'date-fns';
-import { pl } from 'date-fns/locale';
+import { getDateLocale } from '@/utils/locale';
 
 import { EventCard } from '@/components/event/EventCard';
 import { theme } from '@/constants/theme';
@@ -32,7 +32,8 @@ function parsePoint(wkt: string | null): LatLon | null {
 }
 
 export default function MapScreen() {
-  const { t } = useTranslation('events');
+  const { t, i18n } = useTranslation('events');
+  const dateLocale = getDateLocale(i18n.language);
   const { profile } = useAuthStore();
 
   const cityId = profile?.city_id ?? '';
@@ -136,7 +137,7 @@ export default function MapScreen() {
                         {event.title}
                       </Text>
                       <Text style={styles.calloutDate}>
-                        {format(new Date(event.starts_at), 'EEE d MMM, HH:mm', { locale: pl })}
+                        {format(new Date(event.starts_at), 'EEE d MMM, HH:mm', { locale: dateLocale })}
                       </Text>
                       <Text style={styles.calloutCta}>{t('events:tap_to_view')}</Text>
                     </View>

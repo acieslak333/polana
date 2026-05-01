@@ -2,7 +2,8 @@ import React from 'react';
 import { View, Text, Pressable, StyleSheet } from 'react-native';
 import { router } from 'expo-router';
 import { format, isToday, isTomorrow } from 'date-fns';
-import { pl } from 'date-fns/locale';
+import { useTranslation } from 'react-i18next';
+import { getDateLocale } from '@/utils/locale';
 import { theme } from '@/constants/theme';
 import type { EventWithRSVP } from '@/services/api/events';
 
@@ -17,19 +18,22 @@ const RSVP_STYLES: Record<string, { bg: string; label: string }> = {
   not_going: { bg: theme.colors.textTertiary, label: 'Nie idę' },
 };
 
-function formatDate(iso: string): string {
-  const d = new Date(iso);
-  if (isToday(d)) return `Dziś, ${format(d, 'HH:mm')}`;
-  if (isTomorrow(d)) return `Jutro, ${format(d, 'HH:mm')}`;
-  return format(d, "d MMM, HH:mm", { locale: pl });
-}
-
 type EventCardProps = {
   event: EventWithRSVP;
   onRSVP?: (eventId: string, status: 'going' | 'maybe' | 'not_going') => void;
 };
 
 function EventCardBase({ event, onRSVP }: EventCardProps) {
+  const { i18n, t } = useTranslation(['events', 'common']);
+  const dateLocale = getDateLocale(i18n.language);
+
+  function formatDate(iso: string): string {
+    const d = new Date(iso);
+    if (isToday(d)) return `${t('common:today')}, ${format(d, 'HH:mm')}`;
+    if (isTomorrow(d)) return `${t('common:tomorrow')}, ${format(d, 'HH:mm')}`;
+    return format(d, 'd MMM, HH:mm', { locale: dateLocale });
+  }
+
   const rsvpStyle = event.user_rsvp ? RSVP_STYLES[event.user_rsvp] : null;
 
   return (

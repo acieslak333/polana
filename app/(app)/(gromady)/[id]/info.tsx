@@ -4,7 +4,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useLocalSearchParams, router } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { format } from 'date-fns';
-import { pl } from 'date-fns/locale';
+import { getDateLocale } from '@/utils/locale';
 
 import { ProceduralAvatar } from '@/components/avatar/ProceduralAvatar';
 import { WarmthIndicator } from '@/components/gromada/WarmthIndicator';
@@ -29,7 +29,8 @@ interface Ally {
 export default function GromadaInfoScreen() {
   const { id: _rawId } = useLocalSearchParams<{ id: string | string[] }>();
   const id = Array.isArray(_rawId) ? _rawId[0] : _rawId;
-  const { t } = useTranslation(['gromady', 'common']);
+  const { t, i18n } = useTranslation(['gromady', 'common']);
+  const dateLocale = getDateLocale(i18n.language);
   const { user } = useAuthStore();
   const [gromada, setGromada] = useState<GromadaWithInterests | null>(null);
   const [loading, setLoading] = useState(true);
@@ -110,7 +111,7 @@ export default function GromadaInfoScreen() {
           <Text style={styles.gromadaName}>{gromada.name}</Text>
           {gromada.description ? <Text style={styles.description}>{gromada.description}</Text> : null}
           <Text style={styles.foundedText}>
-            {t('gromady:founded')} {format(new Date(gromada.created_at), 'd MMMM yyyy', { locale: pl })}
+            {t('gromady:founded')} {format(new Date(gromada.created_at), 'd MMMM yyyy', { locale: dateLocale })}
           </Text>
         </View>
 
