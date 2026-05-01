@@ -40,5 +40,10 @@
     "other": "Інше"
   },
   "tap_to_view": "Натисніть, щоб переглянути",
-  "enable_location": "Увімкніть геолокацію, щоб побачити події поблизу"
+  "enable_location": "Увімкніть геолокацію, щоб побачити події поблизу",
+  "rsvp_going":     "Іду",
+  "rsvp_maybe":     "Можливо",
+  "rsvp_not_going": "Не іду",
+  "attendees_one":  "{{count}} особа йде",
+  "attendees_other":"{{count}} осіб йде"
 }

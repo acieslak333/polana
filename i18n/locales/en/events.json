@@ -40,5 +40,10 @@
     "other": "Other"
   },
   "tap_to_view": "Tap to view",
-  "enable_location": "Enable location to see nearby events"
+  "enable_location": "Enable location to see nearby events",
+  "rsvp_going":     "Going",
+  "rsvp_maybe":     "Maybe",
+  "rsvp_not_going": "Not going",
+  "attendees_one":  "{{count}} person going",
+  "attendees_other":"{{count}} people going"
 }

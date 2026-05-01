@@ -9,6 +9,7 @@ import plGromady from './locales/pl/gromady.json';
 import plEvents from './locales/pl/events.json';
 import plMessages from './locales/pl/messages.json';
 import plProfile from './locales/pl/profile.json';
+import plBrand from './locales/pl/brand.json';
 
 import enCommon from './locales/en/common.json';
 import enAuth from './locales/en/auth.json';
@@ -18,6 +19,7 @@ import enGromady from './locales/en/gromady.json';
 import enEvents from './locales/en/events.json';
 import enMessages from './locales/en/messages.json';
 import enProfile from './locales/en/profile.json';
+import enBrand from './locales/en/brand.json';
 
 import ukCommon from './locales/uk/common.json';
 import ukAuth from './locales/uk/auth.json';
@@ -27,6 +29,7 @@ import ukGromady from './locales/uk/gromady.json';
 import ukEvents from './locales/uk/events.json';
 import ukMessages from './locales/uk/messages.json';
 import ukProfile from './locales/uk/profile.json';
+import ukBrand from './locales/uk/brand.json';
 
 export const defaultNS = 'common';
 
@@ -48,6 +51,7 @@ export const resources = {
     events: plEvents,
     messages: plMessages,
     profile: plProfile,
+    brand: plBrand,
   },
   en: {
     common: enCommon,
@@ -58,6 +62,7 @@ export const resources = {
     events: enEvents,
     messages: enMessages,
     profile: enProfile,
+    brand: enBrand,
   },
   uk: {
     common: ukCommon,
@@ -68,6 +73,7 @@ export const resources = {
     events: ukEvents,
     messages: ukMessages,
     profile: ukProfile,
+    brand: ukBrand,
   },
 } as const;
 

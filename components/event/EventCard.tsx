@@ -12,12 +12,6 @@ const EVENT_EMOJIS: Record<string, string> = {
   coffee: '☕', picnic: '🧺', games: '🎲', talk: '💬', other: '📌',
 };
 
-const RSVP_STYLES: Record<string, { bg: string; label: string }> = {
-  going: { bg: theme.colors.success, label: 'Idę' },
-  maybe: { bg: theme.colors.warmGold, label: 'Może' },
-  not_going: { bg: theme.colors.textTertiary, label: 'Nie idę' },
-};
-
 type EventCardProps = {
   event: EventWithRSVP;
   onRSVP?: (eventId: string, status: 'going' | 'maybe' | 'not_going') => void;
@@ -27,6 +21,12 @@ function EventCardBase({ event, onRSVP }: EventCardProps) {
   const { i18n, t } = useTranslation(['events', 'common']);
   const dateLocale = getDateLocale(i18n.language);
 
+  const rsvpStyles = {
+    going:     { bg: theme.colors.success,      label: t('rsvp_going') },
+    maybe:     { bg: theme.colors.warmGold,     label: t('rsvp_maybe') },
+    not_going: { bg: theme.colors.textTertiary, label: t('rsvp_not_going') },
+  } as const;
+
   function formatDate(iso: string): string {
     const d = new Date(iso);
     if (isToday(d)) return `${t('common:today')}, ${format(d, 'HH:mm')}`;
@@ -34,7 +34,7 @@ function EventCardBase({ event, onRSVP }: EventCardProps) {
     return format(d, 'd MMM, HH:mm', { locale: dateLocale });
   }
 
-  const rsvpStyle = event.user_rsvp ? RSVP_STYLES[event.user_rsvp] : null;
+  const rsvpStyle = event.user_rsvp ? rsvpStyles[event.user_rsvp] : null;
 
   return (
     <Pressable
@@ -66,12 +66,12 @@ function EventCardBase({ event, onRSVP }: EventCardProps) {
         {/* RSVP row */}
         <View style={styles.rsvpRow}>
           <Text style={styles.attendees}>
-            {event.rsvp_count} {event.rsvp_count === 1 ? 'osoba idzie' : 'osób idzie'}
+            {t('attendees', { count: event.rsvp_count })}
           </Text>
           {onRSVP && (
             <View style={styles.rsvpBtns}>
               {(['going', 'maybe', 'not_going'] as const).map((status) => {
-                const s = RSVP_STYLES[status];
+                const s = rsvpStyles[status];
                 const active = event.user_rsvp === status;
                 return (
                   <Pressable

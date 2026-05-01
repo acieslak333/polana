@@ -40,5 +40,10 @@
     "other": "Inne"
   },
   "tap_to_view": "Dotknij, aby zobaczyć",
-  "enable_location": "Włącz lokalizację, aby zobaczyć pobliskie wydarzenia"
+  "enable_location": "Włącz lokalizację, aby zobaczyć pobliskie wydarzenia",
+  "rsvp_going":     "Idę",
+  "rsvp_maybe":     "Może",
+  "rsvp_not_going": "Nie idę",
+  "attendees_one":  "{{count}} osoba idzie",
+  "attendees_other":"{{count}} osób idzie"
 }

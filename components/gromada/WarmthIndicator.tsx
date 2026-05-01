@@ -1,4 +1,5 @@
 import { View, Text, StyleSheet } from 'react-native';
+import { useTranslation } from 'react-i18next';
 import { theme } from '@/constants/theme';
 
 type WarmthIndicatorProps = {
@@ -34,6 +35,7 @@ export function WarmthIndicator({
   memberCount,
   compact = false,
 }: WarmthIndicatorProps) {
+  const { t } = useTranslation('brand');
   const score = calcWarmth(meetingsThisMonth, favorsExchanged, memberCount);
   const color = warmthColor(score);
   const emoji = warmthEmoji(score);
@@ -51,7 +53,7 @@ export function WarmthIndicator({
     <View style={styles.container}>
       <View style={styles.labelRow}>
         <Text style={styles.emoji}>{emoji}</Text>
-        <Text style={styles.label}>Ciepło Gromady</Text>
+        <Text style={styles.label}>{t('warmth')}</Text>
         <Text style={[styles.score, { color }]}>{score}/100</Text>
       </View>
       <View style={styles.track}>
