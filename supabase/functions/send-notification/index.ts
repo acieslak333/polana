@@ -53,13 +53,20 @@ serve(async (req) => {
 
   const rateCheck = await checkRateLimit(auth.userId, 'send-notification', supabase)
   if (!rateCheck.ok) {
-    await log.start('push-rate-limited', { userId: auth.userId, reqId })
+    await log.start('push-rate-limited', { userId: auth.userId, metadata: { reqId } })
     return rateCheck.response
   }
 
   try {
     const payload: NotificationPayload = await req.json()
     const { userId: targetUserId, type, variables, data } = payload
+
+    // Validate required fields before any DB access
+    if (!targetUserId || typeof targetUserId !== 'string' ||
+        !type || typeof type !== 'string' ||
+        !variables || typeof variables !== 'object' || Array.isArray(variables)) {
+      return json({ sent: false, reason: 'invalid payload: userId, type, and variables are required' }, 400)
+    }
 
     const { data: profileData, error: profileError } = await supabase
       .from('profiles')
@@ -71,7 +78,7 @@ serve(async (req) => {
       return json({ sent: false, reason: 'target user not found' }, 404)
     }
 
-    const done = log.start('push', { userId: targetUserId, type, reqId })
+    const done = log.start('push', { userId: targetUserId, metadata: { type, reqId } })
 
     let pushToken: string | null = null
     if (profileData.push_token_enc) {

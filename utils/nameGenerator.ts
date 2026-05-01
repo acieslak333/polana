@@ -47,10 +47,12 @@ function pick<T>(arr: T[]): T {
   return arr[Math.floor(Math.random() * arr.length)];
 }
 
+// Fallback chain: requested language → 'en'.
+// Unlike the SQL function which also falls back to 'pl', the client-side
+// WORDS constant always has 'en' defined, so 'pl' is never needed here.
 function resolveLanguage(language: string): string {
   if (WORDS[language]) return language;
-  if (WORDS['en']) return 'en';
-  return 'pl';
+  return 'en';
 }
 
 /**
